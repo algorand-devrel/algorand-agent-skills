@@ -68,7 +68,7 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 
 | Skill                         | Description                                      |
 | ----------------------------- | ------------------------------------------------ |
-| `creating-projects`           | Initialize AlgoKit projects with best practices  |
+| `create-project`              | Initialize AlgoKit projects with best practices  |
 | `building-smart-contracts`    | Build contracts in Algorand TypeScript or Python |
 | `algorand-typescript-rules`   | Syntax rules for Algorand TypeScript (PuyaTs)    |
 | `testing-smart-contracts`     | Write and run contract tests                     |

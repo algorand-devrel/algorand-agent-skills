@@ -8,7 +8,7 @@ This project develops Algorand blockchain applications including smart contracts
 
 Before initializing any AlgoKit project:
 
-1. **Load the skill**: Use `creating-projects` skill for project setup guidance
+1. **Load the skill**: Use `create-project` skill for project setup guidance
 2. **Run**: `algokit init -n <name> -t typescript --answer preset "Production" --defaults`
 
 ## Writing Smart Contracts
@@ -65,7 +65,7 @@ Before building a React frontend that interacts with Algorand contracts:
 
 | Task                | Skill                         |
 | ------------------- | ----------------------------- |
-| Initialize projects | `creating-projects`           |
+| Initialize projects | `create-project`              |
 | Create contracts    | `building-smart-contracts`    |
 | Syntax questions    | `algorand-typescript-rules`   |
 | Build/deploy cmds   | `algokit-commands`            |

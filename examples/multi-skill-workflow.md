@@ -16,7 +16,7 @@ You want to build a simple voting contract where:
 
 **You say:** "Create a new AlgoKit project called voting-app"
 
-**Skills activated:** `creating-projects`
+**Skills activated:** `create-project`
 
 **What happens:**
 
@@ -164,7 +164,7 @@ export class VotingContract extends Contract {
 
 | Step          | Skills                                                  | MCP Tools                                 |
 | ------------- | ------------------------------------------------------- | ----------------------------------------- |
-| 1. Initialize | `creating-projects`                                     | -                                         |
+| 1. Initialize | `create-project`                                        | -                                         |
 | 2. Research   | -                                                       | `kappa_search_algorand_knowledge_sources` |
 | 3. Examples   | `searching-algorand-examples`                           | `github_get_file_contents`                |
 | 4. Build      | `building-smart-contracts`, `algorand-typescript-rules` | -                                         |

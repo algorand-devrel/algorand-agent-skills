@@ -1,5 +1,5 @@
 ---
-name: creating-projects
+name: create-project
 description: Bootstraps production-ready AlgoKit projects for Algorand dApps and smart contracts. Use for new project initialization, dev environment setup, or smart contract scaffolding.
 ---
 
