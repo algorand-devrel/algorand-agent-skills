@@ -31,13 +31,8 @@ cp -r /path/to/algorand-agent-skills/skills ./
 cp /path/to/algorand-agent-skills/setups/AGENTS.md ./
 
 # Copy Copilot instructions
-cp /path/to/algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/copilot-instructions.md
-```
-
-### 3. Create .github Directory (if needed)
-
-```bash
 mkdir -p .github
+cp /path/to/algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/copilot-instructions.md
 ```
 
 ## Files to Copy

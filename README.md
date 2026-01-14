@@ -44,7 +44,6 @@ cp algorand-agent-skills/setups/claude-code/CLAUDE.md ./
 cp algorand-agent-skills/setups/AGENTS.md ./
 mkdir -p .cursor/skills
 cp -r algorand-agent-skills/skills/* .cursor/skills/
-mkdir -p .cursor
 cp algorand-agent-skills/setups/cursor/mcp.json .cursor/mcp.json
 ```
 

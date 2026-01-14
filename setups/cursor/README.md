@@ -37,7 +37,6 @@ MCP config can be project-level or global:
 
 **Option A: Project-level (recommended)**
 ```bash
-mkdir -p .cursor
 cp /path/to/algorand-agent-skills/setups/cursor/mcp.json .cursor/mcp.json
 ```
 
