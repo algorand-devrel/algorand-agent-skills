@@ -1,5 +1,5 @@
 ---
-name: testing-smart-contracts
+name: test-smart-contracts
 description: Testing patterns for Algorand smart contracts using generated clients. Use when writing tests, setting up test fixtures, debugging test failures, or asking about E2E vs unit testing for Algorand apps.
 ---
 

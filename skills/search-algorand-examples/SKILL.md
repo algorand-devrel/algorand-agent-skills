@@ -1,5 +1,5 @@
 ---
-name: searching-algorand-examples
+name: search-algorand-examples
 description: Search GitHub for Algorand smart contract examples and patterns. Use when looking for contract implementations, code patterns, or exploring algorandfoundation repositories.
 ---
 

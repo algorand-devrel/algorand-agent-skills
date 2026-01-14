@@ -1,5 +1,5 @@
 ---
-name: algokit-commands
+name: use-algokit-cli
 description: AlgoKit CLI commands for building, testing, and deploying Algorand applications. Use when running builds, tests, deployments, or asking about algokit project commands and localnet.
 ---
 

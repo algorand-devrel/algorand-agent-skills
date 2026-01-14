@@ -47,7 +47,7 @@ State management, ABI methods, inner transactions: Start in `contracts/` subdire
 
 - Carefully adapt canonical examples
 - Preserve all safety checks and efficient patterns
-- Follow all critical rules from the algorand-typescript-rules skill
+- Follow all critical rules from the algorand-typescript skill
 
 ## Step 5: Include Tests
 

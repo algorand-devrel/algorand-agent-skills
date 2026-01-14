@@ -1,5 +1,5 @@
 ---
-name: deploying-react-frontends
+name: deploy-react-frontend
 description: Create React frontends for Algorand dApps with wallet integration. Use when building React UIs that interact with smart contracts, setting up wallet connections, or integrating typed clients with use-wallet.
 ---
 

@@ -66,16 +66,16 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 Skills teach AI assistants how to complete Algorand-specific tasks:
 
-| Skill                         | Description                                      |
-| ----------------------------- | ------------------------------------------------ |
-| `create-project`              | Initialize AlgoKit projects with best practices  |
-| `building-smart-contracts`    | Build contracts in Algorand TypeScript or Python |
-| `algorand-typescript-rules`   | Syntax rules for Algorand TypeScript (PuyaTs)    |
-| `testing-smart-contracts`     | Write and run contract tests                     |
-| `calling-smart-contracts`     | Deploy and interact with contracts               |
-| `deploying-react-frontends`   | Build React frontends for dApps                  |
-| `algokit-commands`            | AlgoKit CLI command reference                    |
-| `searching-algorand-examples` | Find canonical code examples                     |
+| Skill                    | Description                                      |
+| ------------------------ | ------------------------------------------------ |
+| `create-project`         | Initialize AlgoKit projects with best practices  |
+| `build-smart-contracts`  | Build contracts in Algorand TypeScript or Python |
+| `algorand-typescript`    | Syntax rules for Algorand TypeScript (PuyaTs)    |
+| `test-smart-contracts`   | Write and run contract tests                     |
+| `call-smart-contracts`   | Deploy and interact with contracts               |
+| `deploy-react-frontend`  | Build React frontends for dApps                  |
+| `use-algokit-cli`        | AlgoKit CLI command reference                    |
+| `search-algorand-examples` | Find canonical code examples                   |
 
 ### MCP Servers
 

@@ -1,5 +1,5 @@
 ---
-name: calling-smart-contracts
+name: call-smart-contracts
 description: Deploy and interact with Algorand smart contracts using AlgoKit CLI and generated TypeScript clients. Use when deploying contracts, calling methods, reading state, or managing contract lifecycle.
 ---
 
@@ -182,4 +182,4 @@ DEPLOYER_MNEMONIC="your twenty four word mnemonic phrase here"
 - [CLI Commands Reference](./REFERENCE.md)
 - [AlgoKit Utils Documentation](https://dev.algorand.co/algokit/utils/typescript/)
 - [ARC-56 App Spec Standard](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0056.md)
-- [Testing Contracts](../testing-smart-contracts/SKILL.md)
+- [Testing Contracts](../test-smart-contracts/SKILL.md)

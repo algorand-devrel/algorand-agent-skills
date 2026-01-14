@@ -154,7 +154,7 @@ Before submitting a PR:
 
 ### Naming
 
-- Skill directories: `kebab-case` (e.g., `building-smart-contracts`)
+- Skill directories: `kebab-case` (e.g., `build-smart-contracts`)
 - Skill names in frontmatter: match directory name
 - File names: `UPPERCASE.md` for main files, `lowercase.md` for topic files
 

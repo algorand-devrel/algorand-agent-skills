@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: Iteration 1
+> Last updated: Pre-iteration (manual renames completed)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**rename-building-smart-contracts**: Rename `building-smart-contracts` → `build-smart-contracts`
+**add-python-types**: Create `build-smart-contracts/python/types.md` with Algorand Python type system documentation
 
 ## Completed Tasks
 
@@ -15,51 +15,30 @@
    - Updated SKILL.md frontmatter `name` field
    - Updated references in: examples/multi-skill-workflow.md, README.md, setups/AGENTS.md
 
+2. **PHASE 1 COMPLETE**: All remaining renames done manually
+   - `building-smart-contracts` → `build-smart-contracts`
+   - `algorand-typescript-rules` → `algorand-typescript`
+   - `testing-smart-contracts` → `test-smart-contracts`
+   - `calling-smart-contracts` → `call-smart-contracts`
+   - `deploying-react-frontends` → `deploy-react-frontend`
+   - `algokit-commands` → `use-algokit-cli`
+   - `searching-algorand-examples` → `search-algorand-examples`
+   - Updated all SKILL.md frontmatter and cross-references
+
 ## Queue
 
-### PHASE 1: RENAME EXISTING SKILLS (HIGH PRIORITY)
+### PHASE 1: RENAME EXISTING SKILLS (HIGH PRIORITY) - COMPLETE
 
-Rename all skills to action-oriented names following Anthropic best practices.
+All skills renamed to action-oriented names following Anthropic best practices.
 
-- [x] **rename-creating-projects**: Rename `creating-projects` → `create-project`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-building-smart-contracts**: Rename `building-smart-contracts` → `build-smart-contracts`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-algorand-typescript-rules**: Rename `algorand-typescript-rules` → `algorand-typescript`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update references in other skills
-
-- [ ] **rename-testing-smart-contracts**: Rename `testing-smart-contracts` → `test-smart-contracts`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-calling-smart-contracts**: Rename `calling-smart-contracts` → `call-smart-contracts`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-deploying-react-frontends**: Rename `deploying-react-frontends` → `deploy-react-frontend`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-algokit-commands**: Rename `algokit-commands` → `use-algokit-cli`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
-
-- [ ] **rename-searching-algorand-examples**: Rename `searching-algorand-examples` → `search-algorand-examples`
-  - Rename directory
-  - Update SKILL.md frontmatter `name` field
-  - Update any internal references
+- [x] **rename-creating-projects**: `creating-projects` → `create-project`
+- [x] **rename-building-smart-contracts**: `building-smart-contracts` → `build-smart-contracts`
+- [x] **rename-algorand-typescript-rules**: `algorand-typescript-rules` → `algorand-typescript`
+- [x] **rename-testing-smart-contracts**: `testing-smart-contracts` → `test-smart-contracts`
+- [x] **rename-calling-smart-contracts**: `calling-smart-contracts` → `call-smart-contracts`
+- [x] **rename-deploying-react-frontends**: `deploying-react-frontends` → `deploy-react-frontend`
+- [x] **rename-algokit-commands**: `algokit-commands` → `use-algokit-cli`
+- [x] **rename-searching-algorand-examples**: `searching-algorand-examples` → `search-algorand-examples`
 
 ### PHASE 2: ADD PYTHON CONTRACT PATTERNS (HIGH PRIORITY)
 

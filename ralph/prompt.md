@@ -4,6 +4,35 @@ You are enhancing Algorand agent skills for AI coding assistants. Your goal is t
 
 **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations).
 
+## Available MCP Tools
+
+You have access to MCP (Model Context Protocol) servers that provide specialized tools:
+
+### Kappa (Algorand Knowledge)
+
+Use `mcp__kappa__search_algorand_knowledge_sources` to search Algorand documentation and knowledge sources. This is your **primary tool** for fetching Algorand information - it performs semantic search and returns relevant documentation chunks.
+
+```
+mcp__kappa__search_algorand_knowledge_sources(query: "How to create an Algorand smart contract in Python")
+```
+
+**When to use Kappa:**
+- Researching Algorand concepts, APIs, or patterns
+- Finding code examples and syntax rules
+- Understanding AlgoKit Utils, PuyaTs, PuyaPy, or other Algorand tools
+- Verifying current best practices
+
+### GitHub
+
+Use `mcp__github__*` tools for GitHub operations:
+- `mcp__github__get_file_contents` - Read files from GitHub repos (useful for example code)
+- `mcp__github__search_code` - Search for code patterns across GitHub
+- `mcp__github__search_repositories` - Find relevant Algorand repositories
+
+**When to use GitHub:**
+- Finding real-world code examples in Algorand repositories
+- Checking implementation patterns in official repos like `algorandfoundation/puya`
+
 ## Your Workflow
 
 ### Step 1: Read Progress
@@ -33,8 +62,10 @@ If no current task, take the next unchecked item from the QUEUE in phase/priorit
 
 #### For Content Creation Tasks
 
-1. **Fetch documentation** using WebFetch for the URLs listed
-   - If WebFetch fails, use WebSearch fallback: `site:dev.algorand.co {topic}`
+1. **Fetch documentation** using these tools in priority order:
+   - **Primary**: Use `mcp__kappa__search_algorand_knowledge_sources` for Algorand-specific information
+   - **Secondary**: Use `mcp__github__get_file_contents` to read example code from official repos
+   - **Fallback**: Use WebFetch for specific URLs or WebSearch: `site:dev.algorand.co {topic}`
    - Extract key concepts, syntax rules, and common patterns
 
 2. **Study existing skills** for format consistency:

@@ -42,7 +42,7 @@ You want to build a simple voting contract where:
 
 **You say:** "Show me an example voting contract from the official repos"
 
-**Skills activated:** `searching-algorand-examples`
+**Skills activated:** `search-algorand-examples`
 
 **What happens:**
 
@@ -55,11 +55,11 @@ You want to build a simple voting contract where:
 
 **You say:** "Create a voting contract based on those patterns"
 
-**Skills activated:** `building-smart-contracts`, `algorand-typescript-rules`
+**Skills activated:** `build-smart-contracts`, `algorand-typescript`
 
 **What happens:**
 
-1. Agent follows the `building-smart-contracts` workflow:
+1. Agent follows the `build-smart-contracts` workflow:
    - Uses docs and examples gathered earlier
    - Generates Algorand TypeScript contract code
    - Includes proper AVM types (`uint64`, not `number`)
@@ -107,7 +107,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Add tests for the voting contract"
 
-**Skills activated:** `testing-smart-contracts`
+**Skills activated:** `test-smart-contracts`
 
 **What happens:**
 
@@ -122,7 +122,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Build and run the tests"
 
-**Skills activated:** `algokit-commands`
+**Skills activated:** `use-algokit-cli`
 
 **What happens:**
 
@@ -134,7 +134,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Deploy the contract to localnet"
 
-**Skills activated:** `calling-smart-contracts`, `managing-networks`
+**Skills activated:** `call-smart-contracts`, `managing-networks`
 
 **What happens:**
 
@@ -146,7 +146,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Create a proposal called 'Upgrade v2' and cast a vote"
 
-**Skills activated:** `calling-smart-contracts`
+**Skills activated:** `call-smart-contracts`
 
 **What happens:**
 
@@ -166,12 +166,12 @@ export class VotingContract extends Contract {
 | ------------- | ------------------------------------------------------- | ----------------------------------------- |
 | 1. Initialize | `create-project`                                        | -                                         |
 | 2. Research   | -                                                       | `kappa_search_algorand_knowledge_sources` |
-| 3. Examples   | `searching-algorand-examples`                           | `github_get_file_contents`                |
-| 4. Build      | `building-smart-contracts`, `algorand-typescript-rules` | -                                         |
-| 5. Test       | `testing-smart-contracts`                               | -                                         |
-| 6. Build/Test | `algokit-commands`                                      | -                                         |
-| 7. Deploy     | `calling-smart-contracts`, `managing-networks`          | -                                         |
-| 8. Interact   | `calling-smart-contracts`                               | `call_contract`                           |
+| 3. Examples   | `search-algorand-examples`                           | `github_get_file_contents`                |
+| 4. Build      | `build-smart-contracts`, `algorand-typescript` | -                                         |
+| 5. Test       | `test-smart-contracts`                               | -                                         |
+| 6. Build/Test | `use-algokit-cli`                                      | -                                         |
+| 7. Deploy     | `call-smart-contracts`, `managing-networks`          | -                                         |
+| 8. Interact   | `call-smart-contracts`                               | `call_contract`                           |
 
 ## Key Takeaways
 

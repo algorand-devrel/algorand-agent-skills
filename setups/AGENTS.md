@@ -15,7 +15,7 @@ Before initializing any AlgoKit project:
 
 Before writing ANY Algorand contract code:
 
-1. **Load the skill first**: Use `building-smart-contracts` skill
+1. **Load the skill first**: Use `build-smart-contracts` skill
 2. **Search docs**: Call `kappa_search_algorand_knowledge_sources` for concepts
 3. **Get examples**: Use `github_get_file_contents` from:
    - `algorandfoundation/devportal-code-examples`
@@ -29,7 +29,7 @@ Use the **CLI and generated TypeScript clients** for deployment and interaction.
 
 ### Workflow
 
-1. **Load the skill**: Use `calling-smart-contracts` skill
+1. **Load the skill**: Use `call-smart-contracts` skill
 2. **Start localnet**: `algokit localnet start`
 3. **Build contracts**: `algokit project run build`
 4. **Deploy to localnet**: `algokit project deploy localnet`
@@ -45,13 +45,13 @@ After deployment, interact with contracts using the generated TypeScript client:
 2. **Use the typed client** generated from the ARC-56 app spec
 3. **Run scripts**: `npx tsx scripts/call-contract.ts`
 
-See the `calling-smart-contracts` skill for detailed patterns and examples.
+See the `call-smart-contracts` skill for detailed patterns and examples.
 
 ## Building React Frontends
 
 Before building a React frontend that interacts with Algorand contracts:
 
-1. **Load the skill**: Use `deploying-react-frontends` skill
+1. **Load the skill**: Use `deploy-react-frontend` skill
 2. **Prerequisites**: Deployed contract with known App ID, ARC-56 app spec
 3. **Generate typed client**: `algokit generate client MyContract.arc56.json --output src/contracts/MyContractClient.ts`
 4. **Install deps**: `npm install @algorandfoundation/algokit-utils @txnlab/use-wallet-react algosdk`
@@ -66,13 +66,13 @@ Before building a React frontend that interacts with Algorand contracts:
 | Task                | Skill                         |
 | ------------------- | ----------------------------- |
 | Initialize projects | `create-project`              |
-| Create contracts    | `building-smart-contracts`    |
-| Syntax questions    | `algorand-typescript-rules`   |
-| Build/deploy cmds   | `algokit-commands`            |
-| Write tests         | `testing-smart-contracts`     |
-| Find examples       | `searching-algorand-examples` |
-| Deploy & call       | `calling-smart-contracts`     |
-| React frontends     | `deploying-react-frontends`   |
+| Create contracts    | `build-smart-contracts`    |
+| Syntax questions    | `algorand-typescript`   |
+| Build/deploy cmds   | `use-algokit-cli`            |
+| Write tests         | `test-smart-contracts`     |
+| Find examples       | `search-algorand-examples` |
+| Deploy & call       | `call-smart-contracts`     |
+| React frontends     | `deploy-react-frontend`   |
 
 ## MCP Tools
 

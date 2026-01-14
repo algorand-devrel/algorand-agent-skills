@@ -1,5 +1,5 @@
 ---
-name: algorand-typescript-rules
+name: algorand-typescript
 description: Syntax rules and patterns for Algorand TypeScript (PuyaTs) smart contracts. Use when writing TypeScript contract code, encountering Puya compiler errors, or asking about AVM types, storage, arrays, clone(), inner transactions, or value semantics.
 ---
 
