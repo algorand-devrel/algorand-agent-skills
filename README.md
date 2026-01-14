@@ -66,16 +66,19 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 Skills teach AI assistants how to complete Algorand-specific tasks:
 
-| Skill                    | Description                                      |
-| ------------------------ | ------------------------------------------------ |
-| `create-project`         | Initialize AlgoKit projects with best practices  |
-| `build-smart-contracts`  | Build contracts in Algorand TypeScript or Python |
-| `algorand-typescript`    | Syntax rules for Algorand TypeScript (PuyaTs)    |
-| `test-smart-contracts`   | Write and run contract tests                     |
-| `call-smart-contracts`   | Deploy and interact with contracts               |
-| `deploy-react-frontend`  | Build React frontends for dApps                  |
-| `use-algokit-cli`        | AlgoKit CLI command reference                    |
-| `search-algorand-examples` | Find canonical code examples                   |
+| Skill                      | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| `create-project`           | Initialize AlgoKit projects with best practices  |
+| `build-smart-contracts`    | Build contracts in Algorand TypeScript or Python |
+| `algorand-typescript`      | Syntax rules for Algorand TypeScript (PuyaTs)    |
+| `test-smart-contracts`     | Write and run contract tests                     |
+| `call-smart-contracts`     | Deploy and interact with contracts               |
+| `deploy-react-frontend`    | Build React frontends for dApps                  |
+| `use-algokit-cli`          | AlgoKit CLI command reference                    |
+| `search-algorand-examples` | Find canonical code examples                     |
+| `use-algokit-utils`        | AlgoKit Utils library for SDK interactions       |
+| `troubleshoot-errors`      | Diagnose and fix common Algorand errors          |
+| `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards    |
 
 ### MCP Servers
 

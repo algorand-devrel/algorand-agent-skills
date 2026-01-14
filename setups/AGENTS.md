@@ -63,16 +63,19 @@ Before building a React frontend that interacts with Algorand contracts:
 
 ## Available Skills
 
-| Task                | Skill                         |
-| ------------------- | ----------------------------- |
-| Initialize projects | `create-project`              |
-| Create contracts    | `build-smart-contracts`    |
-| Syntax questions    | `algorand-typescript`   |
-| Build/deploy cmds   | `use-algokit-cli`            |
-| Write tests         | `test-smart-contracts`     |
-| Find examples       | `search-algorand-examples` |
-| Deploy & call       | `call-smart-contracts`     |
-| React frontends     | `deploy-react-frontend`   |
+| Task                  | Skill                       |
+| --------------------- | --------------------------- |
+| Initialize projects   | `create-project`            |
+| Create contracts      | `build-smart-contracts`     |
+| Syntax questions      | `algorand-typescript`       |
+| Build/deploy cmds     | `use-algokit-cli`           |
+| Write tests           | `test-smart-contracts`      |
+| Find examples         | `search-algorand-examples`  |
+| Deploy & call         | `call-smart-contracts`      |
+| React frontends       | `deploy-react-frontend`     |
+| SDK interactions      | `use-algokit-utils`         |
+| Debug errors          | `troubleshoot-errors`       |
+| ARC standards         | `implement-arc-standards`   |
 
 ## MCP Tools
 
