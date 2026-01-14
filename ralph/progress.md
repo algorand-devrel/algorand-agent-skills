@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: 2026-01-14 (Iteration 4)
+> Last updated: 2026-01-14 (Iteration 5)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**create-use-algokit-utils**: Create new `use-algokit-utils` skill with TypeScript and Python documentation
+**create-troubleshoot-errors**: Create new `troubleshoot-errors` skill with common error patterns and solutions
 
 ## Completed Tasks
 
@@ -43,7 +43,14 @@
    - Added inner transaction result properties tables
    - Added common mistakes and security considerations
 
-6. **PHASE 1 COMPLETE**: All remaining renames done manually
+6. **create-use-algokit-utils**: Created new `use-algokit-utils` skill
+   - Created SKILL.md with overview and core workflow
+   - Created typescript/algorand-client.md with full TypeScript API documentation
+   - Created python/algorand-client.md with full Python API documentation
+   - Documented AlgorandClient initialization, accounts, transactions, groups
+   - Included common patterns and amount helpers
+
+7. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -91,7 +98,7 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ### PHASE 3: CREATE NEW SKILLS (MEDIUM PRIORITY)
 
-- [ ] **create-use-algokit-utils**: Create new `use-algokit-utils` skill
+- [x] **create-use-algokit-utils**: Create new `use-algokit-utils` skill
   - Fetch: https://dev.algorand.co/algokit/utils/typescript/overview/
   - Fetch: https://dev.algorand.co/algokit/utils/python/overview/
   - Create: skills/use-algokit-utils/SKILL.md
@@ -141,7 +148,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 4 (current)
+### Iteration 5 (current)
+- Started: 2026-01-14
+- Task: create-use-algokit-utils
+- Result: Completed - created new `skills/use-algokit-utils/` skill with SKILL.md, typescript/algorand-client.md, and python/algorand-client.md documenting AlgorandClient API for both languages
+
+### Iteration 4
 - Started: 2026-01-14
 - Task: add-python-transactions
 - Result: Completed - created `skills/build-smart-contracts/python/transactions.md` with inner transactions (itxn), grouped inner transactions, group transactions (gtxn), fee pooling patterns, and common mistakes
