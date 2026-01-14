@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: 2026-01-14 (Iteration 2)
+> Last updated: 2026-01-14 (Iteration 3)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**add-python-decorators**: Create `build-smart-contracts/python/decorators.md` with @arc4.abimethod, @subroutine, @arc4.baremethod patterns
+**add-python-transactions**: Create `build-smart-contracts/python/transactions.md` with inner transactions and group transaction patterns
 
 ## Completed Tasks
 
@@ -28,7 +28,14 @@
    - Included MBR formulas and funding patterns
    - Added common mistakes and storage comparison table
 
-4. **PHASE 1 COMPLETE**: All remaining renames done manually
+4. **add-python-decorators**: Created `build-smart-contracts/python/decorators.md`
+   - Documented @arc4.abimethod with all parameters (create, allow_actions, readonly, name, default_args)
+   - Documented @arc4.baremethod for bare methods
+   - Documented @subroutine with inline parameter
+   - Included lifecycle methods (__init__, clear_state_program)
+   - Added method visibility summary table and common mistakes
+
+5. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -66,7 +73,7 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
   - Cover: GlobalState, LocalState, BoxMap patterns
   - Include MBR considerations
 
-- [ ] **add-python-decorators**: Create `build-smart-contracts/python/decorators.md`
+- [x] **add-python-decorators**: Create `build-smart-contracts/python/decorators.md`
   - Cover: @arc4.abimethod, @subroutine, @arc4.baremethod
   - Include method visibility patterns
 
@@ -126,7 +133,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 2 (current)
+### Iteration 3 (current)
+- Started: 2026-01-14
+- Task: add-python-decorators
+- Result: Completed - created `skills/build-smart-contracts/python/decorators.md` with @arc4.abimethod, @arc4.baremethod, @subroutine documentation including method visibility patterns, lifecycle methods, and common mistakes
+
+### Iteration 2
 - Started: 2026-01-14
 - Task: add-python-storage
 - Result: Completed - created `skills/build-smart-contracts/python/storage.md` with GlobalState, LocalState, Box, BoxMap, BoxRef documentation including MBR formulas, funding patterns, and common mistakes
