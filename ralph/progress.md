@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: 2026-01-14 (Iteration 3)
+> Last updated: 2026-01-14 (Iteration 4)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**add-python-transactions**: Create `build-smart-contracts/python/transactions.md` with inner transactions and group transaction patterns
+**create-use-algokit-utils**: Create new `use-algokit-utils` skill with TypeScript and Python documentation
 
 ## Completed Tasks
 
@@ -35,7 +35,15 @@
    - Included lifecycle methods (__init__, clear_state_program)
    - Added method visibility summary table and common mistakes
 
-5. **PHASE 1 COMPLETE**: All remaining renames done manually
+5. **add-python-transactions**: Created `build-smart-contracts/python/transactions.md`
+   - Documented inner transactions (itxn): Payment, AssetTransfer, AssetConfig, ApplicationCall
+   - Documented grouped inner transactions with itxn.submit_txns()
+   - Documented group transactions (gtxn) as ABI parameters and by index
+   - Included fee pooling security pattern (always fee=0)
+   - Added inner transaction result properties tables
+   - Added common mistakes and security considerations
+
+6. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -77,7 +85,7 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
   - Cover: @arc4.abimethod, @subroutine, @arc4.baremethod
   - Include method visibility patterns
 
-- [ ] **add-python-transactions**: Create `build-smart-contracts/python/transactions.md`
+- [x] **add-python-transactions**: Create `build-smart-contracts/python/transactions.md`
   - Cover: Inner transactions, group transactions
   - Include CORRECT/INCORRECT examples
 
@@ -133,7 +141,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 3 (current)
+### Iteration 4 (current)
+- Started: 2026-01-14
+- Task: add-python-transactions
+- Result: Completed - created `skills/build-smart-contracts/python/transactions.md` with inner transactions (itxn), grouped inner transactions, group transactions (gtxn), fee pooling patterns, and common mistakes
+
+### Iteration 3
 - Started: 2026-01-14
 - Task: add-python-decorators
 - Result: Completed - created `skills/build-smart-contracts/python/decorators.md` with @arc4.abimethod, @arc4.baremethod, @subroutine documentation including method visibility patterns, lifecycle methods, and common mistakes
