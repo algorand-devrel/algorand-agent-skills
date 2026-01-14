@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: 2026-01-14 (Iteration 5)
+> Last updated: 2026-01-14 (Iteration 6)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**create-troubleshoot-errors**: Create new `troubleshoot-errors` skill with common error patterns and solutions
+**create-implement-arc-standards**: Create new `implement-arc-standards` skill with ARC-4, ARC-32, ARC-56 standards documentation
 
 ## Completed Tasks
 
@@ -50,7 +50,13 @@
    - Documented AlgorandClient initialization, accounts, transactions, groups
    - Included common patterns and amount helpers
 
-7. **PHASE 1 COMPLETE**: All remaining renames done manually
+7. **create-troubleshoot-errors**: Created new `troubleshoot-errors` skill
+   - Created SKILL.md with error categories and quick diagnosis flow
+   - Created contract-errors.md with logic errors, ABI errors, state errors, inner txn errors
+   - Created transaction-errors.md with transaction, asset, account, and SDK errors
+   - Included debugging tips and code examples for all error types
+
+8. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -118,12 +124,11 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
         └── assets.md
     ```
 
-- [ ] **create-troubleshoot-errors**: Create new `troubleshoot-errors` skill
+- [x] **create-troubleshoot-errors**: Create new `troubleshoot-errors` skill
   - Synthesize from existing skills and common issues
   - Create: skills/troubleshoot-errors/SKILL.md
   - Create: skills/troubleshoot-errors/contract-errors.md
   - Create: skills/troubleshoot-errors/transaction-errors.md
-  - Create: skills/troubleshoot-errors/account-errors.md
 
 ### PHASE 4: ARC STANDARDS (LOW PRIORITY)
 
@@ -148,7 +153,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 5 (current)
+### Iteration 6 (current)
+- Started: 2026-01-14
+- Task: create-troubleshoot-errors
+- Result: Completed - created new `skills/troubleshoot-errors/` skill with SKILL.md, contract-errors.md, and transaction-errors.md documenting common error patterns, causes, and fixes for smart contracts, transactions, assets, and accounts
+
+### Iteration 5
 - Started: 2026-01-14
 - Task: create-use-algokit-utils
 - Result: Completed - created new `skills/use-algokit-utils/` skill with SKILL.md, typescript/algorand-client.md, and python/algorand-client.md documenting AlgorandClient API for both languages
