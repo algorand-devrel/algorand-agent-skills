@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: 2026-01-14 (Iteration 1)
+> Last updated: 2026-01-14 (Iteration 2)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**add-python-storage**: Create `build-smart-contracts/python/storage.md` with GlobalState, LocalState, BoxMap patterns
+**add-python-decorators**: Create `build-smart-contracts/python/decorators.md` with @arc4.abimethod, @subroutine, @arc4.baremethod patterns
 
 ## Completed Tasks
 
@@ -21,7 +21,14 @@
    - Added CORRECT/INCORRECT code examples
    - Included type comparison tables and common mistakes
 
-3. **PHASE 1 COMPLETE**: All remaining renames done manually
+3. **add-python-storage**: Created `build-smart-contracts/python/storage.md`
+   - Documented GlobalState patterns (simple and wrapper)
+   - Documented LocalState with opt-in requirements
+   - Documented Box, BoxMap, BoxRef for large data
+   - Included MBR formulas and funding patterns
+   - Added common mistakes and storage comparison table
+
+4. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -55,7 +62,7 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
   - Cover: algopy types (UInt64, Bytes, String, etc.)
   - Include CORRECT/INCORRECT examples
 
-- [ ] **add-python-storage**: Create `build-smart-contracts/python/storage.md`
+- [x] **add-python-storage**: Create `build-smart-contracts/python/storage.md`
   - Cover: GlobalState, LocalState, BoxMap patterns
   - Include MBR considerations
 
@@ -119,7 +126,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 1 (current)
+### Iteration 2 (current)
+- Started: 2026-01-14
+- Task: add-python-storage
+- Result: Completed - created `skills/build-smart-contracts/python/storage.md` with GlobalState, LocalState, Box, BoxMap, BoxRef documentation including MBR formulas, funding patterns, and common mistakes
+
+### Iteration 1
 - Started: 2026-01-14
 - Task: add-python-types
 - Result: Completed - created `skills/build-smart-contracts/python/types.md` with comprehensive Algorand Python type system documentation including UInt64, Bytes, String, BigUInt, Account, Asset, Application types with CORRECT/INCORRECT examples
