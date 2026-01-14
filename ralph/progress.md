@@ -1,12 +1,12 @@
 # Ralph Progress Tracker
 
 > **Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations)
-> Last updated: Pre-iteration (manual renames completed)
+> Last updated: 2026-01-14 (Iteration 1)
 > Status: IN PROGRESS
 
 ## Current Task
 
-**add-python-types**: Create `build-smart-contracts/python/types.md` with Algorand Python type system documentation
+**add-python-storage**: Create `build-smart-contracts/python/storage.md` with GlobalState, LocalState, BoxMap patterns
 
 ## Completed Tasks
 
@@ -15,7 +15,13 @@
    - Updated SKILL.md frontmatter `name` field
    - Updated references in: examples/multi-skill-workflow.md, README.md, setups/AGENTS.md
 
-2. **PHASE 1 COMPLETE**: All remaining renames done manually
+2. **add-python-types**: Created `build-smart-contracts/python/types.md`
+   - Documented all AVM types: UInt64, Bytes, String, BigUInt
+   - Documented reference types: Account, Asset, Application
+   - Added CORRECT/INCORRECT code examples
+   - Included type comparison tables and common mistakes
+
+3. **PHASE 1 COMPLETE**: All remaining renames done manually
    - `building-smart-contracts` → `build-smart-contracts`
    - `algorand-typescript-rules` → `algorand-typescript`
    - `testing-smart-contracts` → `test-smart-contracts`
@@ -44,7 +50,7 @@ All skills renamed to action-oriented names following Anthropic best practices.
 
 Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
-- [ ] **add-python-types**: Create `build-smart-contracts/python/types.md`
+- [x] **add-python-types**: Create `build-smart-contracts/python/types.md`
   - Fetch: https://dev.algorand.co/concepts/smart-contracts/languages/python/
   - Cover: algopy types (UInt64, Bytes, String, etc.)
   - Include CORRECT/INCORRECT examples
@@ -113,7 +119,12 @@ Add Python-specific syntax patterns to `build-smart-contracts` skill.
 
 ## Iteration Log
 
-### Iteration 1
+### Iteration 1 (current)
 - Started: 2026-01-14
-- Task: rename-creating-projects
-- Result: Completed - renamed directory, updated frontmatter, updated 5 references in 3 files
+- Task: add-python-types
+- Result: Completed - created `skills/build-smart-contracts/python/types.md` with comprehensive Algorand Python type system documentation including UInt64, Bytes, String, BigUInt, Account, Asset, Application types with CORRECT/INCORRECT examples
+
+### Iteration 0 (pre-iteration)
+- Started: 2026-01-14
+- Task: rename-creating-projects + manual renames
+- Result: Completed - renamed all skills to action-oriented names
