@@ -1,16 +1,16 @@
-# Ralph Skill Enhancement Prompt
+# Ralph Skill Review & Enhancement Prompt
 
-You are enhancing Algorand agent skills for AI coding assistants. Your goal is to create high-quality skills that help LLMs write correct Algorand code.
+You are reviewing and enhancing Algorand agent skills for AI coding assistants. Your goal is to ensure comprehensive coverage, technical accuracy, and adherence to Anthropic's best practices.
 
-**Vision**: Comprehensive skill coverage for all Algorand development (excluding node operations).
+**Vision**: Comprehensive, accurate, best-practices-compliant skill coverage for all Algorand development (excluding node operations).
 
 ## Available MCP Tools
 
-You have access to MCP (Model Context Protocol) servers that provide specialized tools:
+You have access to MCP (Model Context Protocol) servers that provide specialized tools. **USE THESE ACTIVELY** - they are your primary research tools.
 
-### Kappa (Algorand Knowledge)
+### Kappa (Algorand Knowledge) - PRIMARY TOOL
 
-Use `mcp__kappa__search_algorand_knowledge_sources` to search Algorand documentation and knowledge sources. This is your **primary tool** for fetching Algorand information - it performs semantic search and returns relevant documentation chunks.
+Use `mcp__kappa__search_algorand_knowledge_sources` to search Algorand documentation and knowledge sources. This performs semantic search and returns relevant documentation chunks.
 
 ```
 mcp__kappa__search_algorand_knowledge_sources(query: "How to create an Algorand smart contract in Python")
@@ -19,10 +19,12 @@ mcp__kappa__search_algorand_knowledge_sources(query: "How to create an Algorand 
 **When to use Kappa:**
 - Researching Algorand concepts, APIs, or patterns
 - Finding code examples and syntax rules
-- Understanding AlgoKit Utils, PuyaTs, PuyaPy, or other Algorand tools
+- Understanding AlgoKit Utils, PuyaTs, PuyaPy
 - Verifying current best practices
+- Checking for NEW features or patterns not in existing skills
+- Validating technical accuracy of skill content
 
-### GitHub
+### GitHub MCP Tools
 
 Use `mcp__github__*` tools for GitHub operations:
 - `mcp__github__get_file_contents` - Read files from GitHub repos (useful for example code)
@@ -32,6 +34,16 @@ Use `mcp__github__*` tools for GitHub operations:
 **When to use GitHub:**
 - Finding real-world code examples in Algorand repositories
 - Checking implementation patterns in official repos like `algorandfoundation/puya`
+- Verifying code snippets are up-to-date
+
+### Web Tools
+
+- `WebFetch` - Fetch specific URLs when you have them
+- `WebSearch` - Search the web for specific topics
+
+**Important:** Always prefer Kappa for Algorand-specific information. Use WebFetch/WebSearch for:
+- Anthropic best practices: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+- Non-Algorand technical content
 
 ## Your Workflow
 
@@ -44,43 +56,65 @@ Read `ralph/progress.md` to understand:
 
 ### Step 2: Pick Next Task
 
-If no current task, take the next unchecked item from the QUEUE in phase/priority order:
-1. PHASE 1: Rename existing skills (HIGH)
-2. PHASE 2: Add Python patterns (HIGH)
-3. PHASE 3: Create new skills (MEDIUM)
-4. PHASE 4: ARC standards (LOW)
-5. PHASE 5: Finalization
+Take the next unchecked item from the QUEUE in phase order:
+1. **PHASE A**: Coverage Audit - Review Algorand docs, identify gaps, create new skills
+2. **PHASE B**: Accuracy Review - Go through each skill, verify against current docs
+3. **PHASE C**: Best Practices Audit - Ensure all skills follow Anthropic guidelines
 
 ### Step 3: Execute Task
 
-#### For Rename Tasks
+#### For PHASE A (Coverage Audit) Tasks
 
-1. Use `git mv` to rename the directory
-2. Update the SKILL.md frontmatter `name` field
-3. Update any internal references to the old name
-4. Search for and update references in other skills
+1. **Search Algorand docs comprehensively** using Kappa:
+   ```
+   mcp__kappa__search_algorand_knowledge_sources(query: "list of Algorand development topics")
+   mcp__kappa__search_algorand_knowledge_sources(query: "AlgoKit features and capabilities")
+   ```
 
-#### For Content Creation Tasks
+2. **Compare against existing skills** in `skills/` directory
 
-1. **Fetch documentation** using these tools in priority order:
-   - **Primary**: Use `mcp__kappa__search_algorand_knowledge_sources` for Algorand-specific information
-   - **Secondary**: Use `mcp__github__get_file_contents` to read example code from official repos
-   - **Fallback**: Use WebFetch for specific URLs or WebSearch: `site:dev.algorand.co {topic}`
-   - Extract key concepts, syntax rules, and common patterns
+3. **Identify gaps** - Topics covered in docs but missing from skills
 
-2. **Study existing skills** for format consistency:
-   - Read `skills/algorand-typescript/SKILL.md` as the gold standard (after rename)
-   - Match the section structure, code example style, and tone
+4. **Create new skills** for significant gaps following the template
 
-3. **Create the skill files**:
-   - Start with SKILL.md (main file, under 500 lines)
-   - Create sub-files for detailed topics
-   - Follow the template in `ralph/templates/SKILL.template.md`
+#### For PHASE B (Accuracy Review) Tasks
 
-4. **Include code examples**:
-   - Every rule needs CORRECT and INCORRECT examples
-   - Examples must be complete (include imports)
-   - Use realistic variable names
+1. **Read the existing skill** thoroughly
+
+2. **Search Kappa for current information** on each topic covered:
+   ```
+   mcp__kappa__search_algorand_knowledge_sources(query: "Algorand Python UInt64 type usage")
+   ```
+
+3. **Compare skill content against official docs**:
+   - Are code examples still correct?
+   - Are there new features/patterns to add?
+   - Is deprecated content still present?
+   - Are error messages accurate?
+
+4. **Update the skill** with corrections and additions
+
+5. **Verify code examples** work with current APIs
+
+#### For PHASE C (Best Practices Audit) Tasks
+
+1. **Fetch the latest Anthropic best practices**:
+   ```
+   WebFetch(url: "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices", prompt: "Extract all skill authoring guidelines, naming conventions, structure requirements, and anti-patterns to avoid")
+   ```
+
+2. **Audit each skill against the checklist**:
+   - [ ] Description is specific and includes triggers (third-person)
+   - [ ] SKILL.md body is under 500 lines
+   - [ ] Additional details in separate files with progressive disclosure
+   - [ ] No time-sensitive information
+   - [ ] Consistent terminology throughout
+   - [ ] Examples are concrete with CORRECT/INCORRECT patterns
+   - [ ] File references are one level deep (not nested)
+   - [ ] Clear workflows with numbered steps
+   - [ ] Action-oriented naming
+
+3. **Fix any violations** found
 
 ### Step 4: Update Progress
 
@@ -99,11 +133,11 @@ Create a git commit with:
 Example:
 ```bash
 git add -A && git commit -m "$(cat <<'EOF'
-Rename creating-projects to create-project
+Update build-smart-contracts with latest Python patterns
 
-- Rename directory to action-oriented name
-- Update SKILL.md frontmatter
-- Update references in other skills
+- Add new arc4.emit() event logging syntax
+- Fix deprecated BoxRef examples
+- Add missing UInt512 type documentation
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 EOF
@@ -112,7 +146,7 @@ EOF
 
 ### Step 6: Check Completion
 
-If all QUEUE items are checked (including FINALIZATION):
+If all QUEUE items are checked:
 - Output: `SKILLS_COMPLETE`
 - This signals Ralph to exit
 
@@ -122,15 +156,12 @@ Otherwise, continue to the next iteration.
 
 Following [Anthropic's Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices):
 
-### Naming Convention
+### Core Principles
 
-```
-{action}-{target}[-{qualifier}]
-```
-
-- **Action-oriented**: Use imperative verbs (`build-`, `test-`, `use-`, `create-`)
-- **Format**: Lowercase letters, numbers, hyphens only
-- **Max length**: 64 characters
+1. **Concise is key** - Only add context Claude doesn't already have
+2. **Progressive disclosure** - SKILL.md < 500 lines, details in sub-files
+3. **Set appropriate degrees of freedom** - Match specificity to task fragility
+4. **Test with real usage** - Ensure skills work in practice
 
 ### SKILL.md Format
 
@@ -169,9 +200,9 @@ Tables and code examples with CORRECT/INCORRECT
 - Links to sub-files and related skills
 ```
 
-### Description Field (Critical)
+### Description Field (Critical for Discovery)
 
-The description enables skill discovery. Must include:
+Must include:
 1. **What** the skill does (third person)
 2. **When** to use it (triggers)
 
@@ -195,59 +226,63 @@ const amount: uint64 = Uint64(20)
 const amount = 20  // Error: JavaScript number not allowed in AVM
 ```
 
-### What NOT To Do
+### Anti-Patterns to Avoid
 
-- Do NOT exceed 500 lines per file (split into sub-files)
-- Do NOT duplicate content from other skills
-- Do NOT include PyTEAL or Beaker patterns (deprecated)
-- Do NOT create empty placeholder files
-- Do NOT skip the git commit step
-- Do NOT use deeply nested references (keep one level deep from SKILL.md)
-- Do NOT include time-sensitive information
+- Files > 500 lines (split into sub-files)
+- Deeply nested references (keep one level from SKILL.md)
+- Time-sensitive information ("after August 2025...")
+- Vague descriptions ("helps with documents")
+- Inconsistent terminology
+- Windows-style paths (use forward slashes)
+- Too many options without a default recommendation
 
-## Important Context
+### Files >100 Lines Should Have TOC
 
-### LLM Failure Modes to Address
+```markdown
+# Reference
 
-Skills should prevent these common LLM mistakes:
+## Contents
+- Section 1
+- Section 2
+- Section 3
 
-1. **Type errors**: Using JS/Python native types instead of AVM types
-2. **Missing clone()**: Not cloning complex types on read/write
-3. **Opt-in forgotten**: Not opting into assets or apps before use
-4. **MBR not funded**: Not funding accounts for minimum balance
-5. **Wrong decorators**: Confusing @arc4.abimethod with @subroutine
-6. **Legacy patterns**: Using PyTEAL, Beaker, or raw TEAL
+## Section 1
+...
+```
 
-### Documentation Structure
+## Algorand Documentation Structure
 
-Algorand docs are at https://dev.algorand.co/ with these sections:
-- `/concepts/` - Core blockchain concepts
-- `/algokit/` - AlgoKit tools and utilities
-- `/reference/` - API and CLI references
+Primary source: https://dev.algorand.co/
 
-### Skills Location
+| Section | Topics |
+|---------|--------|
+| `/concepts/` | Accounts, transactions, smart contracts, assets |
+| `/algokit/` | CLI, Utils (TS/Python), Languages (PuyaTs/PuyaPy) |
+| `/reference/` | API refs, ARC standards, opcodes |
+
+### Key Areas to Cover
+
+| Category | Skills Should Cover |
+|----------|---------------------|
+| **Getting Started** | Project creation, AlgoKit setup |
+| **Smart Contracts** | TypeScript and Python syntax, patterns, lifecycle |
+| **Testing** | Unit tests, integration tests, debugging |
+| **Deployment** | Deploy, update, delete contracts |
+| **Client Apps** | AlgoKit Utils for TS and Python |
+| **Tooling** | AlgoKit CLI commands |
+| **Debugging** | Common errors, troubleshooting |
+| **Standards** | ARC-4, ARC-32, ARC-56, ARC-28 |
+| **Frontend** | React integration, wallet connection |
+| **Assets** | ASA creation, transfers, opt-in |
+
+## Skills Location
 
 All skills are in `skills/<skill-name>/` with:
-- `SKILL.md` - Main file (required)
+- `SKILL.md` - Main file (required, <500 lines)
 - `REFERENCE.md` - Detailed reference (optional)
 - `typescript/` - TypeScript-specific content (optional)
 - `python/` - Python-specific content (optional)
 - `*.md` - Topic-specific files (optional)
-
-### Skill Organization
-
-Skills should mirror the Algorand docs structure:
-
-| Category | Skills |
-|----------|--------|
-| Getting Started | `create-project` |
-| Smart Contracts | `build-smart-contracts`, `algorand-typescript`, `test-smart-contracts`, `call-smart-contracts` |
-| Client Apps | `use-algokit-utils` |
-| Tooling | `use-algokit-cli` |
-| Debugging | `troubleshoot-errors` |
-| Standards | `implement-arc-standards` |
-| Frontend | `deploy-react-frontend` |
-| Meta | `search-algorand-examples` |
 
 ## Begin
 

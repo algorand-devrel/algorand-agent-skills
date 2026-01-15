@@ -74,7 +74,7 @@ Use this skill when the user wants to:
    - Check if project directory already exists
    - Verify AlgoKit is installed: `algokit --version`
    - Ensure target directory is writable
-   - Check template name is valid (`typescript` or `python`)
+   - Valid templates: `typescript`, `python`, `tealscript`, `react`, `fullstack`, `base`
 
 4. **Provide next steps:**
    - `cd <project-name>`
@@ -93,11 +93,17 @@ Use this skill when the user wants to:
 
 ## Common Variations / Edge Cases
 
-- **Python with TypeScript deployment:** Add `--answer deployment_language "typescript"`
-- **Existing directory:** Check and warn if directory already exists
-- **No Git initialization:** Use `--no-git` flag
-- **No dependency installation:** Use `--no-bootstrap` flag
-- **Custom author name:** Pass `--answer author_name "Your Name"`
+| Scenario | Approach |
+|----------|----------|
+| Python with TypeScript deployment | `--answer deployment_language "typescript"` |
+| Existing directory | Check and warn if directory already exists |
+| No Git initialization | Use `--no-git` flag |
+| No dependency installation | Use `--no-bootstrap` flag |
+| Custom author name | `--answer author_name "Your Name"` |
+| Fullstack (frontend + contracts) | Use `-t fullstack` template |
+| React frontend only | Use `-t react` template |
+| Standalone (no workspace) | Use `--no-workspace` flag |
+| Initialize from example | Use `algokit init example` subcommand |
 
 ## References / Further Reading
 

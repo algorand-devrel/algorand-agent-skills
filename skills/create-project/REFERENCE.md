@@ -2,12 +2,16 @@
 
 ## Templates
 
-| Template     | Language   | Use Case                          |
-| ------------ | ---------- | --------------------------------- |
-| `typescript` | TypeScript | Production dApps, web integration |
-| `python`     | Python     | Backend services, DeFi protocols  |
+| Template     | Language   | Use Case                                      |
+| ------------ | ---------- | --------------------------------------------- |
+| `typescript` | TypeScript | Smart contracts (Algorand TypeScript/PuyaTs)  |
+| `python`     | Python     | Smart contracts (Algorand Python/PuyaPy)      |
+| `tealscript` | TypeScript | Smart contracts (TealScript - alternative)    |
+| `react`      | TypeScript | Frontend dApp with wallet integration         |
+| `fullstack`  | Both       | Smart contracts + React frontend combined     |
+| `base`       | N/A        | Minimal workspace template                    |
 
-**Default:** `typescript`
+**Default for smart contracts:** `typescript`
 
 ## Presets
 
@@ -43,16 +47,34 @@ algokit init -n <name> -t python --answer deployment_language "typescript" --def
 
 ## Options
 
-| Flag                         | Description                        |
-| ---------------------------- | ---------------------------------- |
-| `-n, --name <name>`          | Project directory name (required)  |
-| `-t, --template <name>`      | Template: `typescript` or `python` |
-| `--answer "<key>" "<value>"` | Answer template prompts            |
-| `--defaults`                 | Accept all defaults                |
-| `--no-git`                   | Skip git initialization            |
-| `--no-bootstrap`             | Skip dependency installation       |
+| Flag                         | Description                                      |
+| ---------------------------- | ------------------------------------------------ |
+| `-n, --name <name>`          | Project directory name (required)                |
+| `-t, --template <name>`      | Template name (see Templates table above)        |
+| `--answer "<key>" "<value>"` | Answer template prompts                          |
+| `--defaults`                 | Accept all defaults                              |
+| `--no-git`                   | Skip git initialization                          |
+| `--no-bootstrap`             | Skip dependency installation                     |
+| `--workspace`                | Create within workspace structure (default)      |
+| `--no-workspace`             | Create standalone project                        |
+| `--ide` / `--no-ide`         | Open IDE after creation (default: auto-detect)   |
+
+## Initialize from Examples
+
+AlgoKit can also initialize projects from pre-built examples:
+
+```bash
+# Interactive example selector
+algokit init example
+
+# List available examples
+algokit init example --list
+
+# Initialize specific example
+algokit init example <example_id>
+```
 
 ## Full Reference
 
 - [AlgoKit Init Command](https://dev.algorand.co/reference/algokit-cli/#init)
-- [Template Options](https://dev.algorand.co/reference/algokit-cli/templates/)
+- [AlgoKit Templates](https://dev.algorand.co/algokit/official-algokit-templates/)
