@@ -212,6 +212,8 @@ const appClient = await algorand.client.getTypedAppClientByCreatorAndName(
 | `Method not found` | Wrong method name or signature | Check typed client API; ensure args match ABI |
 | `Network mismatch` | Different networks | Ensure AlgorandClient and WalletManager use same network |
 | `User rejected transaction` | User cancelled in wallet | Handle rejection gracefully in UI |
+| `global is not defined` | algosdk references `global` in browser | Add to vite.config.ts: `define: { global: 'globalThis' }` |
+| TypeScript errors in generated client | Strict TS mode incompatibility | Set `verbatimModuleSyntax: false` in tsconfig.json |
 
 ## Wallet Disconnect
 

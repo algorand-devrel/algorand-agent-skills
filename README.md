@@ -21,7 +21,7 @@ cp -r algorand-agent-skills/skills ./
 cp algorand-agent-skills/setups/AGENTS.md ./
 cp algorand-agent-skills/setups/opencode/opencode.json ./
 
-# 3. Edit opencode.json with your GitHub PAT
+# 3. Set GITHUB_TOKEN env var (see GitHub PAT Setup below)
 # 4. Run: opencode
 ```
 
@@ -123,9 +123,11 @@ All MCP configurations require a GitHub Personal Access Token:
 1. Go to https://github.com/settings/personal-access-tokens
 2. Create a new token with an **expiration date** (required)
 3. Default permissions are sufficient (public repo read access)
-4. Add the token to your tool's MCP configuration (format varies by tool):
-   - **OpenCode**: Raw token - `"Authorization": "github_pat_..."`
-   - **Claude Code/Cursor**: With Bearer prefix - `"Authorization": "Bearer ghp_..."`
+4. Set the `GITHUB_TOKEN` environment variable:
+   ```bash
+   export GITHUB_TOKEN="github_pat_..."
+   ```
+   Add this to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.) to persist it.
 
 ## Resources
 

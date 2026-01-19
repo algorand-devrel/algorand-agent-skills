@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Ralph Loop for Algorand Agent Skills
+# Ralph Loop - Iterative Claude Workflow Pattern
 # Each iteration runs Claude in fresh context (non-interactive mode with -p flag)
+# See README.md for documentation
 
 cd "$(dirname "$0")/.."
 
@@ -19,10 +20,10 @@ for ((i=1; i<=$MAX_ITERATIONS; i++)); do
 
     echo "$result"
 
-    # Check for completion in output
-    if [[ "$result" == *"SKILLS_COMPLETE"* ]]; then
+    # Check for completion in output (supports both generic and legacy signals)
+    if [[ "$result" == *"WORKFLOW_COMPLETE"* ]] || [[ "$result" == *"SKILLS_COMPLETE"* ]]; then
         echo ""
-        echo "=== SKILLS_COMPLETE found - workflow finished! ==="
+        echo "=== Workflow complete! ==="
         exit 0
     fi
 
