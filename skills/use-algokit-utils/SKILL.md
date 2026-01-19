@@ -89,7 +89,11 @@ Use AlgoKit Utils to interact with the Algorand blockchain from TypeScript or Py
 
 ## References / Further Reading
 
-- [TypeScript AlgorandClient](./references/typescript/algorand-client.md)
-- [Python AlgorandClient](./references/python/algorand-client.md)
+Language-specific references are organized in subfolders:
+
+- **TypeScript** (`references/typescript/`): [AlgorandClient](./references/typescript/algorand-client.md)
+- **Python** (`references/python/`): [AlgorandClient](./references/python/algorand-client.md)
+
+External documentation:
 - [AlgoKit Utils TS Docs](https://dev.algorand.co/algokit/utils/typescript/overview/)
 - [AlgoKit Utils Python Docs](https://dev.algorand.co/algokit/utils/python/overview/)

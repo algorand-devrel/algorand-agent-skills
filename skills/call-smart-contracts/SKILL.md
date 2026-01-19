@@ -131,6 +131,26 @@ await client.send.optIn.bare({})
 const boxValue = await client.state.box.myBox()
 ```
 
+#### Bulk Opt-In/Opt-Out
+
+For batch operations across multiple assets:
+
+```typescript
+// Bulk opt-in to multiple assets
+const group = algorand.newGroup()
+for (const assetId of assetIds) {
+  group.addAssetOptIn({ sender: account.addr, assetId })
+}
+await group.send()
+
+// Bulk opt-out from multiple assets
+const closeGroup = algorand.newGroup()
+for (const assetId of assetIds) {
+  closeGroup.addAssetOptOut({ sender: account.addr, assetId, creator: creatorAddr })
+}
+await closeGroup.send()
+```
+
 ## Important Rules / Guidelines
 
 - **Always build before deploying**: Run `algokit project run build` to generate fresh artifacts

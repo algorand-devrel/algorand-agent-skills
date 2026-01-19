@@ -121,6 +121,13 @@ await client.send.deposit({
 // Get return value
 const result = await client.send.getValue({})
 console.log(result.return) // typed return value
+
+// With version parameters (for versioned contracts)
+await client.send.myMethod({
+  args: { value: 42n },
+  appVersion: '1.0.0',      // Optional: specify expected app version
+  rejectVersion: '0.9.0',   // Optional: reject if app is this version
+})
 ```
 
 ### Read State

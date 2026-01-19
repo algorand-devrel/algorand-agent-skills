@@ -2,6 +2,18 @@
 
 Follow this exact order when building smart contracts.
 
+## Reference Files Structure
+
+This skill includes language-specific reference files:
+
+- **Python references** (`references/python/`):
+  - `decorators.md` — Python contract decorators (`@arc4.abimethod`, `@arc4.baremethod`)
+  - `storage.md` — GlobalState, LocalState, Box storage in Python
+  - `transactions.md` — Inner transactions and group transactions in Python
+  - `types.md` — AVM types in Algorand Python (`arc4.UInt64`, `arc4.String`, etc.)
+
+Use these Python-specific references when the user explicitly requests Python contracts.
+
 ## Step 1: Search Documentation
 
 Use `search_algorand_knowledge_sources` for conceptual guidance, best practices, and official documentation.

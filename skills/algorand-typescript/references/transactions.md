@@ -37,6 +37,24 @@ assert(payment.amount === listing.price, 'Payment amount mismatch')
 
 ## Inner Transactions (itxn)
 
+### Method Selector Helper
+
+Use `methodSelector` to get the 4-byte ARC-4 method selector for inner app calls:
+
+```typescript
+import { methodSelector } from '@algorandfoundation/algorand-typescript/arc4'
+
+// Get selector from method signature
+const selector = methodSelector('transfer(address,uint64)void')
+
+// Use in inner app call
+itxn.applicationCall({
+  appId: targetApp,
+  appArgs: [selector, encodedArg1, encodedArg2],
+  fee: Uint64(0),
+}).submit()
+```
+
 ### Method Names
 
 Inner transaction methods use **lowercase**:
@@ -94,6 +112,38 @@ itxn.payment({
 ```
 
 This prevents app account drain attacks where malicious callers force the app to pay fees.
+
+### Composing Multiple Inner Transactions
+
+Use `itxnCompose` for submitting multiple inner transactions atomically:
+
+```typescript
+import { itxn, itxnCompose, Global, Account, Uint64 } from '@algorandfoundation/algorand-typescript'
+
+// Submit multiple inner transactions as a group
+itxnCompose.begin()
+
+itxnCompose.next(
+  itxn.payment({
+    receiver: Account(recipientBytes),
+    amount: Uint64(100_000),
+    fee: Uint64(0),
+  })
+)
+
+itxnCompose.next(
+  itxn.assetTransfer({
+    xferAsset: assetId,
+    assetReceiver: Account(recipientBytes),
+    assetAmount: Uint64(50),
+    fee: Uint64(0),
+  })
+)
+
+itxnCompose.submit()
+```
+
+**Note**: `itxnCompose.begin()` starts a new group, `itxnCompose.next()` adds transactions, and `itxnCompose.submit()` sends them all atomically.
 
 ## Asset Type
 

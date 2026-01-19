@@ -2,6 +2,30 @@
 
 Common errors when sending transactions and managing accounts on Algorand.
 
+## Table of Contents
+
+- [Transaction Errors](#transaction-errors)
+  - [Overspend](#overspend)
+  - [Transaction Already in Ledger](#transaction-already-in-ledger)
+  - [Transaction Pool Full](#transaction-pool-full)
+  - [Fee Too Low](#fee-too-low)
+  - [Round Out of Range](#round-out-of-range)
+  - [Invalid Group](#invalid-group)
+  - [Group Size Limit](#group-size-limit)
+- [Asset Errors](#asset-errors)
+  - [Asset Not Found](#asset-not-found)
+  - [Asset Not Opted In](#asset-not-opted-in)
+  - [Asset Frozen](#asset-frozen)
+  - [Clawback Not Authorized](#clawback-not-authorized)
+  - [Cannot Close Asset](#cannot-close-asset)
+- [Account Errors](#account-errors)
+  - [Account Not Found](#account-not-found)
+  - [Invalid Address](#invalid-address)
+  - [Wrong Network](#wrong-network)
+- [SDK Errors](#sdk-errors)
+- [Application Errors](#application-errors)
+- [Debugging Tips](#debugging-tips)
+
 ## Transaction Errors
 
 ### Overspend

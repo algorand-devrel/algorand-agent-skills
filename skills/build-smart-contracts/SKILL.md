@@ -62,6 +62,7 @@ Create modern Algorand smart contracts in Algorand TypeScript or Algorand Python
 | ARC-4 methods | See `puya-ts/examples/hello_world_arc4/` |
 | State management | Check GlobalState, LocalState patterns in examples |
 | Python contracts | Use `algorandfoundation/puya` instead of puya-ts |
+| Python syntax help | Consult `references/python/` subfolder for Python-specific patterns |
 
 ## References / Further Reading
 

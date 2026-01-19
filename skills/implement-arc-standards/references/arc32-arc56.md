@@ -2,6 +2,24 @@
 
 Application specifications describe a smart contract's interface, state schema, and metadata. They enable typed client generation, IDE support, and enhanced developer experience.
 
+## Table of Contents
+
+- [ARC-32 vs ARC-56 Comparison](#arc-32-vs-arc-56-comparison)
+- [Generating App Specs](#generating-app-specs)
+- [ARC-56 Contract Structure](#arc-56-contract-structure)
+- [Method Descriptions](#method-descriptions)
+  - [ARC-56 Method Format](#arc-56-method-format)
+  - [Action Configuration](#action-configuration)
+  - [Default Argument Values](#default-argument-values)
+- [Named Structs](#named-structs)
+- [State Schema](#state-schema)
+- [Events (ARC-28)](#events-arc-28)
+- [Using App Specs](#using-app-specs)
+- [Source Information](#source-information-optional)
+- [Template Variables](#template-variables)
+- [Common Patterns](#common-patterns)
+- [Common Mistakes](#common-mistakes)
+
 ## ARC-32 vs ARC-56 Comparison
 
 | Feature | ARC-32 | ARC-56 |

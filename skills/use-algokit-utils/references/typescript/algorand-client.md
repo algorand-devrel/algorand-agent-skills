@@ -234,7 +234,59 @@ import { algo, microAlgo } from '@algorandfoundation/algokit-utils'
 algo(1)           // 1 Algo = 1,000,000 microAlgo
 algo(0.5)         // 0.5 Algo = 500,000 microAlgo
 microAlgo(1000)   // 1000 microAlgo
-(100).microAlgo() // Extension method: 100 microAlgo
+
+// Extension method syntax (alternative)
+(1).algo()        // 1 Algo = 1,000,000 microAlgo
+(100).microAlgo() // 100 microAlgo
+```
+
+## Testing with algorandFixture
+
+For testing, use `algorandFixture` to manage LocalNet lifecycle:
+
+```typescript
+import { algorandFixture, AlgorandFixtureConfig } from '@algorandfoundation/algokit-utils/testing'
+import { Config } from '@algorandfoundation/algokit-utils'
+
+// Basic setup
+const localnet = algorandFixture()
+
+// With custom configuration
+const localnet = algorandFixture({
+  testAccountFunding: algo(100),  // Fund test accounts with 100 Algo
+  algodConfig: {
+    server: 'http://localhost',
+    port: '4001',
+    token: 'aaaa...',
+  },
+} satisfies AlgorandFixtureConfig)
+
+// In tests
+beforeAll(() => {
+  Config.configure({ debug: true })
+})
+beforeEach(localnet.newScope, 10_000)  // 10s timeout for LocalNet setup
+
+// Access algorand client
+const { algorand, testAccount } = localnet.context
+```
+
+### Log Capture Fixture
+
+Use `algoKitLogCaptureFixture` to capture and verify logs in tests:
+
+```typescript
+import { algoKitLogCaptureFixture } from '@algorandfoundation/algokit-utils/testing'
+
+const logs = algoKitLogCaptureFixture()
+
+beforeEach(logs.beforeEach)
+afterEach(logs.afterEach)
+
+test('should log transaction', async () => {
+  // ... perform operations
+  expect(logs.testLogger.getLogSnapshot()).toMatchInlineSnapshot()
+})
 ```
 
 ## Common Patterns

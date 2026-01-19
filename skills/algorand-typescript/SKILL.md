@@ -7,6 +7,8 @@ description: Syntax rules and patterns for Algorand TypeScript (PuyaTs) smart co
 
 Critical syntax rules for Algorand TypeScript (PuyaTs) that prevent compiler errors and runtime failures.
 
+**File Extension**: Contract files must use `.algo.ts` extension (e.g., `Counter.algo.ts`).
+
 ## Overview / Core Workflow
 
 1. Identify the syntax issue or pattern needed
@@ -33,6 +35,8 @@ const total: uint64 = amount + Uint64(100)
 // INCORRECT - Compiler error
 const amount = 20
 ```
+
+**Numeric limits**: Algorand TypeScript supports integers up to 2^512. Use `biguint` for values exceeding uint64 (2^64 - 1).
 
 ### Value Semantics: Always `clone()`
 

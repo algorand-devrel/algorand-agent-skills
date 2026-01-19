@@ -113,6 +113,62 @@ algokit init -n my-project -t python --answer preset "Production" --defaults
 | `--no-git` | Skip git initialization |
 | `--no-bootstrap` | Skip dependency installation |
 
+## Project Configuration
+
+### .algokit.toml
+
+The `.algokit.toml` file configures project behavior:
+
+```toml
+[project]
+type = "contract"
+name = "my-project"
+artifacts = "smart_contracts/artifacts"
+
+[project.run]
+build = "npm run build"
+test = "npm run test"
+
+[project.deploy]
+command = "npm run deploy:ci"
+environment_secrets = ["DEPLOYER_MNEMONIC"]
+
+[project.deploy.localnet]
+environment_secrets = []
+
+[project.deploy.testnet]
+environment_secrets = ["DEPLOYER_MNEMONIC"]
+```
+
+### Environment Files
+
+Environment variables can be set in `.env` files:
+
+- `.env` — Default values for all environments
+- `.env.localnet` — LocalNet-specific overrides
+- `.env.testnet` — TestNet-specific values
+- `.env.mainnet` — MainNet-specific values
+
+```bash
+# .env.testnet
+ALGOD_SERVER=https://testnet-api.algonode.cloud
+ALGOD_PORT=443
+ALGOD_TOKEN=
+DEPLOYER_MNEMONIC="word1 word2 ..."
+```
+
+The `algokit project deploy` command automatically loads the appropriate `.env.{network}` file.
+
+### Deploy Command Flags
+
+```bash
+# Deploy with specific deployer account
+algokit project deploy testnet --deployer "DEPLOYER_NAME"
+
+# Deploy with custom dispenser (for funding)
+algokit project deploy testnet --dispenser "DISPENSER_NAME"
+```
+
 ## Build Artifacts
 
 After `algokit project run build`:

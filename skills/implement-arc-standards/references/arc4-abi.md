@@ -2,6 +2,24 @@
 
 ARC-4 defines how to encode method calls, arguments, and return values for Algorand smart contracts. It enables interoperability between contracts, clients, wallets, and explorers.
 
+## Table of Contents
+
+- [ARC-4 Types](#arc-4-types)
+  - [Primitive Types](#primitive-types)
+  - [Complex Types](#complex-types)
+  - [Reference Types](#reference-types-arguments-only)
+  - [Transaction Types](#transaction-types-arguments-only)
+- [Using ARC-4 Types](#using-arc-4-types)
+- [Method Signatures and Selectors](#method-signatures-and-selectors)
+- [Encoding Rules](#encoding-rules)
+  - [Static vs Dynamic Types](#static-vs-dynamic-types)
+  - [Tuple Encoding](#tuple-encoding-head--tail)
+  - [Boolean Packing](#boolean-packing)
+- [Method Invocation](#method-invocation)
+- [Calling ARC-4 Methods](#calling-arc-4-methods)
+- [Common Patterns](#common-patterns)
+- [Common Mistakes](#common-mistakes)
+
 ## ARC-4 Types
 
 ### Primitive Types

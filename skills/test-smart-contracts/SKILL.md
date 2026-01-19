@@ -11,6 +11,8 @@ Write integration tests for Algorand smart contracts using the `algorandFixture`
 
 **Always write integration tests unless the user explicitly requests unit tests.** Integration tests run against LocalNet and test real contract behavior.
 
+**Test Framework**: Both Vitest (default) and Jest are supported. The examples below use Vitest syntax, but Jest equivalents work identically.
+
 ### File naming
 
 - Integration tests: `contract.algo.e2e.spec.ts`
@@ -33,7 +35,8 @@ describe('MyContract', () => {
   beforeAll(() => {
     Config.configure({ debug: true })
   })
-  beforeEach(localnet.newScope)
+  // 10-second timeout: LocalNet needs time to process transactions and confirm blocks
+  beforeEach(localnet.newScope, 10_000)
 
   const deploy = async (account: Address) => {
     const factory = localnet.algorand.client.getTypedAppFactory(MyContractFactory, {

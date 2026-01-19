@@ -2,6 +2,26 @@
 
 Common errors when building, deploying, or calling Algorand smart contracts.
 
+## Table of Contents
+
+- [Logic Eval Errors](#logic-eval-errors)
+  - [Assert Failed](#assert-failed)
+  - [Opcode Budget Exceeded](#opcode-budget-exceeded)
+  - [Invalid Program](#invalid-program)
+  - [Stack Underflow](#stack-underflow)
+  - [Byte/Int Type Mismatch](#byteint-type-mismatch)
+- [ABI Errors](#abi-errors)
+  - [Method Not Found](#method-not-found)
+  - [ABI Encoding Error](#abi-encoding-error)
+  - [Return Value Decoding Error](#return-value-decoding-error)
+- [State Errors](#state-errors)
+  - [Global State Full](#global-state-full)
+  - [Local State Not Opted In](#local-state-not-opted-in)
+  - [Box Not Found](#box-not-found)
+  - [Box MBR Not Met](#box-mbr-not-met)
+- [Inner Transaction Errors](#inner-transaction-errors)
+- [Debugging Tips](#debugging-tips)
+
 ## Logic Eval Errors
 
 ### Assert Failed
