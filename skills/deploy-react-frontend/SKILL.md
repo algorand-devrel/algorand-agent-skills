@@ -1,28 +1,11 @@
 ---
 name: deploy-react-frontend
-description: Create React frontends for Algorand dApps with wallet integration. Use when building React UIs that interact with smart contracts, setting up wallet connections, or integrating typed clients with use-wallet.
+description: Create React frontends for Algorand dApps with wallet integration. Use when creating React frontends that interact with smart contracts, setting up wallet connections (Pera, Defly, Exodus), integrating typed app clients with wallet signers, or building dApp UIs that call contract methods. Strong triggers include "create a frontend for my contract", "add wallet connection to my React app", "how do I call my contract from the frontend?", "set up use-wallet with my typed client", "connect Pera wallet to my dApp", "algorand.setSigner".
 ---
 
 # Deploying React Frontends for Algorand
 
 Build React applications that connect to Algorand wallets and interact with smart contracts using typed clients.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Create a React frontend that interacts with Algorand smart contracts
-- Set up wallet connections using Pera, Defly, or other Algorand wallets
-- Integrate typed app clients with wallet signers
-- Build a dApp UI that calls contract methods
-
-**Strong triggers:**
-
-- "Create a frontend for my contract"
-- "Add wallet connection to my React app"
-- "How do I call my contract from the frontend?"
-- "Set up use-wallet with my typed client"
-- "Connect Pera wallet to my dApp"
 
 ## Prerequisites
 
@@ -60,8 +43,23 @@ This creates a typed client with full IntelliSense for your contract's methods.
 
 ### Step 2: Install Dependencies
 
+Core packages:
 ```bash
 npm install @algorandfoundation/algokit-utils @txnlab/use-wallet-react algosdk
+```
+
+Wallet peer dependencies (install only for wallets you're using):
+
+| Wallet | Package |
+|--------|---------|
+| Pera | `@perawallet/connect` |
+| Defly | `@blockshake/defly-connect` |
+| Kibisis | `@agoralabs-sh/avm-web-provider` |
+| Lute | `lute-connect` |
+
+Example for Pera + Defly:
+```bash
+npm install @perawallet/connect @blockshake/defly-connect
 ```
 
 ### Step 3: Set Up WalletProvider
@@ -236,8 +234,8 @@ function DisconnectButton() {
 
 ## References / Further Reading
 
-- [REFERENCE.md](./REFERENCE.md) - Detailed API reference
-- [EXAMPLES.md](./EXAMPLES.md) - Complete code examples
+- [REFERENCE.md](./references/REFERENCE.md) - Detailed API reference
+- [EXAMPLES.md](./references/EXAMPLES.md) - Complete code examples
 - [use-wallet Documentation](https://txnlab.gitbook.io/use-wallet)
 - [AlgoKit Utils TypeScript](https://dev.algorand.co/algokit/utils/typescript/algorand-client/)
 - [Typed App Clients](https://dev.algorand.co/algokit/utils/typescript/typed-app-clients/)

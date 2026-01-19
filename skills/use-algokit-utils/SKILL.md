@@ -1,34 +1,11 @@
 ---
 name: use-algokit-utils
-description: AlgoKit Utils library for interacting with the Algorand blockchain. Use when sending transactions, managing accounts, working with assets, or deploying smart contracts from application code (not from within smart contracts).
+description: AlgoKit Utils library for interacting with the Algorand blockchain from TypeScript or Python applications. Use when connecting to Algorand networks (LocalNet, TestNet, MainNet), sending payments or transferring assets, creating and managing accounts, deploying or interacting with smart contracts from client code, or composing transaction groups. NOT for writing smart contract code (use build-smart-contracts skill). Strong triggers include "How do I connect to Algorand?", "send a payment transaction", "create an account", "deploy my contract", "get an AlgorandClient", "AlgorandClient.fromEnvironment".
 ---
 
 # AlgoKit Utils
 
 Use AlgoKit Utils to interact with the Algorand blockchain from TypeScript or Python applications.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Connect to Algorand networks (LocalNet, TestNet, MainNet)
-- Send payments or transfer assets
-- Create and manage Algorand accounts
-- Deploy or interact with smart contracts from client code
-- Compose transaction groups
-
-**Strong triggers:**
-
-- "How do I connect to Algorand?"
-- "Send a payment transaction"
-- "Create an account"
-- "Deploy my contract"
-- "Get an AlgorandClient"
-
-**NOT for:**
-
-- Writing smart contract code (use `build-smart-contracts` skill)
-- Inner transactions from within contracts (use `build-smart-contracts/python/transactions.md`)
 
 ## Overview / Core Workflow
 
@@ -112,7 +89,7 @@ Use this skill when the user wants to:
 
 ## References / Further Reading
 
-- [TypeScript AlgorandClient](./typescript/algorand-client.md)
-- [Python AlgorandClient](./python/algorand-client.md)
+- [TypeScript AlgorandClient](./references/typescript/algorand-client.md)
+- [Python AlgorandClient](./references/python/algorand-client.md)
 - [AlgoKit Utils TS Docs](https://dev.algorand.co/algokit/utils/typescript/overview/)
 - [AlgoKit Utils Python Docs](https://dev.algorand.co/algokit/utils/python/overview/)

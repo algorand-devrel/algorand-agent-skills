@@ -1,29 +1,11 @@
 ---
 name: call-smart-contracts
-description: Deploy and interact with Algorand smart contracts using AlgoKit CLI and generated TypeScript clients. Use when deploying contracts, calling methods, reading state, or managing contract lifecycle.
+description: Deploy and interact with Algorand smart contracts using AlgoKit CLI and generated TypeScript clients. Use when deploying contracts to localnet/testnet/mainnet, calling contract methods, reading global/local/box state, opting in or closing out of applications, or writing interaction scripts. Strong triggers include "deploy the contract", "call the increment method", "read the contract state", "opt into the app", "write a script to interact", "getTypedAppClientById".
 ---
 
 # Calling Smart Contracts
 
 Deploy and interact with Algorand smart contracts using AlgoKit CLI and the generated TypeScript client.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Deploy a contract to localnet, testnet, or mainnet
-- Call a method on a deployed contract
-- Read contract state (global, local, or box storage)
-- Opt-in or close-out of an application
-- Write scripts to interact with contracts
-
-**Strong triggers:**
-
-- "Deploy the contract"
-- "Call the increment method"
-- "Read the contract state"
-- "Opt into the app"
-- "Write a script to interact with the contract"
 
 ## Overview / Core Workflow
 
@@ -179,7 +161,7 @@ DEPLOYER_MNEMONIC="your twenty four word mnemonic phrase here"
 
 ## References / Further Reading
 
-- [CLI Commands Reference](./REFERENCE.md)
+- [CLI Commands Reference](./references/REFERENCE.md)
 - [AlgoKit Utils Documentation](https://dev.algorand.co/algokit/utils/typescript/)
 - [ARC-56 App Spec Standard](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0056.md)
 - [Testing Contracts](../test-smart-contracts/SKILL.md)

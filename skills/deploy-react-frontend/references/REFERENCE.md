@@ -4,6 +4,7 @@ Detailed API reference for building Algorand React frontends.
 
 ## Dependencies
 
+Core packages:
 ```json
 {
   "dependencies": {
@@ -13,6 +14,20 @@ Detailed API reference for building Algorand React frontends.
     "react": "^18.2.0"
   }
 }
+```
+
+Wallet peer dependencies (install only for wallets you're using):
+
+| Wallet | Package |
+|--------|---------|
+| Pera | `@perawallet/connect` |
+| Defly | `@blockshake/defly-connect` |
+| Kibisis | `@agoralabs-sh/avm-web-provider` |
+| Lute | `lute-connect` |
+
+Example for Pera + Defly:
+```bash
+npm install @perawallet/connect @blockshake/defly-connect
 ```
 
 ## WalletManager Configuration

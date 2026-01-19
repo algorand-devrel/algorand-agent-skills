@@ -1,28 +1,11 @@
 ---
 name: build-smart-contracts
-description: Build Algorand smart contracts using Algorand TypeScript (PuyaTs) or Algorand Python (PuyaPy). Use when creating smart contracts, writing contract code, developing Algorand applications, or asking about Algorand development patterns and best practices.
+description: Build Algorand smart contracts using Algorand TypeScript (PuyaTs) or Algorand Python (PuyaPy). Use when creating new smart contracts from scratch, adding features or methods to existing contracts, understanding Algorand contract development patterns, or getting guidance on contract architecture. Strong triggers include "create a smart contract", "write a contract that...", "build a voting contract", "implement an NFT contract", "add a method to the contract".
 ---
 
 # Building Smart Contracts
 
 Create modern Algorand smart contracts in Algorand TypeScript or Algorand Python—statically-typed subsets compiled to TEAL bytecode by the Puya compiler.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Create a new smart contract from scratch
-- Add features or methods to an existing contract
-- Understand Algorand contract development patterns
-- Get guidance on contract architecture
-
-**Strong triggers:**
-
-- "Create a smart contract"
-- "Write a contract that..."
-- "Build a voting contract"
-- "Implement an NFT contract"
-- "Add a method to the contract"
 
 ## Overview / Core Workflow
 
@@ -82,7 +65,7 @@ Use this skill when the user wants to:
 
 ## References / Further Reading
 
-- [Detailed Workflow](./REFERENCE.md)
+- [Detailed Workflow](./references/REFERENCE.md)
 - [Syntax Rules](../algorand-typescript/SKILL.md)
 - [Testing Patterns](../test-smart-contracts/SKILL.md)
 - [AlgoKit Commands](../use-algokit-cli/SKILL.md)

@@ -63,19 +63,19 @@ Before building a React frontend that interacts with Algorand contracts:
 
 ## Available Skills
 
-| Task                  | Skill                       |
-| --------------------- | --------------------------- |
-| Initialize projects   | `create-project`            |
-| Create contracts      | `build-smart-contracts`     |
-| Syntax questions      | `algorand-typescript`       |
-| Build/deploy cmds     | `use-algokit-cli`           |
-| Write tests           | `test-smart-contracts`      |
-| Find examples         | `search-algorand-examples`  |
-| Deploy & call         | `call-smart-contracts`      |
-| React frontends       | `deploy-react-frontend`     |
-| SDK interactions      | `use-algokit-utils`         |
-| Debug errors          | `troubleshoot-errors`       |
-| ARC standards         | `implement-arc-standards`   |
+| Task                | Skill                      |
+| ------------------- | -------------------------- |
+| Initialize projects | `create-project`           |
+| Create contracts    | `build-smart-contracts`    |
+| Syntax questions    | `algorand-typescript`      |
+| Build/deploy cmds   | `use-algokit-cli`          |
+| Write tests         | `test-smart-contracts`     |
+| Find examples       | `search-algorand-examples` |
+| Deploy & call       | `call-smart-contracts`     |
+| React frontends     | `deploy-react-frontend`    |
+| SDK interactions    | `use-algokit-utils`        |
+| Debug errors        | `troubleshoot-errors`      |
+| ARC standards       | `implement-arc-standards`  |
 
 ## MCP Tools
 
@@ -126,3 +126,8 @@ If localnet commands fail with "network unreachable" or connection errors:
 1. **Start localnet**: `algokit localnet start`
 2. **Verify it's running**: `algokit localnet status`
 3. **Reset if needed**: `algokit localnet reset`
+
+## Plan Mode
+
+- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+- At the end of each plan, give me a list of unresolved questions to answer, if any.

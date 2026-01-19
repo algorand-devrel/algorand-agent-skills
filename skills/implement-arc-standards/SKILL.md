@@ -1,29 +1,11 @@
 ---
 name: implement-arc-standards
-description: Implement Algorand ARC standards in smart contracts and clients. Use when working with ARC-4 ABI, ARC-32/ARC-56 app specs, method signatures, type encoding, or client generation.
+description: Implement Algorand ARC standards in smart contracts and clients. Use when needing to understand ARC-4 ABI encoding or method signatures, working with application specifications (ARC-32 or ARC-56), calling ARC-4 methods from contracts or clients, encountering ABI encoding/decoding issues, or generating typed clients from app specs. Strong triggers include "What is ARC-4?", "How do I encode ABI arguments?", "What's the difference between ARC-32 and ARC-56?", "method selector not matching", "application specification", "arc56.json".
 ---
 
 # Implement ARC Standards
 
 ARC (Algorand Request for Comments) standards define conventions for encoding, method calls, and application specifications on Algorand. This skill covers the most essential ARCs for smart contract development.
-
-## When to use this skill
-
-Use this skill when the user:
-
-- Needs to understand ARC-4 ABI encoding or method signatures
-- Is working with application specifications (ARC-32 or ARC-56)
-- Wants to call ARC-4 methods from contracts or clients
-- Encounters ABI encoding/decoding issues
-- Needs to generate typed clients from app specs
-
-**Strong triggers:**
-
-- "What is ARC-4?"
-- "How do I encode ABI arguments?"
-- "What's the difference between ARC-32 and ARC-56?"
-- "Method selector not matching"
-- "Application specification"
 
 ## Overview / Core Workflow
 
@@ -157,7 +139,7 @@ result = client.send.add(a=10, b=20)
 
 ## References / Further Reading
 
-- [ARC-4 ABI Details](./arc4-abi.md) - Types, encoding rules, method invocation
-- [ARC-32/56 App Specs](./arc32-arc56.md) - Application specification details
+- [ARC-4 ABI Details](./references/arc4-abi.md) - Types, encoding rules, method invocation
+- [ARC-32/56 App Specs](./references/arc32-arc56.md) - Application specification details
 - [ARC Standards](https://dev.algorand.co/arc-standards/) - Official ARC documentation
 - [Call Smart Contracts](../call-smart-contracts/SKILL.md) - Using AlgoKit Utils for ABI calls

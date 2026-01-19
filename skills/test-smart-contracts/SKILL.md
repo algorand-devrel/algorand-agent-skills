@@ -1,18 +1,11 @@
 ---
 name: test-smart-contracts
-description: Testing patterns for Algorand smart contracts using generated clients. Use when writing tests, setting up test fixtures, debugging test failures, or asking about E2E vs unit testing for Algorand apps.
+description: Testing patterns for Algorand smart contracts using generated clients and algorandFixture. Use when writing tests for smart contracts, setting up test fixtures and deployment, debugging failing tests, testing multi-user scenarios, or asking about E2E vs unit testing. Strong triggers include "how do I test my contract", "algorandFixture", "test is failing", "LocalNet testing", "vitest setup", "fund contract for boxes".
 ---
 
 # Testing Smart Contracts
 
 Write integration tests for Algorand smart contracts using the `algorandFixture` and generated typed clients.
-
-## When to use this skill
-
-- Writing tests for a smart contract
-- Setting up test fixtures and deployment
-- Debugging failing tests
-- Testing multi-user scenarios
 
 ## Default: Integration Tests (E2E)
 
@@ -130,6 +123,6 @@ await client.send.setBoxMap({
 
 ## References
 
-- [Canonical Examples](./EXAMPLES.md) - Complete patterns from algorandfoundation repos
-- [Unit Testing Guide](./UNIT_TESTS.md) - Only use if user requests unit tests
+- [Canonical Examples](./references/EXAMPLES.md) - Complete patterns from algorandfoundation repos
+- [Unit Testing Guide](./references/UNIT_TESTS.md) - Only use if user requests unit tests
 - [devportal-code-examples](https://github.com/algorandfoundation/devportal-code-examples/tree/main/projects/typescript-examples/contracts)

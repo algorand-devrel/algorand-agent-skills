@@ -1,29 +1,11 @@
 ---
 name: use-algokit-cli
-description: AlgoKit CLI commands for building, testing, and deploying Algorand applications. Use when running builds, tests, deployments, or asking about algokit project commands and localnet.
+description: AlgoKit CLI commands for building, testing, and deploying Algorand applications. Use when building or compiling smart contracts, running test suites, deploying to localnet, managing local Algorand network, or understanding the development workflow. Strong triggers include "build the contract", "run the tests", "start localnet", "deploy to localnet", "algokit project run", "localnet status".
 ---
 
 # AlgoKit Commands
 
 Standard commands for Algorand development with AlgoKit CLI.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Build or compile smart contracts
-- Run the test suite
-- Deploy contracts to localnet
-- Manage the local Algorand network
-- Understand the development workflow
-
-**Strong triggers:**
-
-- "Build the contract"
-- "Run the tests"
-- "Start localnet"
-- "Deploy to localnet"
-- "What AlgoKit command do I use?"
 
 ## Overview / Core Workflow
 
@@ -81,6 +63,6 @@ Use this skill when the user wants to:
 
 ## References / Further Reading
 
-- [Full CLI Reference](./REFERENCE.md)
+- [Full CLI Reference](./references/REFERENCE.md)
 - [AlgoKit CLI Documentation](https://dev.algorand.co/algokit/cli/)
 - [AlgoKit Project Commands](https://dev.algorand.co/reference/algokit-cli/#project)

@@ -1,28 +1,11 @@
 ---
 name: search-algorand-examples
-description: Search GitHub for Algorand smart contract examples and patterns. Use when looking for contract implementations, code patterns, or exploring algorandfoundation repositories.
+description: Search GitHub for Algorand smart contract examples and patterns. Use when finding example implementations of specific patterns (BoxMap, inner transactions), looking up contract feature usage, discovering Algorand repositories, or retrieving files from algorandfoundation repos. Strong triggers include "find an example of...", "show me how to use BoxMap", "search for voting contract examples", "get the code from puya-ts examples", "find Algorand NFT repositories".
 ---
 
 # Searching Algorand Examples
 
 Find working contract examples and code patterns from Algorand Foundation repositories using GitHub tools.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Find example implementations of specific patterns (BoxMap, inner transactions, etc.)
-- Look up how a particular contract feature is used in practice
-- Discover Algorand repositories by topic or keyword
-- Retrieve specific files from algorandfoundation repos
-
-**Strong triggers:**
-
-- "Find an example of..."
-- "Show me how to use BoxMap"
-- "Search for voting contract examples"
-- "Get the code from puya-ts examples"
-- "Find Algorand NFT repositories"
 
 ## Overview / Core Workflow
 
@@ -102,7 +85,7 @@ Key URLs to browse directly:
 
 ## References / Further Reading
 
-- [Tool Reference](./REFERENCE.md)
+- [Tool Reference](./references/REFERENCE.md)
 - [DevPortal Code Examples](https://github.com/algorandfoundation/devportal-code-examples)
 - [Puya TypeScript Examples](https://github.com/algorandfoundation/puya-ts/tree/main/examples)
 - [Algorand Developer Portal](https://dev.algorand.co/)

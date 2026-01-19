@@ -1,39 +1,18 @@
 ---
 name: troubleshoot-errors
-description: Diagnose and fix common Algorand errors including smart contract failures, transaction rejections, and SDK exceptions. Use when encountering error messages or unexpected behavior.
+description: Diagnose and fix common Algorand errors including smart contract failures, transaction rejections, and SDK exceptions. Use when encountering smart contract logic errors or assertion failures, transaction rejections or confirmation timeouts, SDK exceptions (AlgodHTTPError, LogicError), account-related errors (insufficient balance, not opted in), or ABI encoding/decoding errors. Strong triggers include "logic eval error", "assert failed", "overspend", "transaction rejected", "pc=X" in error messages, "opcode budget exceeded", "account not found", "asset not found".
 ---
 
 # Troubleshoot Errors
 
 Diagnose and resolve common Algorand development errors.
 
-## When to use this skill
-
-Use this skill when the user encounters:
-
-- Smart contract logic errors or assertion failures
-- Transaction rejections or confirmation timeouts
-- SDK exceptions (AlgodHTTPError, LogicError)
-- Account-related errors (insufficient balance, not opted in)
-- ABI encoding/decoding errors
-
-**Strong triggers:**
-
-- "logic eval error"
-- "assert failed"
-- "overspend"
-- "transaction rejected"
-- "pc=X" in error messages
-- "opcode budget exceeded"
-- "account not found"
-- "asset not found"
-
 ## Error Categories
 
 | Category | Common Causes | Reference |
 |----------|---------------|-----------|
-| Contract Errors | Assert failures, opcode budget, invalid operations | [contract-errors.md](./contract-errors.md) |
-| Transaction Errors | Overspend, invalid params, group issues | [transaction-errors.md](./transaction-errors.md) |
+| Contract Errors | Assert failures, opcode budget, invalid operations | [contract-errors.md](./references/contract-errors.md) |
+| Transaction Errors | Overspend, invalid params, group issues | [transaction-errors.md](./references/transaction-errors.md) |
 
 ## Quick Diagnosis Flow
 
@@ -104,7 +83,7 @@ algorand.send.asset_opt_in(AssetOptInParams(
 
 ## References
 
-- [Contract Errors](./contract-errors.md) - Smart contract and logic errors
-- [Transaction Errors](./transaction-errors.md) - Transaction and account errors
+- [Contract Errors](./references/contract-errors.md) - Smart contract and logic errors
+- [Transaction Errors](./references/transaction-errors.md) - Transaction and account errors
 - [Debugging Guide](https://dev.algorand.co/concepts/smart-contracts/debugging/)
 - [Error Handling in AlgoKit Utils](https://dev.algorand.co/algokit/utils/typescript/debugging/)

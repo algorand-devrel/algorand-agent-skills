@@ -1,27 +1,11 @@
 ---
 name: create-project
-description: Bootstraps production-ready AlgoKit projects for Algorand dApps and smart contracts. Use for new project initialization, dev environment setup, or smart contract scaffolding.
+description: Bootstraps production-ready AlgoKit projects for Algorand dApps and smart contracts. Use when initializing new Algorand smart contract projects, setting up development environments from scratch, or scaffolding dApps with pre-configured tooling. Strong triggers include "create a new project", "initialize a new Algorand app", "start a new smart contract", "set up AlgoKit", "scaffold a dApp", "algokit init".
 ---
 
 # AlgoKit Project Initialization
 
 Create new Algorand projects using AlgoKit's official templates.
-
-## When to use this skill
-
-Use this skill when the user wants to:
-
-- Initialize a new Algorand smart contract project
-- Set up a development environment from scratch
-- Scaffold a dApp with pre-configured tooling
-
-**Strong triggers:**
-
-- "Create a new project"
-- "Initialize a new Algorand app"
-- "Start a new smart contract"
-- "Set up AlgoKit"
-- "Scaffold a dApp"
 
 ## Overview / Core Workflow
 
@@ -107,6 +91,6 @@ Use this skill when the user wants to:
 
 ## References / Further Reading
 
-- [CLI Reference](./REFERENCE.md)
+- [CLI Reference](./references/REFERENCE.md)
 - [AlgoKit CLI Init Documentation](https://dev.algorand.co/algokit/cli/init/)
 - [AlgoKit CLI Init Reference](https://dev.algorand.co/reference/algokit-cli#init)
