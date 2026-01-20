@@ -1,9 +1,11 @@
 {
   "mcpServers": {
     "kappa": {
+      "type": "http",
       "url": "https://algorand-docs.mcp.kapa.ai/"
     },
     "github": {
+      "type": "http",
       "url": "https://api.githubcopilot.com/mcp/",
       "headers": {
         "Authorization": "Bearer YOUR_GITHUB_PAT"
