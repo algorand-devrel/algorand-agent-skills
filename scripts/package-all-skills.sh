@@ -16,5 +16,10 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     python3 "$PACKAGER" "$skill_dir" "$DIST_DIR"
 done
 
+# Create all-in-one bundle
+BUNDLE="$DIST_DIR/algorand-skills-all.zip"
+rm -f "$BUNDLE"
+(cd "$DIST_DIR" && zip -q "$BUNDLE" *.skill)
+
 echo "Done! Packaged skills are in $DIST_DIR/"
 ls -la "$DIST_DIR"

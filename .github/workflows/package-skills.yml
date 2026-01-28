@@ -27,4 +27,6 @@ jobs:
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*.skill
+          files: |
+            dist/*.skill
+            dist/algorand-skills-all.zip
