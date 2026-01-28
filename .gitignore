@@ -17,7 +17,6 @@ venv/
 
 # Packaged skills (generated for releases)
 dist/
-*.skill
 
 # OS
 .DS_Store

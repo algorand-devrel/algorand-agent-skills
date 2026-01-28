@@ -132,7 +132,7 @@ All MCP configurations require a GitHub Personal Access Token:
 
 ## Packaged Skills (Releases)
 
-Pre-packaged `.skill` files are available from [GitHub Releases](https://github.com/algorand-devrel/algorand-agent-skills/releases). These are single-file bundles that can be imported directly into tools that support the `.skill` format.
+Pre-packaged `.zip` files are available from [GitHub Releases](https://github.com/algorand-devrel/algorand-agent-skills/releases). These are single-file bundles that can be extracted directly into your project's skills directory.
 
 To package skills locally:
 

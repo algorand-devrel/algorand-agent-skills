@@ -1,5 +1,5 @@
 #!/bin/bash
-# Package all skills into .skill files for release
+# Package all skills into .zip files for release
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
@@ -8,7 +8,7 @@ DIST_DIR="$REPO_ROOT/dist"
 PACKAGER="$SCRIPT_DIR/package_skill.py"
 
 mkdir -p "$DIST_DIR"
-rm -f "$DIST_DIR"/*.skill
+rm -f "$DIST_DIR"/*.zip
 
 for skill_dir in "$SKILLS_DIR"/*/; do
     skill_name=$(basename "$skill_dir")
@@ -19,7 +19,7 @@ done
 # Create all-in-one bundle
 BUNDLE="$DIST_DIR/algorand-skills-all.zip"
 rm -f "$BUNDLE"
-(cd "$DIST_DIR" && zip -q "$BUNDLE" *.skill)
+(cd "$DIST_DIR" && zip -q "$BUNDLE" *.zip -x algorand-skills-all.zip)
 
 echo "Done! Packaged skills are in $DIST_DIR/"
 ls -la "$DIST_DIR"
