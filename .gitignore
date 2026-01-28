@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code (user-specific config, but keep skills)
+.claude/settings.local.json
+
+# Packaged skills (generated for releases)
+dist/
+*.skill
+
+# OS
+.DS_Store
+Thumbs.db

@@ -6,7 +6,8 @@ This repository contains **Algorand Agent Skills** - a collection of skills and 
 
 - **`skills/`** - Universal Algorand skills (building contracts, testing, deployment, etc.)
 - **`setups/`** - Tool-specific configurations for OpenCode, Claude Code, Cursor, and Copilot
-- **`examples/`** - Workflow examples showing skills in action
+- **`scripts/`** - Skill tooling (init, validate, package)
+- **`.claude/skills/skill-creator/`** - Skill for creating new skills
 
 ## For Agents Working on This Repo
 

@@ -66,19 +66,20 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 Skills teach AI assistants how to complete Algorand-specific tasks:
 
-| Skill                      | Description                                      |
-| -------------------------- | ------------------------------------------------ |
-| `create-project`           | Initialize AlgoKit projects with best practices  |
-| `build-smart-contracts`    | Build contracts in Algorand TypeScript or Python |
-| `algorand-typescript`      | Syntax rules for Algorand TypeScript (PuyaTs)    |
-| `test-smart-contracts`     | Write and run contract tests                     |
-| `call-smart-contracts`     | Deploy and interact with contracts               |
-| `deploy-react-frontend`    | Build React frontends for dApps                  |
-| `use-algokit-cli`          | AlgoKit CLI command reference                    |
-| `search-algorand-examples` | Find canonical code examples                     |
-| `use-algokit-utils`        | AlgoKit Utils library for SDK interactions       |
-| `troubleshoot-errors`      | Diagnose and fix common Algorand errors          |
-| `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards    |
+| Skill                      | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| `create-project`           | Initialize AlgoKit projects with best practices   |
+| `build-smart-contracts`    | Build contracts in Algorand TypeScript or Python  |
+| `algorand-typescript`      | Syntax rules for Algorand TypeScript (PuyaTs)     |
+| `algorand-ts-migration`    | Migrate from TEALScript or beta Algorand TS       |
+| `test-smart-contracts`     | Write and run contract tests                      |
+| `call-smart-contracts`     | Deploy and interact with contracts                |
+| `deploy-react-frontend`    | Build React frontends for dApps                   |
+| `use-algokit-cli`          | AlgoKit CLI command reference                     |
+| `search-algorand-examples` | Find canonical code examples                      |
+| `use-algokit-utils`        | AlgoKit Utils library for SDK interactions        |
+| `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
+| `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
 
 ### MCP Servers
 
@@ -128,6 +129,18 @@ All MCP configurations require a GitHub Personal Access Token:
    export GITHUB_TOKEN="github_pat_..."
    ```
    Add this to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.) to persist it.
+
+## Packaged Skills (Releases)
+
+Pre-packaged `.skill` files are available from [GitHub Releases](https://github.com/algorand-devrel/algorand-agent-skills/releases). These are single-file bundles that can be imported directly into tools that support the `.skill` format.
+
+To package skills locally:
+
+```bash
+./scripts/package-all-skills.sh
+```
+
+Packaged skills will be output to the `dist/` directory.
 
 ## Resources
 

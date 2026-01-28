@@ -1,0 +1,30 @@
+name: Package Skills
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Package all skills
+        run: |
+          chmod +x scripts/package-all-skills.sh
+          ./scripts/package-all-skills.sh
+
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.skill
