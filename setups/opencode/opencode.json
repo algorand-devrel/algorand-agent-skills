@@ -1,18 +1,18 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
+    "kappa": {
+      "type": "remote",
+      "url": "https://algorand-docs.mcp.kapa.ai/",
+      "enabled": true
+    },
     "github": {
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/",
       "enabled": true,
       "headers": {
-        "Authorization": "YOUR_GITHUB_PAT"
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
       }
-    },
-    "kappa": {
-      "type": "remote",
-      "url": "https://algorand-docs.mcp.kapa.ai/",
-      "enabled": true
     }
   }
 }

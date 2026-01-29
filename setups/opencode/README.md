@@ -34,21 +34,29 @@ cp /path/to/algorand-agent-skills/setups/AGENTS.md ./
 cp /path/to/algorand-agent-skills/setups/opencode/opencode.json ./
 ```
 
-### 3. Configure GitHub PAT
+### 3. Set GitHub Token Environment Variable
 
-Edit `opencode.json` and replace `YOUR_GITHUB_PAT` with your GitHub PAT (no `Bearer` prefix needed):
+The config uses `{env:GITHUB_TOKEN}` syntax to read your token from an environment variable:
 
 ```json
 {
   "mcp": {
     "github": {
       "headers": {
-        "Authorization": "github_pat_abc123..."
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
       }
     }
   }
 }
 ```
+
+Set the environment variable before running OpenCode:
+
+```bash
+export GITHUB_TOKEN="github_pat_abc123..."
+```
+
+To make this permanent, add to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.).
 
 **PAT Requirements:**
 - Must have an expiration date (some MCP clients refuse non-expiring tokens)
@@ -103,9 +111,9 @@ The Kappa MCP uses OAuth authentication. On first use, OpenCode will prompt you 
 - Restart OpenCode after config changes
 
 ### GitHub authentication failed
+- Verify `GITHUB_TOKEN` environment variable is set
 - Verify your PAT has an expiration date
 - Check the PAT hasn't expired
-- Ensure the PAT is entered directly (no `Bearer` prefix needed for OpenCode)
 
 ### Kappa OAuth issues
 - Run `opencode mcp auth` to re-authenticate
