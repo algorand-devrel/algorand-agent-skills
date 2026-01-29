@@ -96,10 +96,10 @@ Initialize a new project.
 
 ```bash
 # TypeScript with Production preset
-algokit init -n my-project -t typescript --answer preset "Production" --defaults
+algokit init -n my-project -t typescript --answer preset_name production --defaults
 
 # Python with Production preset
-algokit init -n my-project -t python --answer preset "Production" --defaults
+algokit init -n my-project -t python --answer preset_name production --defaults
 ```
 
 **Options:**

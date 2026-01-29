@@ -27,7 +27,7 @@ Create new Algorand projects using AlgoKit's official templates.
    **TypeScript (Production Preset):**
 
    ```bash
-   algokit init -n <project-name> -t typescript --answer preset "Production" --answer author_name "<name>" --defaults
+   algokit init -n <project-name> -t typescript --answer preset_name production --answer author_name "<name>" --defaults
    ```
 
    **TypeScript (Starter Preset):**
@@ -39,7 +39,7 @@ Create new Algorand projects using AlgoKit's official templates.
    **Python (Production Preset):**
 
    ```bash
-   algokit init -n <project-name> -t python --answer preset "Production" --answer author_name "<name>" --defaults
+   algokit init -n <project-name> -t python --answer preset_name production --answer author_name "<name>" --defaults
    ```
 
    **Python (Starter Preset):**
@@ -71,7 +71,7 @@ Create new Algorand projects using AlgoKit's official templates.
 
 - **Always confirm with user before executing** — Never run `algokit init` without explicit confirmation
 - **Default to TypeScript** — Recommended for production applications
-- **Use Production preset** — For any project because it includes testing framework and deployment scripts
+- **Use production preset** — For any project because it includes testing framework and deployment scripts
 - **Include author name** — Pass `--answer author_name "<name>"` for attribution
 - **Use `--defaults`** — Accepts all other default values for non-interactive mode
 

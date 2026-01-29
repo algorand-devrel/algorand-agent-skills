@@ -33,10 +33,10 @@
 
 ```bash
 # TypeScript (Production preset)
-algokit init -n <name> -t typescript --answer preset "Production" --answer author_name "<author>" --defaults
+algokit init -n <name> -t typescript --answer preset_name production --answer author_name "<author>" --defaults
 
 # Python (Production preset)
-algokit init -n <name> -t python --answer preset "Production" --answer author_name "<author>" --defaults
+algokit init -n <name> -t python --answer preset_name production --answer author_name "<author>" --defaults
 
 # Skip git and bootstrap
 algokit init -n <name> -t typescript --no-git --no-bootstrap --defaults
