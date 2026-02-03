@@ -53,10 +53,14 @@ cp /path/to/algorand-agent-skills/setups/copilot/copilot-instructions.md ./.gith
 
 The `.github/copilot-instructions.md` file provides custom instructions for GitHub Copilot in your repository. It tells Copilot to read `AGENTS.md` for project-specific guidance about Algorand development.
 
+## Note on AGENTS.md
+
+GitHub Copilot natively reads `AGENTS.md` files in your repository. The `copilot-instructions.md` file reinforces this and provides additional context.
+
 ## MCP Note
 
 Unlike OpenCode, Claude Code, and Cursor, GitHub Copilot does not currently support MCP servers directly. The skills and AGENTS.md provide guidance, but you won't have access to:
-- Kappa MCP (Algorand documentation search)
+- Kapa MCP (Algorand documentation search)
 - GitHub MCP (code example retrieval)
 
 For full MCP support, consider using OpenCode (recommended) or Claude Code.

@@ -85,7 +85,7 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 
 MCP (Model Context Protocol) servers give AI assistants access to external tools:
 
-**Kappa MCP** - Algorand Documentation
+**Kapa MCP** - Algorand Documentation
 
 - Semantic search over official Algorand docs
 - URL: `https://algorand-docs.mcp.kapa.ai/`

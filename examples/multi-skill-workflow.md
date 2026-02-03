@@ -32,7 +32,7 @@ You want to build a simple voting contract where:
 
 **What happens:**
 
-1. Agent uses `kappa_search_algorand_knowledge_sources` to search docs
+1. Agent uses `kapa_search_algorand_knowledge_sources` to search docs
 2. Returns relevant documentation about:
    - Box storage for vote counts
    - GlobalState for proposals
@@ -165,7 +165,7 @@ export class VotingContract extends Contract {
 | Step          | Skills                                                  | MCP Tools                                 |
 | ------------- | ------------------------------------------------------- | ----------------------------------------- |
 | 1. Initialize | `create-project`                                        | -                                         |
-| 2. Research   | -                                                       | `kappa_search_algorand_knowledge_sources` |
+| 2. Research   | -                                                       | `kapa_search_algorand_knowledge_sources` |
 | 3. Examples   | `search-algorand-examples`                           | `github_get_file_contents`                |
 | 4. Build      | `build-smart-contracts`, `algorand-typescript` | -                                         |
 | 5. Test       | `test-smart-contracts`                               | -                                         |

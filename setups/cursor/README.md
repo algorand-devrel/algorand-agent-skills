@@ -69,13 +69,13 @@ Restart Cursor to load the new configuration.
 | Source | Destination | Required |
 |--------|-------------|----------|
 | `setups/AGENTS.md` | `./AGENTS.md` | Yes |
-| `skills/*` | `.cursor/skills/` | Yes (Nightly only) |
+| `skills/*` | `.cursor/skills/` | Yes |
 | `setups/cursor/mcp.json` | `.cursor/mcp.json` or `~/.cursor/mcp.json` | Yes |
 
 ## How It Works
 
 - **AGENTS.md**: Cursor reads this directly from your project root for agent instructions
-- **Skills**: Place in `.cursor/skills/` directory (requires Cursor Nightly channel)
+- **Skills**: Place in `.cursor/skills/` directory. Cursor also discovers skills from `.claude/skills/` and `.codex/skills/`
 - **MCP**: Configure in `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global)
 
 ## AGENTS.md Note
@@ -84,15 +84,9 @@ Restart Cursor to load the new configuration.
 
 **If you don't have one**: Copy `setups/AGENTS.md` to your project root as `AGENTS.md`.
 
-## Note on Cursor Nightly
+## Note on Skills
 
-The Skills feature requires Cursor Nightly. To switch:
-
-1. Open Cursor Settings (Cmd+Shift+J / Ctrl+Shift+J)
-2. Change update channel to "Nightly"
-3. Restart Cursor
-
-Without Nightly, you can still use AGENTS.md and MCP tools - skills just won't auto-activate.
+Skills in `.cursor/skills/` are automatically discovered by Cursor. Cursor also checks `.claude/skills/` and `.codex/skills/` directories.
 
 ## PAT Requirements
 
@@ -114,7 +108,7 @@ Without Nightly, you can still use AGENTS.md and MCP tools - skills just won't a
    Get the contents of algorandfoundation/puya-ts/examples/hello_world_arc4/contract.algo.ts
    ```
 
-4. Test a skill (Nightly only):
+4. Test a skill:
    ```
    Create a new smart contract that stores a counter
    ```
@@ -133,12 +127,11 @@ Without Nightly, you can still use AGENTS.md and MCP tools - skills just won't a
 - Ensure the `Bearer` prefix is included in the Authorization header
 
 ### Skills not loading
-- Ensure you're on Cursor Nightly channel
 - Check skills are in `.cursor/skills/` directory
 - Each skill folder must contain a `SKILL.md` file
 - Restart Cursor after adding skills
 
-### Kappa OAuth issues
+### Kapa OAuth issues
 - Cursor will prompt for re-authentication when needed
 - Check your network connection
 

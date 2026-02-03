@@ -63,9 +63,9 @@ To make this permanent, add to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.
 - Default permissions work (read access to public repositories)
 - Create at: https://github.com/settings/personal-access-tokens
 
-### 4. Authenticate Kappa MCP
+### 4. Authenticate Kapa MCP
 
-The Kappa MCP uses OAuth authentication. On first use, OpenCode will prompt you to authorize access to Algorand documentation.
+The Kapa MCP uses OAuth authentication. On first use, OpenCode will prompt you to authorize access to Algorand documentation.
 
 ## Files to Copy
 
@@ -88,7 +88,7 @@ The Kappa MCP uses OAuth authentication. On first use, OpenCode will prompt you 
    opencode
    ```
 
-2. Test the Kappa MCP:
+2. Test the Kapa MCP:
    ```
    Search for "GlobalState" in Algorand docs
    ```
@@ -115,7 +115,7 @@ The Kappa MCP uses OAuth authentication. On first use, OpenCode will prompt you 
 - Verify your PAT has an expiration date
 - Check the PAT hasn't expired
 
-### Kappa OAuth issues
+### Kapa OAuth issues
 - Run `opencode mcp auth` to re-authenticate
 - Check your network connection
 

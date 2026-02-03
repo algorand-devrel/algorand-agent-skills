@@ -16,7 +16,7 @@ Before initializing any AlgoKit project:
 Before writing ANY Algorand contract code:
 
 1. **Load the skill first**: Use `build-smart-contracts` skill
-2. **Search docs**: Call `kappa_search_algorand_knowledge_sources` for concepts
+2. **Search docs**: Call `kapa_search_algorand_knowledge_sources` for concepts
 3. **Get examples**: Use `github_get_file_contents` from:
    - `algorandfoundation/devportal-code-examples`
    - `algorandfoundation/puya-ts` (examples/)
@@ -81,11 +81,17 @@ Before building a React frontend that interacts with Algorand contracts:
 
 **Important:** These tools are provided by MCP servers. If a tool isn't available when you try to use it, the MCP server may not be configured. Check for a `.mcp.json` (Claude Code) or `opencode.json` (OpenCode) file in the project root. If the config exists but tools still aren't available, restart your coding agent.
 
-### Documentation Search (Kappa)
+**Note:** MCP tool names may have different prefixes depending on your coding agent. For example:
+- Claude Code: `mcp__kapa__search_algorand_knowledge_sources`
+- Other agents may use: `kapa_search_algorand_knowledge_sources`
+
+The tool functionality is the same regardless of prefix.
+
+### Documentation Search (Kapa)
 
 | Tool                                      | Purpose                       |
 | ----------------------------------------- | ----------------------------- |
-| `kappa_search_algorand_knowledge_sources` | Search official Algorand docs |
+| `kapa_search_algorand_knowledge_sources` | Search official Algorand docs |
 
 ### GitHub (Code Examples)
 
@@ -103,14 +109,14 @@ If MCP tools aren't available, use these fallbacks:
 
 | Missing Tool                              | Fallback                                                        |
 | ----------------------------------------- | --------------------------------------------------------------- |
-| `kappa_search_algorand_knowledge_sources` | Use web search for "site:dev.algorand.co {query}"               |
+| `kapa_search_algorand_knowledge_sources` | Use web search for "site:dev.algorand.co {query}"               |
 | `github_get_file_contents`                | Use web search or browse GitHub directly                        |
 | `github_search_code`                      | Use web search for "site:github.com algorandfoundation {query}" |
 
 **To fix MCP configuration:**
 
 1. **Check config exists**: Look for `.mcp.json` (Claude Code), `opencode.json` (OpenCode), or `.cursor/mcp.json` (Cursor)
-2. **Verify server entries**: Config should include `kappa` and `github` MCP servers
+2. **Verify server entries**: Config should include `kapa` and `github` MCP servers
 3. **Restart the agent**: MCP tools load at startup; restart after config changes
 
 **Note:** You can always proceed without MCPs by:

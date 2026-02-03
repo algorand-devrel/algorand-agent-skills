@@ -2,7 +2,7 @@
 
 Configure [Claude Code](https://claude.ai/code) for AI-assisted Algorand development.
 
-> **Note**: These instructions are for **per-project setup**. For global configuration (`~/.claude.json`), refer to the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
+> **Note**: These instructions are for **per-project setup**. For global configuration (`~/.claude.json`), refer to the [Claude Code documentation](https://code.claude.com/docs/en).
 
 ## Prerequisites
 
@@ -56,9 +56,9 @@ Edit `.mcp.json` and replace `YOUR_GITHUB_PAT` with your GitHub PAT (include the
 - Default permissions work (read access to public repositories)
 - Create at: https://github.com/settings/personal-access-tokens
 
-### 4. Authenticate Kappa MCP
+### 4. Authenticate Kapa MCP
 
-The Kappa MCP uses OAuth authentication. On first use, Claude Code will prompt you to authorize access to Algorand documentation.
+The Kapa MCP uses OAuth authentication. On first use, Claude Code will prompt you to authorize access to Algorand documentation.
 
 ## Files to Copy
 
@@ -90,7 +90,7 @@ All agents should read `AGENTS.md` as the canonical source for project guidance.
    claude
    ```
 
-2. Test the Kappa MCP:
+2. Test the Kapa MCP:
    ```
    Search for "GlobalState" in Algorand docs
    ```
@@ -117,12 +117,12 @@ All agents should read `AGENTS.md` as the canonical source for project guidance.
 - Check the PAT hasn't expired
 - Ensure the `Bearer` prefix is included in the Authorization header
 
-### Kappa OAuth issues
-- Claude Code will prompt for re-authentication automatically
+### Kapa OAuth issues
+- Use `/mcp` in Claude Code to re-authenticate or check status
 - Check your network connection
 
 ## Resources
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Claude Code MCP Configuration](https://docs.anthropic.com/en/docs/claude-code/mcp)
+- [Claude Code Documentation](https://code.claude.com/docs/en)
+- [Claude Code MCP Configuration](https://code.claude.com/docs/en/mcp)
 - [GitHub MCP Server](https://github.com/github/github-mcp-server)

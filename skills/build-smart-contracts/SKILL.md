@@ -18,7 +18,7 @@ Create modern Algorand smart contracts in Algorand TypeScript or Algorand Python
 ## How to proceed
 
 1. **Search documentation first:**
-   - Use `kappa_search_algorand_knowledge_sources` MCP tool for conceptual guidance
+   - Use `kapa_search_algorand_knowledge_sources` MCP tool for conceptual guidance
    - If MCP unavailable, use web search: "site:dev.algorand.co {concept}"
    - If no results, proceed with caution using known patterns
 

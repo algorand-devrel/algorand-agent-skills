@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "kappa": {
+    "kapa": {
       "type": "http",
       "url": "https://algorand-docs.mcp.kapa.ai/"
     },
