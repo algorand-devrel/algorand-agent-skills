@@ -81,24 +81,24 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 | `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
 | `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
 
-Skills to teach AI agents how to complete Algorand-specific X402 tasks:
+Skills for x402 HTTP-native payment protocol with Algorand (AVM) integration:
 
-| Skill                                    | Description                                       |
-| ---------------------------------------- | ------------------------------------------------- |
-| `create-python-x402-client`             | Create Python X402 client implementations         |
-| `create-python-x402-facilitator`        | Create Python X402 facilitator implementations    |
-| `create-python-x402-facilitator-bazaar` | Create Python X402 facilitator bazaar            |
-| `create-python-x402-server`             | Create Python X402 server implementations        |
-| `create-typescript-x402-client`         | Create TypeScript X402 client implementations    |
-| `create-typescript-x402-facilitator`    | Create TypeScript X402 facilitator implementations|
-| `create-typescript-x402-nextjs`         | Create TypeScript X402 Next.js applications      |
-| `create-typescript-x402-paywall`        | Create TypeScript X402 paywall implementations   |
-| `create-typescript-x402-server`         | Create TypeScript X402 server implementations    |
-| `explain-algorand-x402-python`          | Explain X402 concepts for Python development     |
-| `explain-algorand-x402-typescript`      | Explain X402 concepts for TypeScript development |
-| `teach-algorand-x402`                   | Teach X402 concepts and implementation patterns  |
-| `use-python-x402-core-avm`              | Use Python X402 core AVM functionality           |
-| `use-typescript-x402-core-avm`          | Use TypeScript X402 core AVM functionality       |
+| Skill                                    | Description                                               |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `teach-algorand-x402`                   | Teach x402 protocol, payment flow, and component architecture |
+| `explain-algorand-x402-typescript`      | Explain x402-avm TypeScript packages and patterns         |
+| `explain-algorand-x402-python`          | Explain x402-avm Python package and patterns              |
+| `create-typescript-x402-client`         | Build x402 clients with fetch and axios (`@x402-avm/fetch`, `@x402-avm/axios`) |
+| `create-typescript-x402-server`         | Build payment-protected servers with Express and Hono     |
+| `create-typescript-x402-facilitator`    | Build facilitator services with optional Bazaar extension |
+| `create-typescript-x402-paywall`        | Build browser paywall UI for manual payments              |
+| `create-typescript-x402-nextjs`         | Build fullstack Next.js apps with payment middleware      |
+| `use-typescript-x402-core-avm`          | Use `@x402-avm/core` and `@x402-avm/avm` directly for custom integrations |
+| `create-python-x402-client`             | Build x402 clients with httpx (async) and requests (sync) |
+| `create-python-x402-server`             | Build payment-protected servers with FastAPI and Flask    |
+| `create-python-x402-facilitator`        | Build facilitator services implementing `FacilitatorAvmSigner` |
+| `create-python-x402-facilitator-bazaar` | Build facilitator with Bazaar discovery extension         |
+| `use-python-x402-core-avm`              | Use `x402-avm[avm]` core and AVM mechanism directly      |
 
 ### MCP Servers
 
