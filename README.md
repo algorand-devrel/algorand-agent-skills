@@ -81,7 +81,7 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 | `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
 | `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
 
-Skills for x402 HTTP-native payment protocol with Algorand (AVM) integration:
+Skills for x402 HTTP-native payment protocol with Algorand integration ([Contributed by GoPlausible](https://x402.goplausible.xyz)):
 
 | Skill                                    | Description                                               |
 | ---------------------------------------- | --------------------------------------------------------- |
@@ -167,6 +167,7 @@ Packaged skills will be output to the `dist/` directory.
 - [Algorand Developer Portal](https://dev.algorand.co/)
 - [Puya TypeScript (PuyaTs)](https://github.com/algorandfoundation/puya-ts)
 - [Puya Python (PuyaPy)](https://github.com/algorandfoundation/puya)
+- [x402 Protocol on Algorand](https://x402.goplausible.xyz)
 - [OpenCode](https://opencode.ai)
 - [Claude Code](https://claude.ai/code)
 
