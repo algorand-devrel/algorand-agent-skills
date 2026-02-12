@@ -81,7 +81,7 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 | `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
 | `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
 
-Skills for x402 HTTP-native payment protocol with Algorand integration ([Contributed by GoPlausible](https://x402.goplausible.xyz)):
+Skills for x402 HTTP-native payment protocol with Algorand integration ([Contributed by GoPlausible](https://goplausible.com)):
 
 | Skill                                    | Description                                               |
 | ---------------------------------------- | --------------------------------------------------------- |
