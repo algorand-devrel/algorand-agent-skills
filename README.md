@@ -81,6 +81,25 @@ Skills teach AI assistants how to complete Algorand-specific tasks:
 | `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
 | `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
 
+Skills to teach AI agents how to complete Algorand-specific X402 tasks:
+
+| Skill                                    | Description                                       |
+| ---------------------------------------- | ------------------------------------------------- |
+| `create-python-x402-client`             | Create Python X402 client implementations         |
+| `create-python-x402-facilitator`        | Create Python X402 facilitator implementations    |
+| `create-python-x402-facilitator-bazaar` | Create Python X402 facilitator bazaar            |
+| `create-python-x402-server`             | Create Python X402 server implementations        |
+| `create-typescript-x402-client`         | Create TypeScript X402 client implementations    |
+| `create-typescript-x402-facilitator`    | Create TypeScript X402 facilitator implementations|
+| `create-typescript-x402-nextjs`         | Create TypeScript X402 Next.js applications      |
+| `create-typescript-x402-paywall`        | Create TypeScript X402 paywall implementations   |
+| `create-typescript-x402-server`         | Create TypeScript X402 server implementations    |
+| `explain-algorand-x402-python`          | Explain X402 concepts for Python development     |
+| `explain-algorand-x402-typescript`      | Explain X402 concepts for TypeScript development |
+| `teach-algorand-x402`                   | Teach X402 concepts and implementation patterns  |
+| `use-python-x402-core-avm`              | Use Python X402 core AVM functionality           |
+| `use-typescript-x402-core-avm`          | Use TypeScript X402 core AVM functionality       |
+
 ### MCP Servers
 
 MCP (Model Context Protocol) servers give AI assistants access to external tools:
