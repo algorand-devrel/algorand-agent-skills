@@ -64,22 +64,13 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 ### Skills
 
-Skills teach AI assistants how to complete Algorand-specific tasks:
+Skills teach AI assistants how to complete Algorand-specific tasks. They are organized into 5 aggregated parent skills:
 
-| Skill                      | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| `create-project`           | Initialize AlgoKit projects with best practices   |
-| `build-smart-contracts`    | Build contracts in Algorand TypeScript or Python  |
-| `algorand-typescript`      | Syntax rules for Algorand TypeScript (PuyaTs)     |
-| `algorand-ts-migration`    | Migrate from TEALScript or beta Algorand TS       |
-| `test-smart-contracts`     | Write and run contract tests                      |
-| `call-smart-contracts`     | Deploy and interact with contracts                |
-| `deploy-react-frontend`    | Build React frontends for dApps                   |
-| `use-algokit-cli`          | AlgoKit CLI command reference                     |
-| `search-algorand-examples` | Find canonical code examples                      |
-| `use-algokit-utils`        | AlgoKit Utils library for SDK interactions        |
-| `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
-| `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
+| Skill                        | Description                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| `algorand-development`       | All general Algorand development — CLI, examples, project init, ARC standards, troubleshooting |
+| `algorand-typescript`        | All TypeScript skills — syntax, migration, testing, deployment, React frontends, AlgoKit Utils |
+| `algorand-python`            | All Python skills — contract building, decorators, storage, types, AlgoKit Utils |
 
 Skills for x402 HTTP-native payment protocol with Algorand (AVM) integration, [contributed by GoPlausible](https://goplausible.com):
 
@@ -91,6 +82,17 @@ Skills for x402 HTTP-native payment protocol with Algorand (AVM) integration, [c
 Each skill has a single `SKILL.md` router plus a `references/` folder with all implementation guides, API references, and code examples:
 
 ```
+algorand-development/          algorand-typescript/            algorand-python/
+├── SKILL.md                   ├── SKILL.md                    ├── SKILL.md
+└── references/                └── references/                 └── references/
+    ├── use-algokit-cli.md         ├── algorand-typescript-        ├── build-smart-contracts-
+    ├── search-algorand-           │   syntax.md                   │   decorators.md
+    │   examples.md                ├── test-smart-contracts.md     ├── use-algokit-utils-
+    ├── create-project.md          ├── deploy-react-frontend.md    │   reference.md
+    ├── build-smart-contracts.md   ├── use-algokit-utils.md        └── ...
+    ├── implement-arc-standards.md └── ...
+    └── troubleshoot-errors.md
+
 algorand-x402-typescript/             algorand-x402-python/
 ├── SKILL.md                          ├── SKILL.md
 └── references/                       └── references/

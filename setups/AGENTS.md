@@ -8,28 +8,29 @@ This project develops Algorand blockchain applications including smart contracts
 
 Before initializing any AlgoKit project:
 
-1. **Load the skill**: Use `create-project` skill for project setup guidance
-2. **Run**: `algokit init -n <name> -t typescript --answer preset "Production" --defaults`
+1. **Load the skill**: Use `algorand-development` skill (create-project topic)
+2. **For TypeScript**: `algokit init -n <name> -t typescript --answer preset_name production --defaults`
+3. **For Python**: `algokit init -n <name> -t python --answer preset_name production --defaults`
 
 ## Writing Smart Contracts
 
 Before writing ANY Algorand contract code:
 
-1. **Load the skill first**: Use `build-smart-contracts` skill
+1. **Load the skill first**: Use `algorand-typescript` or `algorand-python` skill (build-smart-contracts topic)
 2. **Search docs**: Call `kapa_search_algorand_knowledge_sources` for concepts
 3. **Get examples**: Use `github_get_file_contents` from:
    - `algorandfoundation/devportal-code-examples`
-   - `algorandfoundation/puya-ts` (examples/)
+   - `algorandfoundation/puya-ts` (TypeScript) or `algorandfoundation/puya` (Python)
 4. **Write code** following skill guidance
 5. **Build/test**: `algokit project run build && algokit project run test`
 
 ## Deploying & Calling Contracts
 
-Use the **CLI and generated TypeScript clients** for deployment and interaction.
+Use the **CLI and generated typed clients** for deployment and interaction.
 
 ### Workflow
 
-1. **Load the skill**: Use `call-smart-contracts` skill
+1. **Load the skill**: Use `algorand-typescript` skill (call-smart-contracts topic) or `algorand-python` skill
 2. **Start localnet**: `algokit localnet start`
 3. **Build contracts**: `algokit project run build`
 4. **Deploy to localnet**: `algokit project deploy localnet`
@@ -39,19 +40,19 @@ Use the **CLI and generated TypeScript clients** for deployment and interaction.
 
 ### Contract Interaction
 
-After deployment, interact with contracts using the generated TypeScript client:
+After deployment, interact with contracts using the generated typed client:
 
 1. **Write interaction scripts** in `deploy-config.ts` or separate scripts
 2. **Use the typed client** generated from the ARC-56 app spec
 3. **Run scripts**: `npx tsx scripts/call-contract.ts`
 
-See the `call-smart-contracts` skill for detailed patterns and examples.
+See the `algorand-typescript` skill (call-smart-contracts topic) for detailed patterns and examples.
 
 ## Building React Frontends
 
 Before building a React frontend that interacts with Algorand contracts:
 
-1. **Load the skill**: Use `deploy-react-frontend` skill
+1. **Load the skill**: Use `algorand-typescript` skill (deploy-react-frontend topic)
 2. **Prerequisites**: Deployed contract with known App ID, ARC-56 app spec
 3. **Generate typed client**: `algokit generate client MyContract.arc56.json --output src/contracts/MyContractClient.ts`
 4. **Install deps**: `npm install @algorandfoundation/algokit-utils @txnlab/use-wallet-react algosdk`
@@ -63,19 +64,33 @@ Before building a React frontend that interacts with Algorand contracts:
 
 ## Available Skills
 
-| Task                | Skill                      |
-| ------------------- | -------------------------- |
-| Initialize projects | `create-project`           |
-| Create contracts    | `build-smart-contracts`    |
-| Syntax questions    | `algorand-typescript`      |
-| Build/deploy cmds   | `use-algokit-cli`          |
-| Write tests         | `test-smart-contracts`     |
-| Find examples       | `search-algorand-examples` |
-| Deploy & call       | `call-smart-contracts`     |
-| React frontends     | `deploy-react-frontend`    |
-| SDK interactions    | `use-algokit-utils`        |
-| Debug errors        | `troubleshoot-errors`      |
-| ARC standards       | `implement-arc-standards`  |
+Three aggregated skills cover all core Algorand development. Each skill has a single `SKILL.md` router plus a `references/` folder with all implementation guides and API references.
+
+| Task                              | Skill                    |
+| --------------------------------- | ------------------------ |
+| CLI, examples, general workflows  | `algorand-development`   |
+| TypeScript contracts & tools      | `algorand-typescript`    |
+| Python contracts & tools          | `algorand-python`        |
+
+**Skill structure:**
+```
+algorand-development/           algorand-typescript/            algorand-python/
+├── SKILL.md  (router)          ├── SKILL.md  (router)          ├── SKILL.md  (router)
+└── references/                 └── references/                 └── references/
+    ├── use-algokit-cli.md          ├── algorand-typescript-         ├── build-smart-contracts-
+    ├── search-algorand-                syntax.md                        decorators.md
+    │   examples.md                 ├── test-smart-contracts.md      ├── build-smart-contracts-
+    ├── create-project.md           ├── call-smart-contracts.md          storage.md
+    ├── build-smart-contracts.md    ├── deploy-react-frontend.md     ├── use-algokit-utils-
+    ├── implement-arc-standards.md  ├── use-algokit-utils.md             reference.md
+    └── troubleshoot-errors.md      └── ...                          └── ...
+```
+
+**algorand-development topics:** `use-algokit-cli`, `search-algorand-examples`, `create-project`, `build-smart-contracts`, `implement-arc-standards`, `troubleshoot-errors`
+
+**algorand-typescript topics:** `algorand-typescript-syntax`, `algorand-ts-migration`, `test-smart-contracts`, `call-smart-contracts`, `deploy-react-frontend`, `create-project`, `build-smart-contracts`, `use-algokit-utils`, `implement-arc-standards`, `troubleshoot-errors`
+
+**algorand-python topics:** `create-project`, `build-smart-contracts`, `use-algokit-utils`, `implement-arc-standards`, `troubleshoot-errors`
 
 ## MCP Tools
 
