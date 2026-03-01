@@ -64,41 +64,47 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 ### Skills
 
-Skills teach AI assistants how to complete Algorand-specific tasks:
+Skills teach AI assistants how to complete Algorand-specific tasks. They are organized into 5 aggregated parent skills:
 
-| Skill                      | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| `create-project`           | Initialize AlgoKit projects with best practices   |
-| `build-smart-contracts`    | Build contracts in Algorand TypeScript or Python  |
-| `algorand-typescript`      | Syntax rules for Algorand TypeScript (PuyaTs)     |
-| `algorand-ts-migration`    | Migrate from TEALScript or beta Algorand TS       |
-| `test-smart-contracts`     | Write and run contract tests                      |
-| `call-smart-contracts`     | Deploy and interact with contracts                |
-| `deploy-react-frontend`    | Build React frontends for dApps                   |
-| `use-algokit-cli`          | AlgoKit CLI command reference                     |
-| `search-algorand-examples` | Find canonical code examples                      |
-| `use-algokit-utils`        | AlgoKit Utils library for SDK interactions        |
-| `troubleshoot-errors`      | Diagnose and fix common Algorand errors           |
-| `implement-arc-standards`  | Implement ARC-4, ARC-32, and ARC-56 standards     |
+| Skill                        | Description                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| `algorand-development`       | All general Algorand development — CLI, examples, project init, ARC standards, troubleshooting |
+| `algorand-typescript`        | All TypeScript skills — syntax, migration, testing, deployment, React frontends, AlgoKit Utils |
+| `algorand-python`            | All Python skills — contract building, decorators, storage, types, AlgoKit Utils |
 
-Skills for x402 HTTP-native payment protocol with Algorand integration ([Contributed by GoPlausible](https://goplausible.com)):
+Skills for x402 HTTP-native payment protocol with Algorand (AVM) integration, [contributed by GoPlausible](https://goplausible.com):
 
-| Skill                                    | Description                                               |
-| ---------------------------------------- | --------------------------------------------------------- |
-| `teach-algorand-x402`                   | Teach x402 protocol, payment flow, and component architecture |
-| `explain-algorand-x402-typescript`      | Explain x402-avm TypeScript packages and patterns         |
-| `explain-algorand-x402-python`          | Explain x402-avm Python package and patterns              |
-| `create-typescript-x402-client`         | Build x402 clients with fetch and axios (`@x402-avm/fetch`, `@x402-avm/axios`) |
-| `create-typescript-x402-server`         | Build payment-protected servers with Express and Hono     |
-| `create-typescript-x402-facilitator`    | Build facilitator services with optional Bazaar extension |
-| `create-typescript-x402-paywall`        | Build browser paywall UI for manual payments              |
-| `create-typescript-x402-nextjs`         | Build fullstack Next.js apps with payment middleware      |
-| `use-typescript-x402-core-avm`          | Use `@x402-avm/core` and `@x402-avm/avm` directly for custom integrations |
-| `create-python-x402-client`             | Build x402 clients with httpx (async) and requests (sync) |
-| `create-python-x402-server`             | Build payment-protected servers with FastAPI and Flask    |
-| `create-python-x402-facilitator`        | Build facilitator services implementing `FacilitatorAvmSigner` |
-| `create-python-x402-facilitator-bazaar` | Build facilitator with Bazaar discovery extension         |
-| `use-python-x402-core-avm`              | Use `x402-avm[avm]` core and AVM mechanism directly      |
+| Skill                        | Description                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| `algorand-x402-typescript`   | All TypeScript x402 skills — clients, servers, facilitators, Bazaar, paywalls, Next.js, core SDK |
+| `algorand-x402-python`       | All Python x402 skills — clients, servers, facilitators, Bazaar, core SDK |
+
+Each skill has a single `SKILL.md` router plus a `references/` folder with all implementation guides, API references, and code examples:
+
+```
+algorand-development/          algorand-typescript/            algorand-python/
+├── SKILL.md                   ├── SKILL.md                    ├── SKILL.md
+└── references/                └── references/                 └── references/
+    ├── use-algokit-cli.md         ├── algorand-typescript-        ├── build-smart-contracts-
+    ├── search-algorand-           │   syntax.md                   │   decorators.md
+    │   examples.md                ├── test-smart-contracts.md     ├── use-algokit-utils-
+    ├── create-project.md          ├── deploy-react-frontend.md    │   reference.md
+    ├── build-smart-contracts.md   ├── use-algokit-utils.md        └── ...
+    ├── implement-arc-standards.md └── ...
+    └── troubleshoot-errors.md
+
+algorand-x402-typescript/             algorand-x402-python/
+├── SKILL.md                          ├── SKILL.md
+└── references/                       └── references/
+    ├── create-typescript-x402-           ├── create-python-x402-
+    │   client.md                         │   client.md
+    │   client-reference.md               │   client-reference.md
+    │   client-examples.md                │   client-examples.md
+    ├── ...server, facilitator,           ├── ...server, facilitator,
+    │   paywall, nextjs, core-avm         │   core-avm
+    └── explain-algorand-x402-            └── explain-algorand-x402-
+        typescript.md                         python.md
+```
 
 ### MCP Servers
 
