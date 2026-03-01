@@ -280,7 +280,8 @@ Client -> Resource Server -> Facilitator -> Algorand Network
   | 3. Build |                  |                |
   |   payload|                  |                |
   | 4. GET + |                  |                |
-  | X-PAYMENT|                  |                |
+  | PAYMENT- |                  |                |
+  | SIGNATURE|                  |                |
   |--------->| 5. verify()      |                |
   |          |----------------->| 6. simulate    |
   |          |                  |--------------->|

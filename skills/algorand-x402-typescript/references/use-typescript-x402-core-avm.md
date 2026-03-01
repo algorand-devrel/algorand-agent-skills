@@ -24,7 +24,7 @@ Client                    Resource Server              Facilitator
   |  (sign payment txns)        |                           |
   |                             |                           |
   |-- GET /resource ----------->|                           |
-  |   X-PAYMENT: <payload>      |-- verify(payload) ------->|
+  |   PAYMENT-SIGNATURE: <pay>   |-- verify(payload) ------->|
   |                             |<-- { isValid: true } -----|
   |<-- 200 OK + content --------|                           |
   |                             |-- settle(payload) ------->|
@@ -41,7 +41,7 @@ npm install @x402-avm/core @x402-avm/avm algosdk
 
 ### Step 2: Create a Client
 
-The `x402Client` automatically handles 402 responses by creating and signing payments, then retrying the request with the `X-PAYMENT` header.
+The `x402Client` automatically handles 402 responses by creating and signing payments, then retrying the request with the `PAYMENT-SIGNATURE` header.
 
 ```typescript
 import { x402Client } from "@x402-avm/core/client";

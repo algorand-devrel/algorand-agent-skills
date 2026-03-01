@@ -224,7 +224,7 @@ AssetAmount(
 
 ### FastAPI (ASGI)
 
-1. Client sends request with `X-Payment` or `Payment-Signature` header
+1. Client sends request with `Payment-Signature` header
 2. Middleware checks if the route requires payment via `requires_payment(context)`
 3. On first protected request, facilitator support is synchronized (lazy init)
 4. `process_http_request(context)` verifies the payment:
@@ -236,7 +236,7 @@ AssetAmount(
 
 ### Flask (WSGI)
 
-1. Client sends request with `X-Payment` or `Payment-Signature` header
+1. Client sends request with `Payment-Signature` header
 2. The WSGI middleware intercepts the request within a Flask request context
 3. Middleware checks if the route requires payment via `requires_payment(context)`
 4. On first protected request, facilitator support is synchronized (lazy init)

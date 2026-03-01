@@ -23,7 +23,7 @@ Pattern 1: Proxy (middleware.ts)           Pattern 2: withX402 (route.ts)
     |                                          |
   paymentProxy / paymentProxyFromConfig      withX402(handler, config, server)
     |                                          |
-  Has X-PAYMENT? ----No----> 402             Has X-PAYMENT? ----No----> 402
+  Has PAYMENT-SIGNATURE? -No-> 402           Has PAYMENT-SIGNATURE? -No-> 402
     |                                          |
    Yes                                        Yes
     |                                          |

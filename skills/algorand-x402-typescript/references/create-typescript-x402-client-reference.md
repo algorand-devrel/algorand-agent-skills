@@ -87,7 +87,7 @@ Policies are applied in registration order. Each policy receives the remaining r
 function decodePaymentResponseHeader(header: string): any;
 ```
 
-Decodes the `PAYMENT-RESPONSE` or `X-PAYMENT-RESPONSE` header returned by the server after settlement.
+Decodes the `PAYMENT-RESPONSE` header returned by the server after settlement.
 
 ---
 

@@ -553,8 +553,7 @@ import { decodePaymentResponseHeader } from "@x402-avm/fetch";
 const response = await fetchWithPay("https://api.example.com/paid-endpoint");
 
 const paymentResponseHeader =
-  response.headers.get("PAYMENT-RESPONSE") ||
-  response.headers.get("X-PAYMENT-RESPONSE");
+  response.headers.get("PAYMENT-RESPONSE");
 
 if (paymentResponseHeader) {
   const receipt = decodePaymentResponseHeader(paymentResponseHeader);

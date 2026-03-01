@@ -155,7 +155,7 @@ If localnet commands fail with "network unreachable" or connection errors:
 
 ## X402 Development
 
-x402 is an HTTP-native payment protocol built on the HTTP 402 "Payment Required" status code. Three components work together: **Client** requests a protected resource, **Server** responds with 402 and structured payment requirements, and **Facilitator** verifies and settles the payment on-chain. The client signs a transaction, retries the request with an `X-PAYMENT` header, and the server forwards it to the facilitator for verification and settlement before granting access.
+x402 is an HTTP-native payment protocol built on the HTTP 402 "Payment Required" status code. Three components work together: **Client** requests a protected resource, **Server** responds with 402 and structured payment requirements, and **Facilitator** verifies and settles the payment on-chain. The client signs a transaction, retries the request with a `PAYMENT-SIGNATURE` header, and the server forwards it to the facilitator for verification and settlement before granting access.
 
 Algorand (AVM) is a **first-class citizen** alongside EVM (Ethereum) and SVM (Solana) — never conditional, always registered unconditionally. It uses CAIP-2 network identifiers and supports fee abstraction (facilitator pays transaction fees), ASA payments (USDC, ALGO), atomic transaction groups, and 3.3-second finality.
 
@@ -169,7 +169,7 @@ Client                  Resource Server           Facilitator           Algorand
   | 2. 402 + requirements    |                        |                    |
   |<-------------------------|                        |                    |
   | 3. Build + sign txn      |                        |                    |
-  | 4. GET + X-PAYMENT header|                        |                    |
+  | 4. GET + PAYMENT-SIGNATURE|                      |                    |
   |------------------------->| 5. verify(payload)     |                    |
   |                          |----------------------->| 6. simulate_group  |
   |                          |                        |------------------->|
@@ -188,7 +188,7 @@ Client                  Resource Server           Facilitator           Algorand
 1. Client makes `GET /api/data` — server returns `402` with `PaymentRequirements`
 2. `PaymentRequirements` contain: scheme (`exact`), network (CAIP-2), asset (ASA ID), amount (atomic units), payTo (Algorand address), extra (feePayer, decimals)
 3. Client builds a transaction group, signs its own transactions, encodes as base64
-4. Client retries with `X-PAYMENT` header containing `{ x402Version, scheme, network, payload: { paymentGroup, paymentIndex } }`
+4. Client retries with `PAYMENT-SIGNATURE` header containing `{ x402Version, scheme, network, payload: { paymentGroup, paymentIndex } }`
 5. Server forwards to facilitator — facilitator verifies, simulates, settles
 6. Server returns 200 with the protected resource
 
@@ -205,7 +205,7 @@ V1 legacy identifiers (`algorand-mainnet`, `algorand-testnet`) are still support
 
 ### X402 Components
 
-**Client** — Wraps HTTP clients (fetch/axios/httpx/requests) to automatically handle 402 responses. Builds Algorand transaction groups using `ClientAvmSigner`, signs them, encodes as `X-PAYMENT` header, and retries the request.
+**Client** — Wraps HTTP clients (fetch/axios/httpx/requests) to automatically handle 402 responses. Builds Algorand transaction groups using `ClientAvmSigner`, signs them, encodes as `PAYMENT-SIGNATURE` header, and retries the request.
 
 **Resource Server** — Middleware for Express/Hono/Next.js/FastAPI/Flask that intercepts requests to protected routes. Returns 402 with `PaymentRequirements` (scheme, network, payTo, price, asset) when no payment header is present. Forwards valid payments to facilitator for verification and settlement.
 

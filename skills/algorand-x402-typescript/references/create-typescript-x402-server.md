@@ -13,10 +13,10 @@ Before creating a payment-protected server:
 
 ## Core Workflow: Middleware-Based Payment Gating
 
-The server middleware intercepts requests to protected routes, checks for a valid `X-PAYMENT` header, and either returns 402 (pay first) or passes through to the route handler (payment verified).
+The server middleware intercepts requests to protected routes, checks for a valid `PAYMENT-SIGNATURE` header, and either returns 402 (pay first) or passes through to the route handler (payment verified).
 
 ```
-Request → Middleware checks X-PAYMENT header
+Request → Middleware checks PAYMENT-SIGNATURE header
   ├── No header → Return 402 with PaymentRequirements
   ├── Has header → Forward to facilitator
   │     ├── verify() fails → Return 402

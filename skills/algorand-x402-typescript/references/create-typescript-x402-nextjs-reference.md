@@ -339,7 +339,7 @@ The shared module creates and configures the `x402ResourceServer` once, and expo
 2. Set `PAY_TO` to a testnet address
 3. Fund the test client address with testnet ALGO and USDC (ASA 10458941)
 4. Use the [Algorand Dispenser](https://bank.testnet.algorand.network/) for testnet ALGO
-5. Test 402 responses by hitting protected routes without the `X-PAYMENT` header
+5. Test 402 responses by hitting protected routes without the `PAYMENT-SIGNATURE` header
 6. Test payment flow using `x402Client` from `@x402-avm/core/client`
 
 ## Key Considerations

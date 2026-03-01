@@ -43,7 +43,7 @@ registerExactAvmScheme(facilitator, { signer, networks: ALGORAND_TESTNET_CAIP2 }
 
 ### TypeScript algosdk Encoding
 
-TypeScript algosdk works with raw `Uint8Array` directly — no conversion needed. This matches the `@txnlab/use-wallet` ecosystem standard. Encoding/decoding to/from base64 happens only at protocol boundaries (X-PAYMENT header serialization).
+TypeScript algosdk works with raw `Uint8Array` directly — no conversion needed. This matches the `@txnlab/use-wallet` ecosystem standard. Encoding/decoding to/from base64 happens only at protocol boundaries (PAYMENT-SIGNATURE header serialization).
 
 ## Reference Guide
 

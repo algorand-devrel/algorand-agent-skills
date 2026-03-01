@@ -69,7 +69,7 @@ const client = new x402Client({
 2. Server responds with `402 Payment Required` + `PaymentRequired` body
 3. Client selects a matching `PaymentRequirements` (filtered by policies)
 4. Registered scheme creates and signs payment
-5. Client retries with `X-PAYMENT` header containing signed payload
+5. Client retries with `PAYMENT-SIGNATURE` header containing signed payload
 
 ## PaymentPolicy
 

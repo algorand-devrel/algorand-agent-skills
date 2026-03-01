@@ -30,7 +30,7 @@ Detailed API reference for the x402-avm Python package core components and AVM m
 | Export | Import | Description |
 |--------|--------|-------------|
 | `PaymentRequirements` | `from x402.schemas import PaymentRequirements` | V2 payment requirements structure |
-| `PaymentPayload` | `from x402.schemas import PaymentPayload` | Payment payload sent in X-PAYMENT header |
+| `PaymentPayload` | `from x402.schemas import PaymentPayload` | Payment payload sent in PAYMENT-SIGNATURE header |
 | `Network` | `from x402.schemas import Network` | Network identifier type (CAIP-2 string) |
 
 ---

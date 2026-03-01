@@ -34,7 +34,7 @@ ExactAvmScheme creates atomic transaction group
 ClientAvmSigner signs payment transaction
       |
       v
-Transport retries with X-PAYMENT header
+Transport retries with PAYMENT-SIGNATURE header
       |
       v
 Server verifies, settles, returns 200 + data

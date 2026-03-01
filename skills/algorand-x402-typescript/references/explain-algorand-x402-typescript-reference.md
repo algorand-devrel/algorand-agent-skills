@@ -16,7 +16,7 @@ The core package provides protocol-agnostic base classes and types.
 | `HTTPFacilitatorClient` | `@x402-avm/core/server` | HTTP client for communicating with a remote facilitator |
 | `x402Facilitator` | `@x402-avm/core/facilitator` | Base facilitator for verifying and settling payments |
 | `PaymentRequirements` | `@x402-avm/core/types` | Type: what payment a server accepts |
-| `PaymentPayload` | `@x402-avm/core/types` | Type: what the client sends in X-PAYMENT header |
+| `PaymentPayload` | `@x402-avm/core/types` | Type: what the client sends in PAYMENT-SIGNATURE header |
 | `PaymentRequired` | `@x402-avm/core/types` | Type: 402 response body |
 | `Network` | `@x402-avm/core/types` | Type: CAIP-2 network identifier string |
 | `PaymentPolicy` | `@x402-avm/core/client` | Type: filter function for payment requirements |
@@ -296,7 +296,7 @@ The SDK passes `Uint8Array` between all methods. This:
 - Matches `@txnlab/use-wallet`'s `signTransactions` signature
 - Avoids double-encoding/decoding
 - Keeps the protocol layer independent of `algosdk` types
-- Base64 encoding only happens at the HTTP boundary (X-PAYMENT header)
+- Base64 encoding only happens at the HTTP boundary (PAYMENT-SIGNATURE header)
 
 ### Why Unconditional Registration?
 

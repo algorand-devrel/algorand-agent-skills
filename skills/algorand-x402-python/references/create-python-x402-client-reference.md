@@ -69,7 +69,7 @@ The transport implementation that intercepts 402 responses and handles payments.
 1. Sends the original request via the underlying transport
 2. If response is 402, parses PaymentRequirements from headers/body
 3. Creates payment payload via the registered scheme
-4. Retries request with `X-PAYMENT` header
+4. Retries request with `PAYMENT-SIGNATURE` header
 5. If retry also returns 402, passes through as-is (no infinite loop)
 
 ## requests APIs
@@ -137,7 +137,7 @@ The adapter implementation that intercepts 402 responses and handles payments.
 1. Sends the original request via the standard HTTPAdapter
 2. If response is 402, parses PaymentRequirements from headers/body
 3. Creates payment payload synchronously via the registered scheme
-4. Clones request with `X-PAYMENT` header and `Payment-Retry: 1` marker
+4. Clones request with `PAYMENT-SIGNATURE` header and `Payment-Retry: 1` marker
 5. Retries request; if retry returns 402, passes through as-is
 
 ## ClientAvmSigner Implementation
