@@ -171,6 +171,7 @@ Packaged skills will be output to the `dist/` directory.
 - [Algorand Developer Portal](https://dev.algorand.co/)
 - [Puya TypeScript (PuyaTs)](https://github.com/algorandfoundation/puya-ts)
 - [Puya Python (PuyaPy)](https://github.com/algorandfoundation/puya)
+- [x402 Protocol on Algorand](https://x402.goplausible.xyz)
 - [OpenCode](https://opencode.ai)
 - [Claude Code](https://claude.ai/code)
 
