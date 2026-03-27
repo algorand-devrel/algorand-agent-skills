@@ -1,88 +1,74 @@
 ---
 name: algorand-typescript
-description: Syntax rules and patterns for Algorand TypeScript (PuyaTs) smart contracts. Use when writing TypeScript contract code, encountering Puya compiler errors, asking about AVM types or value semantics, needing guidance on storage patterns (GlobalState, BoxMap), or asking about clone(), arrays, or inner transactions. Strong triggers include "Puya compiler error", "How do I use uint64?", "What is clone() for?", "BoxMap not working", "AVM type error", "GlobalState not updating".
+description: Develops Algorand smart contracts in TypeScript using Algorand TypeScript (PuyaTs). Covers contract syntax, AVM types, storage patterns, transactions, ABI methods, testing, deployment, and AlgoKit Utils. Use when: (1) writing or modifying .algo.ts smart contracts, (2) using uint64, bytes, GlobalState, BoxMap, LocalState, itxn, gtxn in contracts, (3) testing contracts with algorandFixture/Vitest, (4) deploying or calling contracts with typed clients, (5) migrating from TEALScript or Algorand TypeScript beta, (6) troubleshooting Puya compiler errors or AVM transaction errors, (7) using AlgorandClient, AppFactory, or generated app clients in TypeScript.
 ---
 
-# Algorand TypeScript Rules
+# Algorand TypeScript
 
-Critical syntax rules for Algorand TypeScript (PuyaTs) that prevent compiler errors and runtime failures.
+Write, test, deploy, and troubleshoot Algorand TypeScript smart contracts.
 
-**File Extension**: Contract files must use `.algo.ts` extension (e.g., `Counter.algo.ts`).
+## Quick Start
 
-## Overview / Core Workflow
-
-1. Identify the syntax issue or pattern needed
-2. Apply the correct AVM-compatible pattern
-3. Use `clone()` for complex types
-4. Verify no union types or JavaScript `number`
-
-## How to proceed
-
-1. **Check the most critical rules below**
-2. **Consult detailed reference files** for specific topics
-3. **Apply the correct pattern** with proper AVM types
-4. **Build to verify**: `algokit project run build`
-
-## Important Rules / Guidelines
-
-### Numbers: No JavaScript `number`
-
-```typescript
-// CORRECT
-const amount: uint64 = Uint64(20)
-const total: uint64 = amount + Uint64(100)
-
-// INCORRECT - Compiler error
-const amount = 20
+```bash
+algokit init -n my-project -t typescript --answer preset_name production --defaults
+cd my-project
+algokit project run build    # Compile .algo.ts → ARC-56 + typed client
+algokit project run test     # Run Vitest tests
+algokit localnet start       # Start local network
+algokit project deploy localnet  # Deploy
 ```
 
-**Numeric limits**: Algorand TypeScript supports integers up to 2^512. Use `biguint` for values exceeding uint64 (2^64 - 1).
+## Critical Rules
 
-### Value Semantics: Always `clone()`
+- **File extension**: Contract files MUST use `.algo.ts`
+- **NEVER use `number`**: Use `uint64` and `Uint64()` for all numeric values in contracts
+- **Always `clone()` storage reads/writes**: `clone(this.box(k).value)` — see syntax-types.md decision table
+- **`fee: Uint64(0)` on all inner transactions**: Prevents app account drain; caller covers via fee pooling
+- **Fund app account before box operations**: Box storage requires MBR funding
+- **NEVER use PyTEAL, Beaker, or raw TEAL**: Only use Algorand TypeScript (PuyaTs)
+- **Always search docs first**: Use Kapa MCP or web search before writing contract code
+- **Always include tests**: Use `algorandFixture` for E2E integration tests
+- **Understand AVM constraints**: See `algorand-core` skill for the foundational mental model
 
-```typescript
-import { clone } from '@algorandfoundation/algorand-typescript'
+## Reference Guide
 
-const state = clone(this.appState.value)     // Read: clone
-const updated = clone(state)                  // Modify: clone
-this.appState.value = clone(updated)          // Write: clone
-```
+Read the specific reference file for your task. Each file is self-contained.
 
-### No Union Types
+### Contract Syntax
 
-```typescript
-// CORRECT - Use boolean flags
-let found = false
-let foundItem: Item = { /* defaults */ }
+- [syntax-types.md](./references/syntax-types.md) — AVM types (`uint64`, `bytes`, `bigint`), number rules, `clone()`, value semantics, union type workarounds, array rules
+- [syntax-storage.md](./references/syntax-storage.md) — `GlobalState`, `LocalState`, `BoxMap`, `Box`, MBR funding patterns, `@contract` decorator for dynamic keys, choosing storage types
+- [syntax-methods.md](./references/syntax-methods.md) — Method visibility (`public`/`private`), `@abimethod`/`@readonly` decorators, transaction-type parameters, lifecycle methods, `emit()` events, `assertMatch` with comparison operators
+- [syntax-transactions.md](./references/syntax-transactions.md) — `gtxn` typed access, ABI method transaction parameters, `itxn` inner transactions, `itxnCompose`/`itxn.submitGroup`, fee pooling, asset creation
 
-// INCORRECT - Compiler error
-let foundItem: Item | null = null
-```
+### Testing
 
-### Arrays: Clone Before Iterating
+- [testing.md](./references/testing.md) — E2E test examples (HelloWorld, BoxStorage, LocalStorage, StructInBox) + unit testing with `TestExecutionContext`
 
-```typescript
-// CORRECT
-for (const item of clone(array)) { }
-```
+### Deployment and Client Interaction
 
-## Common Variations / Edge Cases
+- [deploy-interaction.md](./references/deploy-interaction.md) — Factory deployment, typed client calls, `newGroup()` chaining, `.simulate()`, struct-as-tuple returns, box references, `populateAppCallResources`, `coverAppCallInnerTransactionFees`, amount helpers, `.addr.toString()` gotcha
 
-| Topic | Rule |
-|-------|------|
-| Numbers | Use `uint64` + `Uint64()`, never `number` |
-| Strings | No `.length`; use `text !== ''` for empty check |
-| Storage | Clone on read AND write for complex types |
-| Arrays | Clone before iterating; indices must be `uint64` |
-| Classes | No class properties; use module-level constants |
-| Methods | Public = ABI method; private = subroutine |
+### Migration
 
-## References / Further Reading
+- [migration-from-tealscript.md](./references/migration-from-tealscript.md) — TEALScript → Algorand TypeScript 1.0 migration with 13 changes
+- [migration-from-beta.md](./references/migration-from-beta.md) — Beta → 1.0 migration with 13 breaking changes
 
-Detailed rules by topic:
+### Troubleshooting
 
-- [Types and Values](./references/types-and-values.md) — AVM types, numbers, clone(), value semantics
-- [Storage](./references/storage.md) — GlobalState, LocalState, BoxMap, MBR funding
-- [Methods and ABI](./references/methods-and-abi.md) — Decorators, lifecycle methods, visibility
-- [Transactions](./references/transactions.md) — Group transactions (gtxn), inner transactions (itxn)
-- [Full Reference Index](./references/REFERENCE.md)
+- [errors.md](./references/errors.md) — Contract errors (assert, opcode budget, box MBR, inner txn) + transaction errors (overspend, asset not opted in, account not found)
+
+## Canonical Example Repos
+
+Search these repositories for real-world code examples:
+
+- **`algorandfoundation/devportal-code-examples`** — Primary examples in `projects/typescript-examples/contracts/` (HelloWorld, BoxStorage, LocalStorage, StructInBox, etc.)
+- **`algorandfoundation/puya-ts`** — Compiler examples in `examples/` (hello_world_arc4, voting, amm)
+- **`algorandfoundation/algokit-typescript-template`** — AlgoKit project template
+- **`algorandfoundation/algokit-utils-ts`** — AlgoKit Utils TypeScript SDK
+
+## Cross-References
+
+- **New to Algorand?** Read `algorand-core` skill first for AVM mental model
+- **Project scaffolding and CLI**: See `algorand-project-setup` skill
+- **React frontends**: See `algorand-frontend` skill

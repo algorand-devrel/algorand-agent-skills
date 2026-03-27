@@ -1,11 +1,11 @@
 ---
 name: algorand-x402-typescript
-description: Comprehensive guide for building x402 HTTP-native payment applications on Algorand using TypeScript. This is the parent skill that aggregates all TypeScript x402 sub-skills. Use when working with x402 payments in TypeScript/JavaScript, building clients, servers, facilitators, paywalls, or Next.js apps with Algorand x402, or when explaining x402 concepts to TypeScript developers. Strong triggers include "x402 TypeScript", "x402 Algorand TypeScript", "@x402-avm", "payment protocol TypeScript", "402 payment TypeScript", "x402 client fetch axios", "x402 server express hono", "x402 facilitator TypeScript", "x402 paywall", "x402 Next.js", "x402 core avm TypeScript", "explain x402 TypeScript", "teach x402".
+description: Builds x402 HTTP-native payment applications on Algorand using TypeScript. Covers clients (fetch, axios), servers (Express, Hono), facilitators, paywalls, Next.js integration, and the @x402-avm core library. Use when implementing x402 payment flows in TypeScript, creating payment-gated APIs, building x402 facilitators or paywalls, or integrating @x402-avm packages.
 ---
 
 # x402 on Algorand - TypeScript
 
-This is the aggregated parent skill for all x402 HTTP-native payment protocol skills targeting TypeScript/JavaScript. Use the reference files below to find detailed guidance for each component.
+Build x402 HTTP-native payment applications on Algorand with TypeScript. Use the reference files below for detailed guidance on each component.
 
 ## TypeScript Quick Start
 

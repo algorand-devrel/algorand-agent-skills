@@ -86,7 +86,7 @@ For full MCP support, consider using OpenCode (recommended) or Claude Code.
 ### Skills not being referenced
 - Ensure `skills/` directory is in your project root
 - Ensure `AGENTS.md` is in your project root
-- Try explicitly mentioning "use the build-smart-contracts skill"
+- Try explicitly mentioning "use the algorand-typescript skill"
 
 ## Resources
 

@@ -1,11 +1,11 @@
 ---
 name: algorand-x402-python
-description: Comprehensive guide for building x402 HTTP-native payment applications on Algorand using Python. This is the parent skill that aggregates all Python x402 sub-skills. Use when working with x402 payments in Python, building clients, servers, facilitators, or Bazaar discovery with Algorand x402, or when explaining x402 concepts to Python developers. Strong triggers include "x402 Python", "x402 Algorand Python", "x402-avm Python", "payment protocol Python", "402 payment Python", "x402 client httpx requests", "x402 server FastAPI Flask", "x402 facilitator Python", "x402 Bazaar discovery", "x402 core avm Python", "explain x402 Python", "teach x402".
+description: Builds x402 HTTP-native payment applications on Algorand using Python. Covers clients (httpx, requests), servers (FastAPI, Flask), facilitators, Bazaar discovery, and the x402-avm core library. Use when implementing x402 payment flows in Python, creating payment-gated APIs, building x402 facilitators, or integrating x402-avm packages.
 ---
 
 # x402 on Algorand - Python
 
-This is the aggregated parent skill for all x402 HTTP-native payment protocol skills targeting Python. Use the reference files below to find detailed guidance for each component.
+Build x402 HTTP-native payment applications on Algorand with Python. Use the reference files below for detailed guidance on each component.
 
 ## Python Quick Start
 

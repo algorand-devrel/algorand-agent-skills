@@ -16,7 +16,7 @@ You want to build a simple voting contract where:
 
 **You say:** "Create a new AlgoKit project called voting-app"
 
-**Skills activated:** `create-project`
+**Skills activated:** `algorand-project-setup`
 
 **What happens:**
 
@@ -42,7 +42,7 @@ You want to build a simple voting contract where:
 
 **You say:** "Show me an example voting contract from the official repos"
 
-**Skills activated:** `search-algorand-examples`
+**Skills activated:** `algorand-project-setup`
 
 **What happens:**
 
@@ -55,11 +55,11 @@ You want to build a simple voting contract where:
 
 **You say:** "Create a voting contract based on those patterns"
 
-**Skills activated:** `build-smart-contracts`, `algorand-typescript`
+**Skills activated:** `algorand-typescript`
 
 **What happens:**
 
-1. Agent follows the `build-smart-contracts` workflow:
+1. Agent follows the `algorand-typescript` build workflow:
    - Uses docs and examples gathered earlier
    - Generates Algorand TypeScript contract code
    - Includes proper AVM types (`uint64`, not `number`)
@@ -107,12 +107,13 @@ export class VotingContract extends Contract {
 
 **You say:** "Add tests for the voting contract"
 
-**Skills activated:** `test-smart-contracts`
+**Skills activated:** `algorand-typescript`
 
 **What happens:**
 
-1. Agent creates test file using generated client
-2. Includes tests for:
+1. Agent reads test reference files from `algorand-typescript`
+2. Creates test file using generated client
+3. Includes tests for:
    - Creating proposals (admin only)
    - Voting on proposals
    - Reading vote counts
@@ -122,7 +123,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Build and run the tests"
 
-**Skills activated:** `use-algokit-cli`
+**Skills activated:** `algorand-project-setup`
 
 **What happens:**
 
@@ -134,7 +135,7 @@ export class VotingContract extends Contract {
 
 **You say:** "Deploy the contract to localnet"
 
-**Skills activated:** `call-smart-contracts`, `managing-networks`
+**Skills activated:** `algorand-typescript`
 
 **What happens:**
 
@@ -146,11 +147,11 @@ export class VotingContract extends Contract {
 
 **You say:** "Create a proposal called 'Upgrade v2' and cast a vote"
 
-**Skills activated:** `call-smart-contracts`
+**Skills activated:** `algorand-typescript`
 
 **What happens:**
 
-1. Agent uses MCP tools to interact:
+1. Agent uses deployment references to interact:
    ```
    call_contract(appId: 1234, methodSignature: "createProposal(string)void", args: ["Upgrade v2"])
    call_contract(appId: 1234, methodSignature: "vote(string)void", args: ["Upgrade v2"])
@@ -162,16 +163,16 @@ export class VotingContract extends Contract {
 
 ## Skills Used in This Workflow
 
-| Step          | Skills                                                  | MCP Tools                                 |
-| ------------- | ------------------------------------------------------- | ----------------------------------------- |
-| 1. Initialize | `create-project`                                        | -                                         |
-| 2. Research   | -                                                       | `kapa_search_algorand_knowledge_sources` |
-| 3. Examples   | `search-algorand-examples`                           | `github_get_file_contents`                |
-| 4. Build      | `build-smart-contracts`, `algorand-typescript` | -                                         |
-| 5. Test       | `test-smart-contracts`                               | -                                         |
-| 6. Build/Test | `use-algokit-cli`                                      | -                                         |
-| 7. Deploy     | `call-smart-contracts`, `managing-networks`          | -                                         |
-| 8. Interact   | `call-smart-contracts`                               | `call_contract`                           |
+| Step          | Skills                    | MCP Tools                                |
+| ------------- | ------------------------- | ---------------------------------------- |
+| 1. Initialize | `algorand-project-setup`  | -                                        |
+| 2. Research   | -                         | `kapa_search_algorand_knowledge_sources` |
+| 3. Examples   | `algorand-project-setup`  | `github_get_file_contents`               |
+| 4. Build      | `algorand-typescript`     | -                                        |
+| 5. Test       | `algorand-typescript`     | -                                        |
+| 6. Build/Test | `algorand-project-setup`  | -                                        |
+| 7. Deploy     | `algorand-typescript`     | -                                        |
+| 8. Interact   | `algorand-typescript`     | -                                        |
 
 ## Key Takeaways
 
