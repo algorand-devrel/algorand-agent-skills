@@ -74,6 +74,8 @@ Skills teach AI assistants how to complete Algorand-specific tasks. Each skill h
 | `algorand-typescript`        | Full TypeScript lifecycle — PuyaTs syntax, testing, deployment, utils, ARC standards, errors |
 | `algorand-python`            | Full Python lifecycle — PuyaPy syntax, testing, deployment, utils, ARC standards, errors |
 | `algorand-frontend`          | React dApp frontends with wallet integration              |
+| `algokit-subscriber-py`      | AlgoKit Subscriber Python — transaction subscription, filters, balance changes, ARC-28 events, sync behaviours |
+| `algokit-subscriber-ts`      | AlgoKit Subscriber TypeScript — transaction subscription, filters, balance changes, ARC-28 events, sync behaviours |
 
 **x402 Skills** ([contributed by GoPlausible](https://goplausible.com)):
 
