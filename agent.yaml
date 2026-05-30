@@ -1,0 +1,40 @@
+spec_version: "0.1.0"
+name: algorand-agent-skills
+version: 1.0.0
+description: >
+  A canonical collection of agent skills and configurations for AI-assisted
+  Algorand blockchain development. Equips AI coding assistants (Claude Code,
+  OpenCode, Cursor, GitHub Copilot) with deep knowledge of Algorand smart
+  contracts, AVM constraints, AlgoKit tooling, TypeScript/Python lifecycle
+  patterns, React dApp frontends with wallet integration, and x402 HTTP-native
+  payment flows. Skills follow a progressive-disclosure model — agents load only
+  the specific reference files they need, keeping context lean and accurate.
+author: algorand-devrel
+license: MIT
+
+model:
+  preferred: anthropic:claude-sonnet-4-6
+  constraints:
+    temperature: 0.3
+
+skills:
+  - algorand-core
+  - algorand-project-setup
+  - algorand-typescript
+  - algorand-python
+  - algorand-frontend
+  - algokit-utils-ts
+  - algokit-utils-py
+  - algorand-x402-typescript
+  - algorand-x402-python
+
+runtime:
+  max_turns: 80
+
+compliance:
+  risk_tier: standard
+  supervision:
+    human_in_the_loop: destructive
+    kill_switch: true
+  data_governance:
+    pii_handling: redact
