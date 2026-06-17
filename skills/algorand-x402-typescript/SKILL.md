@@ -1,6 +1,6 @@
 ---
 name: algorand-x402-typescript
-description: Builds x402 HTTP-native payment applications on Algorand using TypeScript. Covers clients (fetch, axios), servers (Express, Hono), facilitators, paywalls, Next.js integration, and the @x402-avm core library. Use when implementing x402 payment flows in TypeScript, creating payment-gated APIs, building x402 facilitators or paywalls, or integrating @x402-avm packages.
+description: Builds x402 HTTP-native payment applications on Algorand using TypeScript. Covers clients (fetch, axios), servers (Express, Hono), facilitators, paywalls, Next.js integration, and the @x402/core library. Use when implementing x402 payment flows in TypeScript, creating payment-gated APIs, building x402 facilitators or paywalls, or integrating @x402/* packages.
 ---
 
 # x402 on Algorand - TypeScript
@@ -11,16 +11,16 @@ Build x402 HTTP-native payment applications on Algorand with TypeScript. Use the
 
 ```bash
 # Core + AVM mechanism
-npm install @x402-avm/core @x402-avm/avm algosdk
+npm install @x402/core @x402/avm
 
 # Server middleware (pick one)
-npm install @x402-avm/express    # Express.js
-npm install @x402-avm/hono       # Hono
-npm install @x402-avm/next       # Next.js
+npm install @x402/express    # Express.js
+npm install @x402/hono       # Hono
+npm install @x402/next       # Next.js
 
-# Client (pick one)
-npm install @x402-avm/fetch      # Fetch API
-npm install @x402-avm/axios      # Axios
+# HTTP clients (pick one)
+npm install @x402/fetch      # Fetch API
+npm install @x402/axios      # Axios
 ```
 
 ### Register AVM Scheme
@@ -29,16 +29,19 @@ Every component registers the AVM exact scheme unconditionally — no environmen
 
 ```typescript
 // Client
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-registerExactAvmScheme(client, { signer });
+import { ExactAvmClient } from "@x402/avm/exact/client";
+const client = new x402Client()
+  .register("algorand:*", new ExactAvmClient(signer));
 
 // Server
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-registerExactAvmScheme(server);
+import { ExactAvmServer } from "@x402/avm/exact/server";
+const server = new x402ResourceServer()
+  .register("algorand:*", new ExactAvmServer());
 
 // Facilitator
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-registerExactAvmScheme(facilitator, { signer, networks: ALGORAND_TESTNET_CAIP2 });
+import { ExactAvmFacilitator } from "@x402/avm/exact/facilitator";
+const facilitator = new x402Facilitator()
+  .register("algorand:*", new ExactAvmFacilitator(signer));
 ```
 
 ### TypeScript algosdk Encoding
@@ -54,15 +57,15 @@ Navigate to the appropriate reference based on your task. Each topic has three f
 
 ### Explaining x402 for TypeScript
 
-Understand @x402-avm/* TypeScript package structure, signer interfaces (ClientAvmSigner, FacilitatorAvmSigner), registration patterns, builder patterns, constants, and utilities.
+Understand @x402/* TypeScript package structure, signer interfaces (ClientAvmSigner, FacilitatorAvmSigner), registration patterns, builder patterns, constants, and utilities.
 
 - [explain-algorand-x402-typescript.md](./references/explain-algorand-x402-typescript.md) — Package ecosystem explanation
-- [explain-algorand-x402-typescript-reference.md](./references/explain-algorand-x402-typescript-reference.md) — API reference for @x402-avm/* packages
+- [explain-algorand-x402-typescript-reference.md](./references/explain-algorand-x402-typescript-reference.md) — API reference for @x402/* packages
 - [explain-algorand-x402-typescript-examples.md](./references/explain-algorand-x402-typescript-examples.md) — TypeScript pattern examples
 
 ### Building Clients
 
-Build HTTP clients with Fetch or Axios that automatically handle 402 payments. Covers wrapFetchWithPayment, wrapAxiosWithPayment, ClientAvmSigner for browser wallets or Node.js private keys.
+Build HTTP clients with @x402/fetch or @x402/axios that automatically handle 402 payments. Covers wrapFetchWithPayment, wrapAxiosWithPayment, ClientAvmSigner for browser wallets or Node.js private keys.
 
 - [create-typescript-x402-client.md](./references/create-typescript-x402-client.md) — Client creation guide
 - [create-typescript-x402-client-reference.md](./references/create-typescript-x402-client-reference.md) — Fetch/Axios API reference
@@ -70,7 +73,7 @@ Build HTTP clients with Fetch or Axios that automatically handle 402 payments. C
 
 ### Building Servers
 
-Build payment-protected servers with Express.js or Hono middleware. Covers route pricing, multi-network support (AVM+EVM+SVM), 402 responses, and dynamic pricing.
+Build payment-protected servers with @x402/express or @x402/hono middleware. Covers route pricing, multi-network support (AVM+EVM+SVM), 402 responses, and dynamic pricing.
 
 - [create-typescript-x402-server.md](./references/create-typescript-x402-server.md) — Server creation guide
 - [create-typescript-x402-server-reference.md](./references/create-typescript-x402-server-reference.md) — Express/Hono middleware API reference
@@ -78,7 +81,7 @@ Build payment-protected servers with Express.js or Hono middleware. Covers route
 
 ### Building Next.js Apps
 
-Build fullstack Next.js apps with x402 payment protection using paymentProxy and withX402. Covers App Router integration, middleware-level protection, and per-endpoint control.
+Build fullstack Next.js apps with @x402/next payment protection using paymentProxy and withX402. Covers App Router integration, middleware-level protection, and per-endpoint control.
 
 - [create-typescript-x402-nextjs.md](./references/create-typescript-x402-nextjs.md) — Next.js integration guide
 - [create-typescript-x402-nextjs-reference.md](./references/create-typescript-x402-nextjs-reference.md) — Next.js API reference
@@ -86,7 +89,7 @@ Build fullstack Next.js apps with x402 payment protection using paymentProxy and
 
 ### Building Facilitators and Bazaar Discovery
 
-Build facilitator services that verify and settle Algorand payments on-chain. Covers FacilitatorAvmSigner, Express.js facilitator servers, and Bazaar discovery extension for API cataloging (bazaarResourceServerExtension, withBazaar, declare_discovery_extension on servers).
+Build facilitator services that verify and settle Algorand payments on-chain with @x402/avm. Covers FacilitatorAvmSigner, Express.js facilitator servers, and Bazaar discovery extension for API cataloging (bazaarResourceServerExtension, withBazaar, declare_discovery_extension on servers).
 
 - [create-typescript-x402-facilitator.md](./references/create-typescript-x402-facilitator.md) — Facilitator creation guide (includes Bazaar setup in Step 5)
 - [create-typescript-x402-facilitator-reference.md](./references/create-typescript-x402-facilitator-reference.md) — Facilitator + Bazaar API reference
@@ -94,7 +97,7 @@ Build facilitator services that verify and settle Algorand payments on-chain. Co
 
 ### Building Paywalls
 
-Build browser paywall UIs with server-side middleware and client-side wallet integration (Pera, Defly, Lute). Covers PaywallBuilder, avmPaywall, multi-network paywalls.
+Build browser paywall UIs with server-side middleware and client-side wallet integration (Pera, Defly, Lute) using @x402/avm. Covers PaywallBuilder, avmPaywall, multi-network paywalls.
 
 - [create-typescript-x402-paywall.md](./references/create-typescript-x402-paywall.md) — Paywall creation guide
 - [create-typescript-x402-paywall-reference.md](./references/create-typescript-x402-paywall-reference.md) — Paywall API reference
@@ -102,7 +105,7 @@ Build browser paywall UIs with server-side middleware and client-side wallet int
 
 ### Low-Level SDK Usage
 
-Use @x402-avm/core and @x402-avm/avm packages directly for custom integrations. Covers payment policies, AVM signer interfaces, transaction groups, fee abstraction, and low-level primitives.
+Use @x402/core and @x402/avm packages directly for custom integrations. Covers payment policies, AVM signer interfaces, transaction groups, fee abstraction, and low-level primitives.
 
 - [use-typescript-x402-core-avm.md](./references/use-typescript-x402-core-avm.md) — Core SDK usage guide
 - [use-typescript-x402-core-avm-reference.md](./references/use-typescript-x402-core-avm-reference.md) — Core/AVM API reference
@@ -112,14 +115,13 @@ Use @x402-avm/core and @x402-avm/avm packages directly for custom integrations. 
 
 | Package | Purpose |
 | ------- | ------- |
-| `@x402-avm/fetch` | Wrap fetch with automatic 402 payment handling |
-| `@x402-avm/axios` | Wrap axios with automatic 402 payment handling |
-| `@x402-avm/express` | Express.js payment middleware |
-| `@x402-avm/hono` | Hono payment middleware |
-| `@x402-avm/next` | Next.js payment middleware and route wrappers |
-| `@x402-avm/paywall` | Browser paywall UI components |
-| `@x402-avm/core` | Core protocol primitives (client, server, facilitator) |
-| `@x402-avm/avm` | AVM mechanism (signers, transaction builders, constants) |
+| `@x402/core` | Core protocol types and client/server/facilitator implementations |
+| `@x402/avm` | Algorand Virtual Machine implementation with signers and transaction builders |
+| `@x402/fetch` | HTTP Fetch wrapper with automatic 402 payment handling |
+| `@x402/axios` | Axios wrapper with automatic 402 payment handling |
+| `@x402/express` | Express.js payment middleware |
+| `@x402/hono` | Hono payment middleware |
+| `@x402/next` | Next.js payment middleware and route wrappers |
 
 ## How to Use This Skill
 
