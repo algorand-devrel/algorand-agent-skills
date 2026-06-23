@@ -1,16 +1,16 @@
 # x402 Paywall Reference
 
-Detailed API reference for `@x402-avm/paywall` and framework middleware packages.
+Detailed API reference for `@x402/paywall` and framework middleware packages.
 
-## Package: @x402-avm/paywall
+## Package: @x402/paywall
 
 ### Installation
 
 ```bash
-npm install @x402-avm/paywall @x402-avm/avm @x402-avm/core
+npm install @x402/paywall @x402/avm @x402/core
 ```
 
-### Exports from @x402-avm/paywall
+### Exports from @x402/paywall
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -25,7 +25,7 @@ npm install @x402-avm/paywall @x402-avm/avm @x402-avm/core
 | `PaymentRequired` | Type | 402 response structure |
 | `PaymentRequirements` | Type | Individual payment requirement |
 
-### Exports from @x402-avm/paywall/avm
+### Exports from @x402/paywall/avm
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -164,7 +164,7 @@ window.x402 = {
 
 ## Framework Middleware
 
-### @x402-avm/express
+### @x402/express
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
@@ -174,7 +174,7 @@ window.x402 = {
 | `x402ResourceServer` | Class | Resource server for facilitator communication |
 | `x402HTTPResourceServer` | Class | HTTP-aware resource server with route config |
 
-### @x402-avm/hono
+### @x402/hono
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
@@ -183,7 +183,7 @@ window.x402 = {
 | `paymentMiddlewareFromConfig` | `(routes, facilitator?, schemes?, config?, paywall?)` | Hono middleware from config |
 | `x402ResourceServer` | Class | Resource server for facilitator communication |
 
-### @x402-avm/next
+### @x402/next
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
@@ -233,13 +233,13 @@ The paywall system is designed for tree-shaking. Import only the network handler
 
 ```typescript
 // AVM only -- smallest bundle
-import { avmPaywall } from "@x402-avm/paywall/avm";
+import { avmPaywall } from "@x402/paywall/avm";
 
 // AVM + EVM
-import { avmPaywall, evmPaywall } from "@x402-avm/paywall";
+import { avmPaywall, evmPaywall } from "@x402/paywall";
 
 // All networks
-import { avmPaywall, evmPaywall, svmPaywall } from "@x402-avm/paywall";
+import { avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 ```
 
 ---
@@ -258,7 +258,7 @@ import { avmPaywall, evmPaywall, svmPaywall } from "@x402-avm/paywall";
 ### Testing the Paywall HTML Generation
 
 ```typescript
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)

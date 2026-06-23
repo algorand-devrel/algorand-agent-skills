@@ -60,7 +60,7 @@ pip install "x402-avm[fastapi,avm]"
 pip install "x402-avm[flask,avm]"
 pip install "x402-avm[httpx,avm]"
 pip install "x402-avm[requests,avm]"
-pip install "x402-avm[all]"
+pip install "x402-avm[avm,httpx,requests]"
 ```
 
 ## Async vs Sync Component Table

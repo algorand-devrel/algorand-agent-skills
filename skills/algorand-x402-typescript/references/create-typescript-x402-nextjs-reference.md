@@ -1,4 +1,4 @@
-# @x402-avm/next Reference
+# @x402/next Reference
 
 Detailed API reference for the x402-avm Next.js integration package.
 
@@ -7,9 +7,9 @@ Detailed API reference for the x402-avm Next.js integration package.
 ```json
 {
   "dependencies": {
-    "@x402-avm/next": "latest",
-    "@x402-avm/core": "latest",
-    "@x402-avm/avm": "latest",
+    "@x402/next": "latest",
+    "@x402/core": "latest",
+    "@x402/avm": "latest",
     "next": ">=14.0.0"
   }
 }
@@ -20,12 +20,12 @@ For paywall UI:
 ```json
 {
   "dependencies": {
-    "@x402-avm/paywall": "latest"
+    "@x402/paywall": "latest"
   }
 }
 ```
 
-## Package Exports: @x402-avm/next
+## Package Exports: @x402/next
 
 | Export | Description |
 |--------|-------------|
@@ -34,8 +34,8 @@ For paywall UI:
 | `paymentProxyFromHTTPServer` | Create proxy from an `x402HTTPResourceServer` |
 | `withX402` | Wrap a route handler with payment protection |
 | `withX402FromHTTPServer` | Wrap a route handler using an `x402HTTPResourceServer` |
-| `x402ResourceServer` | Re-export from `@x402-avm/core/server` |
-| `x402HTTPResourceServer` | Re-export from `@x402-avm/core/server` |
+| `x402ResourceServer` | Re-export from `@x402/core/server` |
+| `x402HTTPResourceServer` | Re-export from `@x402/core/server` |
 
 ## paymentProxyFromConfig
 
@@ -340,7 +340,7 @@ The shared module creates and configures the `x402ResourceServer` once, and expo
 3. Fund the test client address with testnet ALGO and USDC (ASA 10458941)
 4. Use the [Algorand Dispenser](https://bank.testnet.algorand.network/) for testnet ALGO
 5. Test 402 responses by hitting protected routes without the `PAYMENT-SIGNATURE` header
-6. Test payment flow using `x402Client` from `@x402-avm/core/client`
+6. Test payment flow using `x402Client` from `@x402/core/client`
 
 ## Key Considerations
 
@@ -357,4 +357,4 @@ The shared module creates and configures the `x402ResourceServer` once, and expo
 - [x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)
 - [Next.js Middleware Documentation](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 - [Next.js App Router](https://nextjs.org/docs/app/building-your-application/routing)
-- [@x402-avm/core Reference](./use-typescript-x402-core-avm-reference.md)
+- [@x402/core Reference](./use-typescript-x402-core-avm-reference.md)

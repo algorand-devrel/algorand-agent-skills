@@ -30,24 +30,24 @@ Request → Middleware checks PAYMENT-SIGNATURE header
 
 **Express.js:**
 ```bash
-npm install @x402-avm/express @x402-avm/avm @x402-avm/core express
+npm install @x402/express @x402/avm @x402/core express
 npm install -D @types/express typescript
 ```
 
 **Hono:**
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono
+npm install @x402/hono @x402/avm @x402/core hono
 npm install -D typescript
 ```
 
 **Hono with Node.js server:**
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono @hono/node-server
+npm install @x402/hono @x402/avm @x402/core hono @hono/node-server
 ```
 
 **With paywall UI (optional):**
 ```bash
-npm install @x402-avm/paywall
+npm install @x402/paywall
 ```
 
 ### Step 2: Choose a Middleware Variant
@@ -65,7 +65,7 @@ There are three middleware variants, from simplest to most configurable:
 Routes map HTTP method + path patterns to payment configuration:
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /api/weather": {
@@ -93,9 +93,9 @@ const routes = {
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const app = express();
 
@@ -103,7 +103,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
   url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 app.use(paymentMiddleware(routes, server));
 
@@ -118,9 +118,9 @@ app.listen(4021);
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const app = new Hono();
 
@@ -128,7 +128,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
   url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 app.use(paymentMiddleware(routes, server));
 
@@ -145,9 +145,9 @@ If you need your own facilitator instead of the public one:
 
 ```typescript
 import express from "express";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import algosdk from "algosdk";
 
 const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
@@ -158,7 +158,7 @@ const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud"
 const signer = { /* ... see EXAMPLES.md for full implementation ... */ };
 
 const facilitator = new x402Facilitator();
-registerExactAvmScheme(facilitator, { signer, networks: ALGORAND_TESTNET_CAIP2 });
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 
 const app = express();
 app.use(express.json());
@@ -185,7 +185,7 @@ FACILITATOR_PORT=4020
 
 ## Important Rules / Guidelines
 
-1. **Register AVM scheme unconditionally** -- always call `registerExactAvmScheme(server)` without environment variable guards
+1. **Register AVM scheme unconditionally** -- always call `server.register("algorand:*", new ExactAvmScheme())` without environment variable guards
 2. **Public routes are unaffected** -- only routes listed in the `routes` config object are protected
 3. **Route patterns support wildcards** -- `"GET /api/premium/*"` matches all sub-paths
 4. **Method prefix is optional** -- `"/api/resource"` matches all HTTP methods
@@ -198,9 +198,9 @@ FACILITATOR_PORT=4020
 | Error | Cause | Solution |
 |-------|-------|----------|
 | All routes return 402 | Route patterns too broad | Check route patterns match intended paths |
-| 402 but no `accepts` array | AVM scheme not registered on server | Call `registerExactAvmScheme(server)` |
+| 402 but no `accepts` array | AVM scheme not registered on server | Call `server.register("algorand:*", new ExactAvmScheme())` |
 | Facilitator unreachable | Wrong URL or facilitator not running | Check `FACILITATOR_URL` and facilitator status |
-| `paymentMiddleware is not a function` | Wrong import | Import from `@x402-avm/express` or `@x402-avm/hono` |
+| `paymentMiddleware is not a function` | Wrong import | Import from `@x402/express` or `@x402/hono` |
 | CORS errors in browser | Missing CORS middleware | Add `cors()` middleware before payment middleware |
 | Paywall not showing | Missing `mimeType: "text/html"` | Set `mimeType` in route config for browser routes |
 | Dynamic price error | Price function throws | Ensure price function handles all edge cases |
@@ -210,7 +210,7 @@ FACILITATOR_PORT=4020
 
 - [create-typescript-x402-server-reference.md](./create-typescript-x402-server-reference.md) - Detailed middleware API reference
 - [create-typescript-x402-server-examples.md](./create-typescript-x402-server-examples.md) - Complete server code examples
-- [@x402-avm/express on npm](https://www.npmjs.com/package/@x402-avm/express)
-- [@x402-avm/hono on npm](https://www.npmjs.com/package/@x402-avm/hono)
+- [@x402/express on npm](https://www.npmjs.com/package/@x402/express)
+- [@x402/hono on npm](https://www.npmjs.com/package/@x402/hono)
 - [GoPlausible x402-avm Examples](https://github.com/GoPlausible/x402-avm/tree/branch-v2-algorand-publish/examples/)
 - [GoPlausible x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)

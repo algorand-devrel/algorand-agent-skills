@@ -35,8 +35,8 @@ x402-avm Core                          AVM Mechanism
 pip install "x402-avm[avm]"
 
 # With a web framework
-pip install "x402-avm[avm,fastapi]"
-pip install "x402-avm[avm,flask]"
+pip install "x402-avm[fastapi,avm]"
+pip install "x402-avm[flask,avm]"
 ```
 
 ### Step 2: Understand the Signer Protocols

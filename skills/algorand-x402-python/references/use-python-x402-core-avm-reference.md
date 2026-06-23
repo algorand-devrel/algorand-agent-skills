@@ -260,11 +260,11 @@ Step 6: Both execute atomically (all-or-nothing)
 pip install "x402-avm[avm]"
 
 # With web framework
-pip install "x402-avm[avm,fastapi]"
-pip install "x402-avm[avm,flask]"
+pip install "x402-avm[fastapi,avm]"
+pip install "x402-avm[flask,avm]"
 
 # Multi-chain
-pip install "x402-avm[all]"
+pip install "x402-avm[avm,httpx,requests]"
 ```
 
 ---

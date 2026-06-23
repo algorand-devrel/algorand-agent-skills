@@ -7,7 +7,7 @@ Build FastAPI-based facilitator services that verify and settle x402 payments on
 Before using this skill, ensure:
 
 1. **Python 3.10+** is installed
-2. **x402-avm package** is available: `pip install "x402-avm[avm,fastapi]"`
+2. **x402-avm package** is available: `pip install "x402-avm[fastapi,avm]"`
 3. **Algorand private key** is available as a Base64-encoded 64-byte key (32-byte seed + 32-byte pubkey) in `AVM_PRIVATE_KEY` environment variable
 4. **Algod node access** via AlgoNode (default) or custom node via `ALGOD_SERVER` / `ALGOD_TOKEN`
 
@@ -36,7 +36,7 @@ Resource Server              Facilitator                   Blockchain
 ### Step 1: Install Dependencies
 
 ```bash
-pip install "x402-avm[avm,fastapi]"
+pip install "x402-avm[fastapi,avm]"
 ```
 
 This installs `py-algorand-sdk` (algosdk), FastAPI, uvicorn, and the x402-avm SDK.

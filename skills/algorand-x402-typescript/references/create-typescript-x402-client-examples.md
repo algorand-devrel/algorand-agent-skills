@@ -3,8 +3,8 @@
 ## Quick Start (Fetch)
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import algosdk from "algosdk";
 
 const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
@@ -22,7 +22,7 @@ const signer = {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 const response = await fetchWithPay("https://api.example.com/premium-data");
@@ -36,8 +36,8 @@ console.log(data);
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import algosdk from "algosdk";
 
 const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
@@ -55,7 +55,7 @@ const signer = {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const api = wrapAxiosWithPayment(axios.create(), client);
 const response = await api.get("https://api.example.com/premium-data");
@@ -67,11 +67,11 @@ console.log(response.data);
 ## Basic Fetch Usage
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
@@ -94,11 +94,11 @@ console.log(await postResponse.json());
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const api = wrapAxiosWithPayment(axios.create({
   baseURL: "https://api.example.com",
@@ -131,11 +131,11 @@ console.log(putResult.data);
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 wrapAxiosWithPayment(axios, client);
 
@@ -150,8 +150,8 @@ const response = await axios.get("https://api.example.com/paid");
 import {
   wrapFetchWithPaymentFromConfig,
   type x402ClientConfig,
-} from "@x402-avm/fetch";
-import { ExactAvmScheme } from "@x402-avm/avm";
+} from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
@@ -178,8 +178,8 @@ import axios from "axios";
 import {
   wrapAxiosWithPaymentFromConfig,
   type x402ClientConfig,
-} from "@x402-avm/axios";
-import { ExactAvmScheme } from "@x402-avm/avm";
+} from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
@@ -219,7 +219,7 @@ const config: x402ClientConfig = {
 
 ```typescript
 import algosdk from "algosdk";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function createNodeSigner(privateKeyBase64: string): ClientAvmSigner {
   const secretKey = Buffer.from(privateKeyBase64, "base64");
@@ -253,7 +253,7 @@ console.log("Signer address:", signer.address);
 
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function useAvmSigner(): ClientAvmSigner | null {
   const { activeAccount, signTransactions } = useWallet();
@@ -279,9 +279,9 @@ function useAvmSigner(): ClientAvmSigner | null {
 
 ```typescript
 import { PeraWalletConnect } from "@perawallet/connect";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 const peraWallet = new PeraWalletConnect();
 
@@ -306,7 +306,7 @@ async function setupPaymentFetch(): Promise<typeof fetch> {
   };
 
   const client = new x402Client();
-  registerExactAvmScheme(client, { signer });
+  client.register("algorand:*", new ExactAvmScheme(signer));
   return wrapFetchWithPayment(fetch, client);
 }
 
@@ -319,8 +319,8 @@ const response = await paidFetch("https://api.example.com/paid-api");
 ## Payment Policies: Prefer Algorand
 
 ```typescript
-import { wrapFetchWithPayment, x402Client, type PaymentPolicy } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client, type PaymentPolicy } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const preferAlgorand: PaymentPolicy = (version, reqs) => {
   const algorandReqs = reqs.filter((r) => r.network.startsWith("algorand:"));
@@ -328,7 +328,7 @@ const preferAlgorand: PaymentPolicy = (version, reqs) => {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 client.registerPolicy(preferAlgorand);
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
@@ -354,7 +354,7 @@ client.registerPolicy(maxAmount);
 ## Payment Policies: Prefer Testnet
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const preferTestnet: PaymentPolicy = (version, reqs) => {
   const testnetReqs = reqs.filter((r) => r.network === ALGORAND_TESTNET_CAIP2);
@@ -370,7 +370,7 @@ client.registerPolicy(preferTestnet);
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 client
   .registerPolicy(preferAlgorand)
@@ -384,13 +384,7 @@ client
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
-    algodUrl: "https://your-private-node.example.com",
-    algodToken: "your-api-token",
-  },
-});
+client.register("algorand:*", new ExactAvmScheme(signer));
 ```
 
 ---
@@ -399,7 +393,7 @@ registerExactAvmScheme(client, {
 
 ```typescript
 import algosdk from "algosdk";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const algodClient = new algosdk.Algodv2(
   "your-token",
@@ -408,12 +402,7 @@ const algodClient = new algosdk.Algodv2(
 );
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
-    algodClient,
-  },
-});
+client.register("algorand:*", new ExactAvmScheme(signer));
 ```
 
 ---
@@ -421,14 +410,11 @@ registerExactAvmScheme(client, {
 ## Specific Network Registration
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  networks: [ALGORAND_TESTNET_CAIP2],
-});
+client.register([ALGORAND_TESTNET_CAIP2], new ExactAvmScheme(signer));
 ```
 
 ---
@@ -436,11 +422,11 @@ registerExactAvmScheme(client, {
 ## Error Handling (Fetch)
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
 try {
@@ -477,11 +463,11 @@ try {
 
 ```typescript
 import axios, { AxiosError } from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 const api = wrapAxiosWithPayment(axios.create(), client);
 
 try {
@@ -518,7 +504,7 @@ try {
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 client.onBeforePaymentCreation(async (context) => {
   const { selectedRequirements } = context;
@@ -548,7 +534,7 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 ## Reading Payment Response Headers
 
 ```typescript
-import { decodePaymentResponseHeader } from "@x402-avm/fetch";
+import { decodePaymentResponseHeader } from "@x402/fetch";
 
 const response = await fetchWithPay("https://api.example.com/paid-endpoint");
 
@@ -575,7 +561,7 @@ const cheapestFirst = (version: number, reqs: PaymentRequirements[]) => {
 };
 
 const client = new x402Client(cheapestFirst);
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 ```
 
 ---
@@ -586,9 +572,9 @@ registerExactAvmScheme(client, { signer });
 import React, { useState, useMemo, useCallback } from "react";
 import { WalletProvider, useWallet } from "@txnlab/use-wallet-react";
 import { WalletId } from "@txnlab/use-wallet";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 const WALLET_PROVIDERS = [
   { id: WalletId.PERA },
@@ -614,7 +600,7 @@ function PaidApiDemo() {
   const fetchWithPay = useMemo(() => {
     if (!signer) return null;
     const client = new x402Client();
-    registerExactAvmScheme(client, { signer });
+    client.register("algorand:*", new ExactAvmScheme(signer));
     return wrapFetchWithPayment(fetch, client);
   }, [signer]);
 
@@ -673,9 +659,9 @@ export default function App() {
 ## Complete Node.js CLI Example
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import algosdk from "algosdk";
 
 async function main() {
@@ -703,12 +689,7 @@ async function main() {
   };
 
   const client = new x402Client();
-  registerExactAvmScheme(client, {
-    signer,
-    algodConfig: {
-      algodUrl: process.env.ALGOD_TESTNET_URL || "https://testnet-api.algonode.cloud",
-    },
-  });
+  client.register("algorand:*", new ExactAvmScheme(signer));
 
   client.registerPolicy((version, reqs) => {
     return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("5000000"));
@@ -760,9 +741,9 @@ main();
 
 ```typescript
 import axios, { AxiosError } from "axios";
-import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import algosdk from "algosdk";
 
 const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
@@ -781,12 +762,7 @@ const signer = {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
-    algodUrl: process.env.ALGOD_TESTNET_URL || "https://testnet-api.algonode.cloud",
-  },
-});
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const maxPaymentPolicy: PaymentPolicy = (version, reqs) => {
   return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("5000000"));

@@ -299,7 +299,7 @@ pip install "x402-avm[requests,avm]"
 pip install "x402-avm[httpx,requests,avm]"
 
 # Everything
-pip install "x402-avm[all]"
+pip install "x402-avm[avm,httpx,requests]"
 ```
 
 ## External Resources

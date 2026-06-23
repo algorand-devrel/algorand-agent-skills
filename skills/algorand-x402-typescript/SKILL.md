@@ -10,8 +10,8 @@ Build x402 HTTP-native payment applications on Algorand with TypeScript. Use the
 ## TypeScript Quick Start
 
 ```bash
-# Core + AVM mechanism
-npm install @x402/core @x402/avm
+# Core + AVM mechanism + key/signer helpers from algokit-utils
+npm install @x402/core @x402/avm @algorandfoundation/algokit-utils
 
 # Server middleware (pick one)
 npm install @x402/express    # Express.js
@@ -19,30 +19,49 @@ npm install @x402/hono       # Hono
 npm install @x402/next       # Next.js
 
 # HTTP clients (pick one)
-npm install @x402/fetch      # Fetch API
-npm install @x402/axios      # Axios
+npm install @x402/fetch      # Fetch API (re-exports x402Client, wrapFetchWithPayment)
+npm install @x402/axios      # Axios   (re-exports x402Client, wrapAxiosWithPayment)
+
+# Optional: only needed for custom/manual signers (e.g., browser wallet flows)
+npm install algosdk
 ```
 
 ### Register AVM Scheme
 
 Every component registers the AVM exact scheme unconditionally — no environment variable guards:
 
-```typescript
-// Client
-import { ExactAvmClient } from "@x402/avm/exact/client";
-const client = new x402Client()
-  .register("algorand:*", new ExactAvmClient(signer));
+Every AVM scheme is the same class — `ExactAvmScheme` — exported from three subpaths (each implementing a different `SchemeNetwork*` interface).
 
-// Server
-import { ExactAvmServer } from "@x402/avm/exact/server";
-const server = new x402ResourceServer()
-  .register("algorand:*", new ExactAvmServer());
+```typescript
+// Client (x402Client is also re-exported from @x402/fetch and @x402/axios)
+import { x402Client } from "@x402/core/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const avmSigner = toClientAvmSigner(secretKey);
+const client = new x402Client()
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(avmSigner));
+
+// Server (x402ResourceServer is also re-exported from @x402/hono, @x402/express, @x402/next)
+import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
+const server = new x402ResourceServer(facilitatorClient)
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 // Facilitator
-import { ExactAvmFacilitator } from "@x402/avm/exact/facilitator";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const avmSigner = toFacilitatorAvmSigner(secretKey);
 const facilitator = new x402Facilitator()
-  .register("algorand:*", new ExactAvmFacilitator(signer));
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(avmSigner));
 ```
+
+The `register` builder also accepts a glob pattern (e.g. `"algorand:*"`) when you want one scheme to handle all Algorand networks. Use the exported CAIP-2 constants (`ALGORAND_TESTNET_CAIP2`, `ALGORAND_MAINNET_CAIP2`) when targeting a single network.
 
 ### TypeScript algosdk Encoding
 
@@ -122,6 +141,10 @@ Use @x402/core and @x402/avm packages directly for custom integrations. Covers p
 | `@x402/express` | Express.js payment middleware |
 | `@x402/hono` | Hono payment middleware |
 | `@x402/next` | Next.js payment middleware and route wrappers |
+| `@x402/paywall` | Browser paywall UI builder for HTML 402 responses |
+| `@x402/extensions` | Optional protocol extensions (e.g. Bazaar discovery, offer/receipt) |
+| `@algorandfoundation/algokit-utils` | Mnemonic → ed25519 key derivation used by `toClientAvmSigner` / `toFacilitatorAvmSigner` |
+| `algosdk` | Only required for custom/manual signer construction (browser wallets, advanced flows) |
 
 ## How to Use This Skill
 
