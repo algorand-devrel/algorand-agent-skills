@@ -41,13 +41,13 @@ Pattern 1: Proxy (middleware.ts)           Pattern 2: withX402 (route.ts)
 ### Step 1: Install Dependencies
 
 ```bash
-npm install @x402-avm/next @x402-avm/avm @x402-avm/core
+npm install @x402/next @x402/avm @x402/core
 ```
 
 For paywall UI support:
 
 ```bash
-npm install @x402-avm/next @x402-avm/avm @x402-avm/core @x402-avm/paywall
+npm install @x402/next @x402/avm @x402/core @x402/paywall
 ```
 
 ### Step 2: Set Up Environment Variables
@@ -67,9 +67,9 @@ Create `middleware.ts` at your project root:
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxyFromConfig } from "@x402-avm/next";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxyFromConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
@@ -123,10 +123,10 @@ Create a shared config module:
 
 ```typescript
 // lib/x402.ts
-import { x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 export const PAY_TO = process.env.PAY_TO!;
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
@@ -136,7 +136,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 ```
 
 Wrap individual route handlers:
@@ -144,7 +144,7 @@ Wrap individual route handlers:
 ```typescript
 // app/api/weather/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
@@ -183,7 +183,7 @@ Accept payments on both testnet and mainnet:
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -213,7 +213,7 @@ const routes = {
 3. **Use the `matcher` config** -- Always specify which routes the middleware should intercept to avoid processing static files and other non-API routes
 4. **Route patterns use `*` wildcard** -- `"GET /api/premium/*"` matches all sub-paths under `/api/premium/`
 5. **Share server instances** -- Create `lib/x402.ts` with shared `x402Server` and `PAY_TO` to avoid duplicating setup across route files
-6. **Register the AVM scheme** -- Call `registerExactAvmScheme()` on the server before use
+6. **Register the AVM scheme** -- Call `.register()` on the server before use
 7. **Price uses dollar notation** -- Use `"$0.01"` format for human-readable pricing; the SDK converts to atomic units
 8. **Free routes** -- Either exclude them from the middleware matcher or do not wrap them with `withX402`
 
@@ -236,7 +236,7 @@ const routes = {
 | Middleware not running | `middleware.ts` not at project root | Move to project root directory |
 | Static files returning 402 | Matcher too broad | Restrict `matcher` to `/api/:path*` or specific paths |
 | `PAY_TO` undefined | Missing env variable | Add `PAY_TO` to `.env.local` |
-| `No scheme registered` | Missing AVM scheme registration | Call `registerExactAvmScheme(server)` |
+| `No scheme registered` | Missing AVM scheme registration | Call `server.register("algorand:*", new ExactAvmScheme())` |
 | Payment settled on 500 error | Using proxy pattern | Switch to `withX402` for endpoints that can fail |
 | Route not matched | Wrong route pattern | Verify pattern matches Next.js route structure |
 | Cross-origin issues | CORS not configured | Add CORS headers in middleware or `next.config.js` |
@@ -244,7 +244,7 @@ const routes = {
 
 ## References / Further Reading
 
-- [create-typescript-x402-nextjs-reference.md](./create-typescript-x402-nextjs-reference.md) - Full API reference for @x402-avm/next
+- [create-typescript-x402-nextjs-reference.md](./create-typescript-x402-nextjs-reference.md) - Full API reference for @x402/next
 - [create-typescript-x402-nextjs-examples.md](./create-typescript-x402-nextjs-examples.md) - Complete code examples
 - [x402-avm Next.js Examples](https://github.com/GoPlausible/x402-avm/tree/branch-v2-algorand-publish/examples/)
 - [x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)

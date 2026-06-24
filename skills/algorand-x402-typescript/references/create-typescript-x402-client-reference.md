@@ -1,13 +1,13 @@
 # x402 HTTP Client Reference
 
-Detailed API reference for `@x402-avm/fetch`, `@x402-avm/axios`, and `@x402-avm/avm` client packages.
+Detailed API reference for `@x402/fetch`, `@x402/axios`, and `@x402/avm` client packages.
 
-## Package: @x402-avm/fetch
+## Package: @x402/fetch
 
 ### Installation
 
 ```bash
-npm install @x402-avm/fetch @x402-avm/avm algosdk
+npm install @x402/fetch @x402/avm algosdk
 ```
 
 ### Exports
@@ -91,12 +91,12 @@ Decodes the `PAYMENT-RESPONSE` header returned by the server after settlement.
 
 ---
 
-## Package: @x402-avm/axios
+## Package: @x402/axios
 
 ### Installation
 
 ```bash
-npm install @x402-avm/axios @x402-avm/avm algosdk axios
+npm install @x402/axios @x402/avm algosdk axios
 ```
 
 ### Exports
@@ -166,12 +166,12 @@ Key details:
 
 ---
 
-## Package: @x402-avm/avm
+## Package: @x402/avm
 
 ### Installation
 
 ```bash
-npm install @x402-avm/avm algosdk
+npm install @x402/avm algosdk
 ```
 
 ### Exports
@@ -209,23 +209,36 @@ interface ClientAvmSigner {
 }
 ```
 
-### Subpath: @x402-avm/avm/exact/client
+### Subpath: @x402/avm/exact/client
 
 | Export | Type | Description |
 |--------|------|-------------|
-| `registerExactAvmScheme` | Function | Registers AVM schemes (V1 + V2) to an x402Client |
-| `AvmClientConfig` | Interface | Configuration for AVM client registration |
+| `ExactAvmScheme` | Class | AVM exact scheme for client-side payment payload creation |
+| `ClientAvmConfig` | Interface | Optional Algod configuration |
 
-### registerExactAvmScheme
+### ExactAvmScheme
 
 ```typescript
-function registerExactAvmScheme(
-  client: x402Client,
-  config: AvmClientConfig,
-): void;
+class ExactAvmScheme {
+  constructor(signer: ClientAvmSigner, config?: ClientAvmConfig);
+  readonly scheme: "exact";
+  createPaymentPayload(
+    x402Version: number,
+    paymentRequirements: PaymentRequirements,
+  ): Promise<PaymentPayloadResult>;
+}
 ```
 
-### AvmClientConfig
+Register with the builder pattern:
+
+```typescript
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+client.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
+```
+
+### ClientAvmConfig
 
 ```typescript
 interface AvmClientConfig {
@@ -323,8 +336,8 @@ client.onPaymentCreationFailure(async (context) => {
 ### Unit Testing a Client
 
 ```typescript
-import { x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { x402Client } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 // Create a mock signer for testing
 const mockSigner = {
@@ -338,7 +351,7 @@ const mockSigner = {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer: mockSigner });
+client.register("algorand:*", new ExactAvmScheme(mockSigner));
 ```
 
 ### Integration Testing with Real Transactions

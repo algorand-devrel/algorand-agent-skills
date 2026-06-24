@@ -1,22 +1,22 @@
 # x402 Facilitator Reference
 
-Detailed API reference for `@x402-avm/core/facilitator`, `@x402-avm/avm/exact/facilitator`, and `@x402-avm/extensions` packages.
+Detailed API reference for `@x402/core/facilitator`, `@x402/avm/exact/facilitator`, and `@x402/extensions` packages.
 
-## Package: @x402-avm/core
+## Package: @x402/core
 
 ### Installation
 
 ```bash
-npm install @x402-avm/core @x402-avm/avm algosdk
+npm install @x402/core @x402/avm algosdk
 ```
 
-### Facilitator Exports from @x402-avm/core/facilitator
+### Facilitator Exports from @x402/core/facilitator
 
 | Export | Type | Description |
 |--------|------|-------------|
 | `x402Facilitator` | Class | Core facilitator for verifying and settling payments |
 
-### Server Exports from @x402-avm/core/server
+### Server Exports from @x402/core/server
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -160,37 +160,42 @@ sendTransactions: async (signedTxns, network) => {
 
 ---
 
-## Subpath: @x402-avm/avm/exact/facilitator
+## Subpath: @x402/avm/exact/facilitator
 
-### registerExactAvmScheme (Facilitator)
+### ExactAvmScheme (Facilitator)
 
-Registers the AVM exact payment scheme with a facilitator instance.
+The AVM exact payment scheme for facilitators. Register with the builder pattern on an `x402Facilitator` instance.
 
 ```typescript
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-function registerExactAvmScheme(
-  facilitator: x402Facilitator,
-  config: {
-    signer: FacilitatorAvmSigner;
-    networks: string | string[];
-  },
-): void;
+class ExactAvmScheme {
+  constructor(signer: FacilitatorAvmSigner);
+  readonly scheme: "exact";
+  readonly caipFamily: "algorand:*";
+  verify(payload: PaymentPayload, requirements: PaymentRequirements): Promise<VerifyResponse>;
+  settle(payload: PaymentPayload, requirements: PaymentRequirements): Promise<SettleResponse>;
+  // ...plus getExtra() and getSigners() introspection methods
+}
+
+// Usage:
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 ```
 
-Note: The `registerExactAvmScheme` function exists at three import paths with different signatures:
-- `@x402-avm/avm/exact/client` -- For client-side (takes `ClientAvmSigner`)
-- `@x402-avm/avm/exact/server` -- For resource server (no signer needed)
-- `@x402-avm/avm/exact/facilitator` -- For facilitator (takes `FacilitatorAvmSigner`)
+Note: The `ExactAvmScheme` class is exported from three import paths with different constructor signatures:
+- `@x402/avm/exact/client` -- For client-side (takes `ClientAvmSigner`)
+- `@x402/avm/exact/server` -- For resource server (no signer needed)
+- `@x402/avm/exact/facilitator` -- For facilitator (takes `FacilitatorAvmSigner`)
 
 ---
 
-## Package: @x402-avm/extensions
+## Package: @x402/extensions
 
 ### Installation
 
 ```bash
-npm install @x402-avm/extensions @x402-avm/core
+npm install @x402/extensions @x402/core
 ```
 
 ### Bazaar Discovery Exports
@@ -447,7 +452,7 @@ curl "http://localhost:4000/discovery/resources?limit=10&offset=0"
 - The facilitator address must have ALGO to cover transaction fees. Each settlement requires a minimum of 0.001 ALGO for the fee-payer transaction.
 - `simulateTransactions` must handle both signed and unsigned transaction bytes in the same group. The client signs their payment transaction; the facilitator's fee-payer transaction arrives unsigned.
 - `sendTransactions` receives an array of individually signed transaction bytes. Concatenate them with `Buffer.concat()` before calling `sendRawTransaction`.
-- The `registerExactAvmScheme` function at `@x402-avm/avm/exact/facilitator` is distinct from the client and server variants. Always import from the correct subpath.
+- The `.register()` function at `@x402/avm/exact/facilitator` is distinct from the client and server variants. Always import from the correct subpath.
 - Bazaar discovery is purely additive. If no extensions are present in the payment payload, the facilitator operates normally without cataloging.
 - The `withBazaar` function mutates the client in place and adds an `extensions.discovery` namespace. It is safe to chain with other extension wrappers.
 

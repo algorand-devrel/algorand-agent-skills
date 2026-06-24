@@ -245,16 +245,16 @@ A standard x402 facilitator exposes three endpoints:
 
 ```bash
 # Minimal facilitator
-pip install "x402-avm[avm,fastapi]"
+pip install "x402-avm[fastapi,avm]"
 
 # With uvicorn for production
-pip install "x402-avm[avm,fastapi]" uvicorn
+pip install "x402-avm[fastapi,avm]" uvicorn
 
 # Multi-chain facilitator (EVM + SVM + AVM)
 pip install "x402-avm[all,fastapi]"
 
 # Everything
-pip install "x402-avm[all]"
+pip install "x402-avm[avm,httpx,requests]"
 ```
 
 ---
@@ -611,7 +611,7 @@ pip install "x402-avm[extensions,avm,fastapi]"
 pip install "x402-avm[extensions,avm,flask]"
 
 # Everything
-pip install "x402-avm[all]"
+pip install "x402-avm[avm,httpx,requests]"
 ```
 
 The `[extensions]` extra adds one dependency: `jsonschema>=4.0.0`.

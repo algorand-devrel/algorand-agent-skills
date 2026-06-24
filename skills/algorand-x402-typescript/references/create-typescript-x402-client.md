@@ -41,12 +41,12 @@ Client Request (GET /api/premium)
 
 For Fetch-based clients:
 ```bash
-npm install @x402-avm/fetch @x402-avm/avm algosdk
+npm install @x402/fetch @x402/avm algosdk
 ```
 
 For Axios-based clients:
 ```bash
-npm install @x402-avm/axios @x402-avm/avm algosdk axios
+npm install @x402/axios @x402/avm algosdk axios
 ```
 
 ### Step 2: Implement a ClientAvmSigner
@@ -87,7 +87,7 @@ const signer = {
 **For Browser (@txnlab/use-wallet):**
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function useAvmSigner(): ClientAvmSigner | null {
   const { activeAccount, signTransactions } = useWallet();
@@ -104,18 +104,18 @@ function useAvmSigner(): ClientAvmSigner | null {
 ### Step 3: Create and Configure the x402Client
 
 ```typescript
-import { x402Client } from "@x402-avm/fetch"; // or "@x402-avm/axios"
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { x402Client } from "@x402/fetch"; // or "@x402/axios"
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 ```
 
 ### Step 4: Wrap Fetch or Axios
 
 **Fetch:**
 ```typescript
-import { wrapFetchWithPayment } from "@x402-avm/fetch";
+import { wrapFetchWithPayment } from "@x402/fetch";
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 const response = await fetchWithPay("https://api.example.com/premium-data");
@@ -124,7 +124,7 @@ const response = await fetchWithPay("https://api.example.com/premium-data");
 **Axios:**
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment } from "@x402-avm/axios";
+import { wrapAxiosWithPayment } from "@x402/axios";
 
 const api = wrapAxiosWithPayment(axios.create(), client);
 const response = await api.get("https://api.example.com/premium-data");
@@ -135,7 +135,7 @@ const response = await api.get("https://api.example.com/premium-data");
 Policies filter payment requirements before selection. They are applied in order:
 
 ```typescript
-import type { PaymentPolicy } from "@x402-avm/fetch";
+import type { PaymentPolicy } from "@x402/fetch";
 
 const maxAmount: PaymentPolicy = (version, reqs) => {
   return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("5000000"));
@@ -173,7 +173,7 @@ client.onPaymentCreationFailure(async ({ error }) => {
 
 ## Important Rules / Guidelines
 
-1. **Always register a scheme before wrapping** -- `registerExactAvmScheme(client, { signer })` must be called before `wrapFetchWithPayment` or `wrapAxiosWithPayment`
+1. **Always register a scheme before wrapping** -- `client.register("algorand:*", new ExactAvmScheme(signer))` must be called before `wrapFetchWithPayment` or `wrapAxiosWithPayment`
 2. **AVM_PRIVATE_KEY format** -- Base64-encoded 64-byte key (32-byte seed + 32-byte public key)
 3. **Address derivation** -- Always use `algosdk.encodeAddress(secretKey.slice(32))`, never the first 32 bytes
 4. **Single retry** -- The wrapper retries exactly once after 402. If the retry also returns 402, the error is propagated
@@ -186,8 +186,8 @@ client.onPaymentCreationFailure(async ({ error }) => {
 Instead of creating an `x402Client` manually, use the config-based approach:
 
 ```typescript
-import { wrapFetchWithPaymentFromConfig, type x402ClientConfig } from "@x402-avm/fetch";
-import { ExactAvmScheme } from "@x402-avm/avm";
+import { wrapFetchWithPaymentFromConfig, type x402ClientConfig } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
@@ -209,17 +209,17 @@ const fetchWithPay = wrapFetchWithPaymentFromConfig(fetch, config);
 | `Failed to parse payment requirements` | Server returned 402 with invalid body | Check server is running x402-compatible middleware |
 | `Failed to create payment payload` | Insufficient balance or wrong network | Ensure USDC balance on the correct network |
 | `Payment already attempted` | Server returned 402 after payment was sent | Payment was rejected; check facilitator logs |
-| `No network/scheme registered` | Server requires an unregistered network | Register the needed scheme with `registerExactAvmScheme` |
+| `No network/scheme registered` | Server requires an unregistered network | Register the needed scheme with `.register()` |
 | `Payment creation aborted` | A `beforePaymentCreation` hook returned abort | Review hook logic; check amount limits |
 | `All payment requirements were filtered out` | Policies removed all options | Relax policies or register additional schemes |
-| `No client registered for x402 version: 2` | No schemes registered at all | Call `registerExactAvmScheme(client, { signer })` |
+| `No client registered for x402 version: 2` | No schemes registered at all | Call `client.register("algorand:*", new ExactAvmScheme(signer))` |
 
 ## Reading Payment Receipts
 
 After a successful paid request, check the response header:
 
 ```typescript
-import { decodePaymentResponseHeader } from "@x402-avm/fetch";
+import { decodePaymentResponseHeader } from "@x402/fetch";
 
 const paymentResponseHeader = response.headers.get("PAYMENT-RESPONSE");
 if (paymentResponseHeader) {

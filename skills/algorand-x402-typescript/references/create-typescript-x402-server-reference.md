@@ -1,16 +1,16 @@
 # x402-avm Server Reference
 
-## @x402-avm/express Package
+## @x402/express Package
 
 ### Installation
 
 ```bash
-npm install @x402-avm/express @x402-avm/avm @x402-avm/core express
+npm install @x402/express @x402/avm @x402/core express
 ```
 
 With paywall:
 ```bash
-npm install @x402-avm/express @x402-avm/avm @x402-avm/core @x402-avm/paywall express
+npm install @x402/express @x402/avm @x402/core @x402/paywall express
 ```
 
 ### Middleware Functions
@@ -71,17 +71,17 @@ function paymentMiddlewareFromHTTPServer(
 |-----------|------|----------|-------------|
 | `httpServer` | `x402HTTPResourceServer` | Yes | HTTP server with hooks configured |
 
-## @x402-avm/hono Package
+## @x402/hono Package
 
 ### Installation
 
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono
+npm install @x402/hono @x402/avm @x402/core hono
 ```
 
 Node.js server:
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono @hono/node-server
+npm install @x402/hono @x402/avm @x402/core hono @hono/node-server
 ```
 
 ### Middleware Functions
@@ -200,7 +200,7 @@ type Price = string;  // e.g., "$0.01"
 ### HTTPFacilitatorClient
 
 ```typescript
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const client = new HTTPFacilitatorClient({
   url?: string;     // Facilitator URL (default: "https://x402.org/facilitator")
@@ -219,21 +219,21 @@ const client = new HTTPFacilitatorClient({
 ### x402ResourceServer
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/core/server";
+import { x402ResourceServer } from "@x402/core/server";
 
 const server = new x402ResourceServer(facilitatorClient);
 ```
 
 Must register AVM scheme after creation:
 ```typescript
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-registerExactAvmScheme(server);
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+server.register("algorand:*", new ExactAvmScheme());
 ```
 
 ### x402HTTPResourceServer
 
 ```typescript
-import { x402HTTPResourceServer } from "@x402-avm/core/server";
+import { x402HTTPResourceServer } from "@x402/core/server";
 
 const httpServer = new x402HTTPResourceServer(resourceServer, routes);
 ```
@@ -250,16 +250,16 @@ Return `{ grantAccess: true }` to bypass payment (e.g., API key), `{ abort: true
 
 | Constant | Value | Import |
 |----------|-------|--------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | `@x402-avm/avm` |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | `@x402-avm/avm` |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | `@x402/avm` |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | `@x402/avm` |
 
 ## USDC ASA Constants
 
 | Constant | Value | Import |
 |----------|-------|--------|
-| `USDC_TESTNET_ASA_ID` | `"10458941"` | `@x402-avm/avm` |
-| `USDC_MAINNET_ASA_ID` | `"31566704"` | `@x402-avm/avm` |
-| `USDC_DECIMALS` | `6` | `@x402-avm/avm` |
+| `USDC_TESTNET_ASA_ID` | `"10458941"` | `@x402/avm` |
+| `USDC_MAINNET_ASA_ID` | `"31566704"` | `@x402/avm` |
+| `USDC_DECIMALS` | `6` | `@x402/avm` |
 
 ## Paywall Configuration
 
@@ -370,11 +370,11 @@ Set `FACILITATOR_URL=https://facilitator.goplausible.xyz` to skip running a loca
 
 ## External Resources
 
-- [@x402-avm/express on npm](https://www.npmjs.com/package/@x402-avm/express)
-- [@x402-avm/hono on npm](https://www.npmjs.com/package/@x402-avm/hono)
-- [@x402-avm/core on npm](https://www.npmjs.com/package/@x402-avm/core)
-- [@x402-avm/avm on npm](https://www.npmjs.com/package/@x402-avm/avm)
-- [@x402-avm/paywall on npm](https://www.npmjs.com/package/@x402-avm/paywall)
+- [@x402/express on npm](https://www.npmjs.com/package/@x402/express)
+- [@x402/hono on npm](https://www.npmjs.com/package/@x402/hono)
+- [@x402/core on npm](https://www.npmjs.com/package/@x402/core)
+- [@x402/avm on npm](https://www.npmjs.com/package/@x402/avm)
+- [@x402/paywall on npm](https://www.npmjs.com/package/@x402/paywall)
 - [GoPlausible x402-avm Examples](https://github.com/GoPlausible/x402-avm/tree/branch-v2-algorand-publish/examples/)
 - [GoPlausible x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)
 - [Express.js Documentation](https://expressjs.com/)

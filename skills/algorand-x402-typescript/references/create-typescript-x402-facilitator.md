@@ -36,12 +36,12 @@ Client                    Resource Server              Facilitator              
 ### Step 1: Install Dependencies
 
 ```bash
-npm install @x402-avm/core @x402-avm/avm algosdk express
+npm install @x402/core @x402/avm algosdk express
 ```
 
 For Bazaar discovery extension:
 ```bash
-npm install @x402-avm/extensions
+npm install @x402/extensions
 ```
 
 ### Step 2: Implement the FacilitatorAvmSigner
@@ -50,7 +50,7 @@ The `FacilitatorAvmSigner` interface bridges the facilitator to the Algorand blo
 
 ```typescript
 import algosdk from "algosdk";
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
+import type { FacilitatorAvmSigner } from "@x402/avm";
 
 const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
 const address = algosdk.encodeAddress(secretKey.slice(32));
@@ -100,16 +100,13 @@ const facilitatorSigner: FacilitatorAvmSigner = {
 ### Step 3: Create and Register the Facilitator
 
 ```typescript
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitator = new x402Facilitator();
 
-registerExactAvmScheme(facilitator, {
-  signer: facilitatorSigner,
-  networks: ALGORAND_TESTNET_CAIP2,
-});
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(facilitatorSigner));
 ```
 
 ### Step 4: Create the Express.js Server
@@ -147,7 +144,7 @@ The Bazaar extension enables automatic cataloging of x402-protected resources. W
 **On the resource server side -- declare discovery info:**
 
 ```typescript
-import { declareDiscoveryExtension } from "@x402-avm/extensions";
+import { declareDiscoveryExtension } from "@x402/extensions";
 
 const weatherDiscovery = declareDiscoveryExtension({
   input: { city: "San Francisco", units: "metric" },
@@ -167,7 +164,7 @@ const weatherDiscovery = declareDiscoveryExtension({
 **On the facilitator side -- extract and catalog:**
 
 ```typescript
-import { extractDiscoveryInfo, type DiscoveredResource } from "@x402-avm/extensions";
+import { extractDiscoveryInfo, type DiscoveredResource } from "@x402/extensions";
 
 facilitator.onAfterSettle(async (context) => {
   if (context.result.success) {
@@ -259,7 +256,7 @@ Resource Server                        Facilitator                    Client
 | Simulation fails | Mixed signed/unsigned transactions | Wrap unsigned with `new algosdk.SignedTransaction({ txn })` |
 | `sendRawTransaction` fails | Transaction group not properly concatenated | Use `Buffer.concat(signedTxns.map(t => Buffer.from(t)))` |
 | Settlement times out | Network congestion or low fee | Increase `waitRounds` parameter |
-| `No scheme registered` | `registerExactAvmScheme` not called | Register before handling requests |
+| `No scheme registered` | `.register()` not called | Register before handling requests |
 | Discovery not extracted | Extensions not passed through payload | Ensure resource server includes extensions in PaymentRequired |
 
 ## References / Further Reading

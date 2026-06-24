@@ -2,7 +2,7 @@
 
 ## Package Ecosystem
 
-### @x402-avm/core
+### @x402/core
 
 The core package provides protocol-agnostic base classes and types.
 
@@ -10,18 +10,18 @@ The core package provides protocol-agnostic base classes and types.
 
 | Export | Path | Description |
 |--------|------|-------------|
-| `x402Client` | `@x402-avm/core/client` | Base client that handles 402 responses and payment |
-| `x402ResourceServer` | `@x402-avm/core/server` | Transport-agnostic resource server |
-| `x402HTTPResourceServer` | `@x402-avm/core/server` | HTTP-aware resource server with route configuration |
-| `HTTPFacilitatorClient` | `@x402-avm/core/server` | HTTP client for communicating with a remote facilitator |
-| `x402Facilitator` | `@x402-avm/core/facilitator` | Base facilitator for verifying and settling payments |
-| `PaymentRequirements` | `@x402-avm/core/types` | Type: what payment a server accepts |
-| `PaymentPayload` | `@x402-avm/core/types` | Type: what the client sends in PAYMENT-SIGNATURE header |
-| `PaymentRequired` | `@x402-avm/core/types` | Type: 402 response body |
-| `Network` | `@x402-avm/core/types` | Type: CAIP-2 network identifier string |
-| `PaymentPolicy` | `@x402-avm/core/client` | Type: filter function for payment requirements |
+| `x402Client` | `@x402/core/client` | Base client that handles 402 responses and payment |
+| `x402ResourceServer` | `@x402/core/server` | Transport-agnostic resource server |
+| `x402HTTPResourceServer` | `@x402/core/server` | HTTP-aware resource server with route configuration |
+| `HTTPFacilitatorClient` | `@x402/core/server` | HTTP client for communicating with a remote facilitator |
+| `x402Facilitator` | `@x402/core/facilitator` | Base facilitator for verifying and settling payments |
+| `PaymentRequirements` | `@x402/core/types` | Type: what payment a server accepts |
+| `PaymentPayload` | `@x402/core/types` | Type: what the client sends in PAYMENT-SIGNATURE header |
+| `PaymentRequired` | `@x402/core/types` | Type: 402 response body |
+| `Network` | `@x402/core/types` | Type: CAIP-2 network identifier string |
+| `PaymentPolicy` | `@x402/core/client` | Type: filter function for payment requirements |
 
-### @x402-avm/avm
+### @x402/avm
 
 The AVM mechanism package provides Algorand-specific signer interfaces, constants, utilities, and scheme registration.
 
@@ -36,9 +36,9 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 
 | Function | Import Path | Arguments |
 |----------|-------------|-----------|
-| `registerExactAvmScheme` | `@x402-avm/avm/exact/client` | `(client, { signer, algodConfig?, networks?, policies? })` |
-| `registerExactAvmScheme` | `@x402-avm/avm/exact/server` | `(server, { networks? }?)` |
-| `registerExactAvmScheme` | `@x402-avm/avm/exact/facilitator` | `(facilitator, { signer, networks })` |
+| `.register()` | `@x402/avm/exact/client` | `(client, { signer, algodConfig?, networks?, policies? })` |
+| `.register()` | `@x402/avm/exact/server` | `(server, { networks? }?)` |
+| `.register()` | `@x402/avm/exact/facilitator` | `(facilitator, { signer, networks })` |
 
 **Constants:**
 
@@ -89,7 +89,7 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 | `assignGroupId` | `(txns[]) => Transaction[]` | Assign group ID to transactions |
 | `isAvmSignerWallet` | `(wallet: unknown) => wallet is ClientAvmSigner` | Type guard for ClientAvmSigner |
 
-### @x402-avm/express
+### @x402/express
 
 Express.js middleware for payment-gated routes.
 
@@ -99,7 +99,7 @@ Express.js middleware for payment-gated routes.
 | `paymentMiddlewareFromConfig(routes, facilitatorClient, schemes?, paywallConfig?, paywall?)` | Auto-creates server internally |
 | `paymentMiddlewareFromHTTPServer(httpServer)` | Uses x402HTTPResourceServer with hooks |
 
-### @x402-avm/hono
+### @x402/hono
 
 Hono middleware for payment-gated routes. Same API as Express but returns Hono `MiddlewareHandler`.
 
@@ -109,11 +109,11 @@ Hono middleware for payment-gated routes. Same API as Express but returns Hono `
 | `paymentMiddlewareFromConfig(routes, facilitatorClient, schemes?, paywallConfig?, paywall?, syncOnStart?)` | Auto-creates server internally |
 | `paymentMiddlewareFromHTTPServer(httpServer)` | Uses x402HTTPResourceServer with hooks |
 
-### @x402-avm/next
+### @x402/next
 
 Next.js middleware for payment-gated routes.
 
-### @x402-avm/fetch
+### @x402/fetch
 
 Fetch API wrapper that automatically handles 402 responses.
 
@@ -121,7 +121,7 @@ Fetch API wrapper that automatically handles 402 responses.
 |--------|-------------|
 | `wrapFetch(client)` | Returns a fetch-like function with 402 handling |
 
-### @x402-avm/axios
+### @x402/axios
 
 Axios interceptor that automatically handles 402 responses.
 
@@ -129,11 +129,11 @@ Axios interceptor that automatically handles 402 responses.
 |--------|-------------|
 | `wrapAxios(client)` | Returns an axios instance with 402 handling |
 
-### @x402-avm/paywall
+### @x402/paywall
 
 Browser paywall UI component shown when a user visits a protected route in a browser.
 
-### @x402-avm/extensions
+### @x402/extensions
 
 Protocol extensions (bazaar marketplace, custom schemes).
 
@@ -308,15 +308,15 @@ AVM scheme registration is never conditional on environment variables. This ensu
 
 ## External Resources
 
-- [@x402-avm/core on npm](https://www.npmjs.com/package/@x402-avm/core)
-- [@x402-avm/avm on npm](https://www.npmjs.com/package/@x402-avm/avm)
-- [@x402-avm/express on npm](https://www.npmjs.com/package/@x402-avm/express)
-- [@x402-avm/hono on npm](https://www.npmjs.com/package/@x402-avm/hono)
-- [@x402-avm/next on npm](https://www.npmjs.com/package/@x402-avm/next)
-- [@x402-avm/fetch on npm](https://www.npmjs.com/package/@x402-avm/fetch)
-- [@x402-avm/axios on npm](https://www.npmjs.com/package/@x402-avm/axios)
-- [@x402-avm/paywall on npm](https://www.npmjs.com/package/@x402-avm/paywall)
-- [@x402-avm/extensions on npm](https://www.npmjs.com/package/@x402-avm/extensions)
+- [@x402/core on npm](https://www.npmjs.com/package/@x402/core)
+- [@x402/avm on npm](https://www.npmjs.com/package/@x402/avm)
+- [@x402/express on npm](https://www.npmjs.com/package/@x402/express)
+- [@x402/hono on npm](https://www.npmjs.com/package/@x402/hono)
+- [@x402/next on npm](https://www.npmjs.com/package/@x402/next)
+- [@x402/fetch on npm](https://www.npmjs.com/package/@x402/fetch)
+- [@x402/axios on npm](https://www.npmjs.com/package/@x402/axios)
+- [@x402/paywall on npm](https://www.npmjs.com/package/@x402/paywall)
+- [@x402/extensions on npm](https://www.npmjs.com/package/@x402/extensions)
 - [GoPlausible x402-avm Examples](https://github.com/GoPlausible/x402-avm/tree/branch-v2-algorand-publish/examples/)
 - [GoPlausible x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)
 - [@txnlab/use-wallet](https://github.com/TxnLab/use-wallet)

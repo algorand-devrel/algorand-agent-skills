@@ -3,7 +3,7 @@
 ## Network Identifiers
 
 ```typescript
-import type { Network } from "@x402-avm/core/types";
+import type { Network } from "@x402/core/types";
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
@@ -11,7 +11,7 @@ import {
   V1_ALGORAND_MAINNET,
   V1_TO_CAIP2,
   CAIP2_TO_V1,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const testnet: Network = ALGORAND_TESTNET_CAIP2;
 // => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
@@ -26,8 +26,8 @@ const v1Name = CAIP2_TO_V1[ALGORAND_TESTNET_CAIP2];
 ## PaymentRequirements (V2)
 
 ```typescript
-import type { PaymentRequirements } from "@x402-avm/core/types";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import type { PaymentRequirements } from "@x402/core/types";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const requirements: PaymentRequirements = {
   scheme: "exact",
@@ -50,8 +50,8 @@ const requirements: PaymentRequirements = {
 ## PaymentPayload
 
 ```typescript
-import type { PaymentPayload } from "@x402-avm/core/types";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import type { PaymentPayload } from "@x402/core/types";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const payload: PaymentPayload = {
   x402Version: 2,
@@ -70,7 +70,7 @@ const payload: PaymentPayload = {
 ## ClientAvmSigner Interface
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 interface ClientAvmSigner {
   address: string;
@@ -84,7 +84,7 @@ interface ClientAvmSigner {
 ## ClientAvmSigner with @txnlab/use-wallet (Browser)
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 import { useWallet } from "@txnlab/use-wallet";
 
 function PaymentComponent() {
@@ -107,9 +107,9 @@ function PaymentComponent() {
 
 ```typescript
 import React, { useCallback } from "react";
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 import { WalletProvider, useWallet, WalletId } from "@txnlab/use-wallet-react";
 
 const walletConfig = {
@@ -128,7 +128,7 @@ function PaidContent() {
     };
 
     const client = new x402Client({ schemes: [] });
-    registerExactAvmScheme(client, { signer });
+    client.register("algorand:*", new ExactAvmScheme(signer));
 
     const response = await client.fetch("https://api.example.com/premium");
     if (response.ok) {
@@ -156,7 +156,7 @@ export default function App() {
 ## ClientAvmSigner with algosdk Private Key (Server-Side)
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 import algosdk from "algosdk";
 
 function createPrivateKeySigner(privateKeyBase64: string): ClientAvmSigner {
@@ -192,8 +192,8 @@ const signer = createPrivateKeySigner(process.env.AVM_PRIVATE_KEY!);
 ## FacilitatorAvmSigner Interface
 
 ```typescript
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import type { Network } from "@x402-avm/core/types";
+import type { FacilitatorAvmSigner } from "@x402/avm";
+import type { Network } from "@x402/core/types";
 
 interface FacilitatorAvmSigner {
   getAddresses(): readonly string[];
@@ -208,14 +208,14 @@ interface FacilitatorAvmSigner {
 ## FacilitatorAvmSigner Implementation
 
 ```typescript
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import type { Network } from "@x402-avm/core/types";
+import type { FacilitatorAvmSigner } from "@x402/avm";
+import type { Network } from "@x402/core/types";
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
   createAlgodClient,
   isTestnetNetwork,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 import algosdk from "algosdk";
 
 function createFacilitatorSigner(privateKeyBase64: string): FacilitatorAvmSigner {
@@ -279,66 +279,51 @@ const facilitatorSigner = createFacilitatorSigner(process.env.AVM_PRIVATE_KEY!);
 ## Client Registration
 
 ```typescript
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { x402Client } from "@x402/core/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client({ schemes: [] });
 
-registerExactAvmScheme(client, {
-  signer: myClientSigner,
-  algodConfig: {
-    algodUrl: "https://testnet-api.algonode.cloud",
-  },
-  networks: ["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="],
-  policies: [preferTestnetPolicy],
-});
+client.register(["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="], new ExactAvmScheme(myClientSigner));
 ```
 
 ## Server Registration
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
+import { x402ResourceServer } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 
 const server = new x402ResourceServer(facilitatorClient);
 
 // Wildcard (default -- all Algorand networks)
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 // Or specific networks
-registerExactAvmScheme(server, {
-  networks: ["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="],
-});
+server.register(["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="], new ExactAvmScheme());
 ```
 
 ## Facilitator Registration
 
 ```typescript
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 const facilitator = new x402Facilitator();
 
 // Single network
-registerExactAvmScheme(facilitator, {
-  signer: myFacilitatorSigner,
-  networks: ALGORAND_TESTNET_CAIP2,
-});
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(myFacilitatorSigner));
 
 // Multiple networks
-registerExactAvmScheme(facilitator, {
-  signer: myFacilitatorSigner,
-  networks: [ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2],
-});
+facilitator.register([ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(myFacilitatorSigner));
 ```
 
 ## Payment Policies
 
 ```typescript
-import { x402Client, PaymentPolicy } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Client, PaymentPolicy } from "@x402/core/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const preferTestnet: PaymentPolicy = (version, requirements) => {
   return requirements.filter(r => r.network === ALGORAND_TESTNET_CAIP2);
@@ -355,10 +340,7 @@ const preferAlgorand: PaymentPolicy = (version, requirements) => {
 };
 
 const client = new x402Client({ schemes: [] });
-registerExactAvmScheme(client, {
-  signer,
-  policies: [preferTestnet, maxAmount],
-});
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 client.registerPolicy(preferAlgorand);
 ```
@@ -383,7 +365,7 @@ import {
   MAX_REASONABLE_FEE,
   ALGORAND_ADDRESS_REGEX,
   ALGORAND_ADDRESS_LENGTH,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 ```
 
 ## Utility Functions
@@ -408,7 +390,7 @@ import {
   hasSignature,
   validateGroupId,
   assignGroupId,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Address validation
 isValidAlgorandAddress("AAAA...AAAA"); // => true/false
@@ -429,7 +411,7 @@ const algod = createAlgodClient("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cO
 ## HTTPFacilitatorClient
 
 ```typescript
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const facilitatorClient = new HTTPFacilitatorClient({
   url: "https://facilitator.goplausible.xyz",
@@ -450,7 +432,7 @@ const settleResult = await facilitatorClient.settle({ paymentPayload, paymentReq
 ## Type Guard
 
 ```typescript
-import { isAvmSignerWallet } from "@x402-avm/avm";
+import { isAvmSignerWallet } from "@x402/avm";
 
 function checkWallet(wallet: unknown) {
   if (isAvmSignerWallet(wallet)) {
@@ -463,7 +445,7 @@ function checkWallet(wallet: unknown) {
 
 ```typescript
 import algosdk from "algosdk";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID, createAlgodClient } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID, createAlgodClient } from "@x402/avm";
 
 async function createSimplePayment(senderAddress: string, receiverAddress: string, amount: number) {
   const algod = createAlgodClient(ALGORAND_TESTNET_CAIP2);
@@ -491,7 +473,7 @@ import {
   MIN_TXN_FEE,
   createAlgodClient,
   encodeTransaction,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 async function createFeeAbstractedPayment(
   senderAddress: string,
@@ -533,7 +515,7 @@ async function createFeeAbstractedPayment(
 
 ```typescript
 // ---- shared/config.ts ----
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
 export const USDC_ASA = USDC_TESTNET_ASA_ID;
@@ -543,14 +525,14 @@ export const RESOURCE_SERVER_URL = "http://localhost:4021";
 
 // ---- server/index.ts ----
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 import { NETWORK, USDC_ASA, RESOURCE_WALLET, FACILITATOR_URL } from "../shared/config";
 
 const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 const routes = {
   "GET /api/weather": {
@@ -570,9 +552,9 @@ app.get("/api/weather", (req, res) => res.json({ temperature: 72, condition: "Su
 app.listen(4021);
 
 // ---- client/index.ts ----
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 import algosdk from "algosdk";
 import { RESOURCE_SERVER_URL } from "../shared/config";
 
@@ -588,7 +570,7 @@ const clientSigner: ClientAvmSigner = {
 };
 
 const client = new x402Client({ schemes: [] });
-registerExactAvmScheme(client, { signer: clientSigner });
+client.register("algorand:*", new ExactAvmScheme(clientSigner));
 
 const response = await client.fetch(`${RESOURCE_SERVER_URL}/api/weather`);
 if (response.ok) {
@@ -600,17 +582,17 @@ if (response.ok) {
 
 ```typescript
 // Core
-import { x402Client } from "@x402-avm/core/client";
-import { x402ResourceServer, x402HTTPResourceServer, HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import type { PaymentRequirements, PaymentPayload, PaymentRequired, Network } from "@x402-avm/core/types";
+import { x402Client } from "@x402/core/client";
+import { x402ResourceServer, x402HTTPResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
+import { x402Facilitator } from "@x402/core/facilitator";
+import type { PaymentRequirements, PaymentPayload, PaymentRequired, Network } from "@x402/core/types";
 
 // AVM Registration (different subpath per role)
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
 
 // AVM Types and Constants
-import type { ClientAvmSigner, FacilitatorAvmSigner } from "@x402-avm/avm";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import type { ClientAvmSigner, FacilitatorAvmSigner } from "@x402/avm";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 ```

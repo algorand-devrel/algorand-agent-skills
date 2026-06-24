@@ -44,19 +44,19 @@ Browser Request
 
 Server-side packages:
 ```bash
-npm install @x402-avm/paywall @x402-avm/avm @x402-avm/core
+npm install @x402/paywall @x402/avm @x402/core
 ```
 
 Plus your framework middleware:
 ```bash
 # Express.js
-npm install @x402-avm/express
+npm install @x402/express
 
 # Hono
-npm install @x402-avm/hono
+npm install @x402/hono
 
 # Next.js
-npm install @x402-avm/next
+npm install @x402/next
 ```
 
 ### Step 2: Create the Paywall with PaywallBuilder
@@ -64,7 +64,7 @@ npm install @x402-avm/next
 The `PaywallBuilder` creates a `PaywallProvider` that generates HTML paywall pages. Register network handlers in priority order -- first match wins:
 
 ```typescript
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)    // Supports algorand:* networks
@@ -79,7 +79,7 @@ const paywall = createPaywall()
 For multi-network support, register multiple handlers:
 
 ```typescript
-import { createPaywall, avmPaywall, evmPaywall, svmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)    // algorand:*
@@ -114,7 +114,7 @@ const routes = {
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 
 const app = express();
 const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
@@ -132,7 +132,7 @@ app.listen(3000);
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 
 const app = new Hono();
 const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
@@ -151,7 +151,7 @@ export default app;
 **Middleware approach:**
 ```typescript
 // middleware.ts
-import { paymentProxy, x402ResourceServer } from "@x402-avm/next";
+import { paymentProxy, x402ResourceServer } from "@x402/next";
 
 const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
 const proxy = paymentProxy(routes, server, { testnet: true }, paywall);
@@ -167,7 +167,7 @@ export async function middleware(request: NextRequest) {
 **Route handler approach (withX402):**
 ```typescript
 // app/api/premium/route.ts
-import { withX402, x402ResourceServer } from "@x402-avm/next";
+import { withX402, x402ResourceServer } from "@x402/next";
 
 const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
 
@@ -185,7 +185,7 @@ export const GET = withX402(handler, routeConfig, server, { testnet: true }, pay
 3. **Testnet vs Mainnet** -- Set `testnet: true/false` in both `PaywallConfig` and middleware config
 4. **USDC ASA IDs** -- Testnet: `10458941`, Mainnet: `31566704`
 5. **Facilitator URL is required** -- The middleware needs a running facilitator to verify and settle payments
-6. **Tree-shaking** -- Import only the network handlers you need. `avmPaywall` can be imported from `@x402-avm/paywall` or `@x402-avm/paywall/avm`
+6. **Tree-shaking** -- Import only the network handlers you need. `avmPaywall` can be imported from `@x402/paywall` or `@x402/paywall/avm`
 7. **Multiple routes** -- Define multiple entries in the routes object, each with its own price, description, and asset
 
 ## Wallet Integration
@@ -242,7 +242,7 @@ const routes = {
 If the built-in paywall does not meet your needs, implement a custom `PaywallNetworkHandler`:
 
 ```typescript
-import type { PaywallNetworkHandler } from "@x402-avm/paywall";
+import type { PaywallNetworkHandler } from "@x402/paywall";
 
 const customHandler: PaywallNetworkHandler = {
   supports(requirement) {

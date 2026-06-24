@@ -1,15 +1,15 @@
-# @x402-avm/next Examples
+# @x402/next Examples
 
 ## Installation
 
 ```bash
-npm install @x402-avm/next @x402-avm/avm @x402-avm/core
+npm install @x402/next @x402/avm @x402/core
 ```
 
 For paywall UI support:
 
 ```bash
-npm install @x402-avm/next @x402-avm/avm @x402-avm/core @x402-avm/paywall
+npm install @x402/next @x402/avm @x402/core @x402/paywall
 ```
 
 ---
@@ -20,9 +20,9 @@ npm install @x402-avm/next @x402-avm/avm @x402-avm/core @x402-avm/paywall
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxyFromConfig } from "@x402-avm/next";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxyFromConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
@@ -95,10 +95,10 @@ export async function GET() {
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxy, x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
@@ -107,7 +107,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
 });
 
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 const routes = {
   "GET /api/weather/:city": {
@@ -153,16 +153,16 @@ import {
   paymentProxyFromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+} from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
 const routes = {
   "GET /api/data": {
@@ -220,14 +220,14 @@ function isRateLimited(ip: string): boolean {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { withX402, x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 const routeConfig = {
   accepts: {
@@ -258,17 +258,17 @@ export const GET = withX402(handler, routeConfig, server);
 ### lib/x402.ts
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient({
   url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 
 export const PAY_TO = process.env.PAY_TO!;
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
@@ -278,7 +278,7 @@ export const NETWORK = ALGORAND_TESTNET_CAIP2;
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
@@ -303,7 +303,7 @@ export const GET = withX402(handler, {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
@@ -328,7 +328,7 @@ export const GET = withX402(handler, {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
@@ -372,14 +372,14 @@ import {
   withX402FromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+} from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
 const routeConfig = {
   accepts: {
@@ -415,9 +415,9 @@ export const GET = withX402FromHTTPServer(handler, httpServer);
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxyFromConfig } from "@x402-avm/next";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxyFromConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /premium-article": {
@@ -474,7 +474,7 @@ export default function PremiumArticlePage() {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const routeConfig = {
@@ -526,14 +526,14 @@ import {
   withX402FromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+} from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
 const httpServer = new x402HTTPResourceServer(resourceServer, {
   "*": {
@@ -582,9 +582,9 @@ async function performSearch(query: string, limit: number) {
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxyFromConfig } from "@x402-avm/next";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxyFromConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
@@ -666,14 +666,14 @@ export async function GET(
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxy, x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 const routes = {
   "GET /premium/*": {
@@ -779,7 +779,7 @@ const routes = {
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -807,7 +807,7 @@ const routes = {
 ## Cross-Chain: Algorand + EVM
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -838,7 +838,7 @@ const routes = {
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/premium": {
@@ -887,9 +887,9 @@ FACILITATOR_URL=https://x402.org/facilitator
 ### lib/x402.ts
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 export const PAY_TO = process.env.PAY_TO!;
 
@@ -898,19 +898,19 @@ const facilitatorClient = new HTTPFacilitatorClient({
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 ```
 
 ### middleware.ts
 
 ```typescript
 import { NextRequest } from "next/server";
-import { paymentProxy } from "@x402-avm/next";
+import { paymentProxy } from "@x402/next";
 import { x402Server, PAY_TO } from "@/lib/x402";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/weather/*": {
@@ -1065,10 +1065,10 @@ my-x402-app/
 ### lib/x402.ts
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/next";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402ResourceServer } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 export const PAY_TO = process.env.PAY_TO!;
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
@@ -1078,14 +1078,14 @@ const facilitatorClient = new HTTPFacilitatorClient({
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 ```
 
 ### app/api/weather/route.ts
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
@@ -1112,9 +1112,9 @@ export const GET = withX402(handler, {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
-import { USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const handler = async (request: NextRequest) => {
   return NextResponse.json({
@@ -1139,7 +1139,7 @@ export const GET = withX402(handler, {
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402-avm/next";
+import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
 const handler = async (request: NextRequest) => {
