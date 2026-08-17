@@ -8,6 +8,22 @@ Choose your AI coding tool and follow the setup guide.
 
 > **Note**: These instructions are for **per-project setup**. For global/user-level configuration, refer to each tool's official documentation.
 
+### Install Skills with the skills CLI (any supported agent)
+
+The [skills CLI](https://github.com/vercel-labs/skills) (`npx skills`) installs the skills from this repo directly into 40+ supported agents — including Claude Code, Cursor, OpenCode, GitHub Copilot, and Hermes Agent:
+
+```bash
+# Interactive — pick skills and agents:
+npx skills add algorand-devrel/algorand-agent-skills/skills
+
+# Non-interactive — e.g. all skills, globally, for Hermes Agent:
+npx skills add algorand-devrel/algorand-agent-skills/skills -g -a hermes-agent -s '*' -y
+```
+
+Use the `/skills` subpath so only the Algorand skills are installed. Update later with `npx skills update`.
+
+The CLI handles **skills only** — you still need the per-tool `AGENTS.md` and MCP configuration from the setup guides below.
+
 ### OpenCode (Recommended)
 
 [OpenCode](https://opencode.ai) is an open-source AI coding agent with full MCP support.
@@ -60,6 +76,18 @@ cp algorand-agent-skills/setups/copilot/copilot-instructions.md ./.github/
 
 [Full Copilot setup guide](./setups/copilot/README.md)
 
+### Hermes Agent
+
+[Hermes Agent](https://hermes-agent.nousresearch.com) loads skills and MCP config from the global `~/.hermes/` directory, and reads `AGENTS.md` from your project root.
+
+```bash
+cp -r algorand-agent-skills/skills/* ~/.hermes/skills/
+cp algorand-agent-skills/setups/AGENTS.md ./
+# Merge setups/hermes/config.yaml (mcp_servers) into ~/.hermes/config.yaml
+```
+
+[Full Hermes Agent setup guide](./setups/hermes/README.md)
+
 ## What's Included
 
 ### Skills
@@ -108,6 +136,7 @@ MCP (Model Context Protocol) servers give AI assistants access to external tools
 | Claude Code | `.mcp.json`, `CLAUDE.md`              |
 | Cursor      | `.cursor/mcp.json`, `.cursor/skills/` |
 | Copilot     | `.github/copilot-instructions.md`     |
+| Hermes      | `~/.hermes/config.yaml`, `~/.hermes/skills/` |
 
 ## AGENTS.md
 
@@ -154,6 +183,7 @@ Packaged skills will be output to the `dist/` directory.
 - [x402 Protocol on Algorand](https://x402.goplausible.xyz)
 - [OpenCode](https://opencode.ai)
 - [Claude Code](https://claude.ai/code)
+- [Hermes Agent](https://hermes-agent.nousresearch.com)
 
 ## Contributing
 

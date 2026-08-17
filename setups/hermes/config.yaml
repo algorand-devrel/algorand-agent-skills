@@ -1,0 +1,20 @@
+# Hermes Agent configuration for Algorand development.
+# Merge these sections into ~/.hermes/config.yaml (Hermes config is global,
+# not per-project). Run /reload-mcp inside Hermes after editing.
+
+# Option A: point Hermes at the skills/ directory in your project instead of
+# copying skills into ~/.hermes/skills/. Adjust the path to your project.
+skills:
+  external_dirs:
+    - /path/to/your-project/skills
+
+mcp_servers:
+  kapa:
+    url: "https://algorand-docs.mcp.kapa.ai/"
+    auth: oauth
+    enabled: true
+  github:
+    url: "https://api.githubcopilot.com/mcp/"
+    headers:
+      Authorization: "Bearer ${env:GITHUB_TOKEN}"
+    enabled: true
