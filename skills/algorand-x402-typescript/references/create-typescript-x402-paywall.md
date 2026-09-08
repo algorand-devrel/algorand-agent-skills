@@ -94,14 +94,16 @@ const paywall = createPaywall()
 Routes specify what payment is required for each endpoint:
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const routes: RoutesConfig = {
   "/api/premium-content": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",           // USDC ASA ID on testnet
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS_HERE",
-      price: "$0.01",             // 0.01 USDC
+      price: "$0.01",             // 0.01 USDC (Money prices resolve to the network's default asset, USDC)
       maxTimeoutSeconds: 300,
     },
     description: "Access to premium content",
@@ -115,9 +117,15 @@ const routes = {
 ```typescript
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 app.use(paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -133,9 +141,15 @@ app.listen(3000);
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 app.use("*", paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -152,8 +166,14 @@ export default app;
 ```typescript
 // middleware.ts
 import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 const proxy = paymentProxy(routes, server, { testnet: true }, paywall);
 
 export async function middleware(request: NextRequest) {
@@ -168,8 +188,14 @@ export async function middleware(request: NextRequest) {
 ```typescript
 // app/api/premium/route.ts
 import { withX402, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 async function handler(request: NextRequest) {
   return NextResponse.json({ content: "Premium content!" });
@@ -184,9 +210,10 @@ export const GET = withX402(handler, routeConfig, server, { testnet: true }, pay
 2. **avmPaywall supports `algorand:*`** -- Any network starting with `algorand:` is matched
 3. **Testnet vs Mainnet** -- Set `testnet: true/false` in both `PaywallConfig` and middleware config
 4. **USDC ASA IDs** -- Testnet: `10458941`, Mainnet: `31566704`
-5. **Facilitator URL is required** -- The middleware needs a running facilitator to verify and settle payments
+5. **Facilitator URL is required** -- The middleware needs a running facilitator to verify and settle payments. Pass it as `new x402ResourceServer(new HTTPFacilitatorClient({ url }))` (not `{ url }` directly) and call `.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme())` so the server knows the AVM scheme
 6. **Tree-shaking** -- Import only the network handlers you need. `avmPaywall` can be imported from `@x402/paywall` or `@x402/paywall/avm`
-7. **Multiple routes** -- Define multiple entries in the routes object, each with its own price, description, and asset
+7. **Multiple routes** -- Define multiple entries in the routes object, each with its own price and description. `PaymentOption` has no `asset` field: a Money price (`"$0.01"`) resolves to the network's default asset (USDC); to charge in a specific ASA use `price: { asset: USDC_TESTNET_ASA_ID, amount: "10000" }` (atomic units)
+8. **Type your routes** -- Declare `const routes: RoutesConfig = { ... }` (`import type { RoutesConfig } from "@x402/core/server"`) and use the `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` constants from `@x402/avm` (32-char form since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) instead of hardcoding CAIP-2 strings
 
 ## Wallet Integration
 
@@ -211,13 +238,15 @@ The paywall page automatically:
 Accept payments on multiple chains by specifying an array in `accepts`:
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: [
       {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: "ALGO_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -225,7 +254,6 @@ const routes = {
       {
         scheme: "exact",
         network: "eip155:84532",
-        asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
         payTo: "0xEVM_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 30,

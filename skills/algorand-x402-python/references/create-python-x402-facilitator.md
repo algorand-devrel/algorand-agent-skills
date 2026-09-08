@@ -143,21 +143,22 @@ register_exact_avm_facilitator(
 ```python
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from x402 import PaymentPayload, PaymentRequirements
 
 app = FastAPI(title="x402-avm Facilitator Service")
 
 @app.get("/supported")
 async def supported():
-    return facilitator.get_supported_networks()
+    return facilitator.get_supported().model_dump(by_alias=True)
 
 @app.post("/verify")
 async def verify(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.verify(
-            body["paymentPayload"], body["paymentRequirements"]
-        )
-        return result
+        payload = PaymentPayload.model_validate(body["paymentPayload"])
+        requirements = PaymentRequirements.model_validate(body["paymentRequirements"])
+        result = await facilitator.verify(payload, requirements)
+        return result.model_dump(by_alias=True)
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 
@@ -165,13 +166,15 @@ async def verify(request: Request):
 async def settle(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.settle(
-            body["paymentPayload"], body["paymentRequirements"]
-        )
-        return result
+        payload = PaymentPayload.model_validate(body["paymentPayload"])
+        requirements = PaymentRequirements.model_validate(body["paymentRequirements"])
+        result = await facilitator.settle(payload, requirements)
+        return result.model_dump(by_alias=True)
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 ```
+
+> `facilitator.verify()` / `.settle()` require pydantic models, not dicts (a dict fails with `'dict' object has no attribute 'x402_version'`). `get_supported()` returns a pydantic `SupportedResponse`; there is no `get_supported_networks()`.
 
 ### Step 5: Run the Service
 
@@ -199,6 +202,8 @@ The `x402Facilitator` supports lifecycle hooks for custom logic:
 | `on_after_verify` | After verification completes | Analytics, caching |
 | `on_before_settle` | Before settlement submission | Final validation |
 | `on_after_settle` | After settlement completes | Notification, receipts |
+
+Each hook takes a **single context object** (e.g. `VerifyContext` with `.payment_payload` / `.requirements`, `SettleResultContext` with `.result`), may be sync or async, and is registered with `facilitator.on_before_verify(hook)` etc. (chainable). See the reference for the full table and an example.
 
 ## Common Errors / Troubleshooting
 
@@ -296,8 +301,9 @@ Spread the discovery dict into your route's `extensions` field:
 from x402.http import PaymentOption
 from x402.http.types import RouteConfig
 from x402.schemas import Network
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 
 routes = {
     "GET /weather": RouteConfig(

@@ -42,8 +42,8 @@ npm install @x402/express    # Express.js middleware
 npm install @x402/hono       # Hono middleware
 npm install @x402/next       # Next.js middleware
 
-# For browser wallet integration
-npm install @txnlab/use-wallet
+# For browser wallet integration (React; `useWallet` is exported from the -react package)
+npm install @txnlab/use-wallet-react
 
 # Optional
 npm install @x402/paywall    # Browser paywall UI
@@ -71,12 +71,12 @@ The signer is the only component that touches `algosdk` directly. The SDK define
 **For clients (browser with wallet):**
 ```typescript
 import type { ClientAvmSigner } from "@x402/avm";
-import { useWallet } from "@txnlab/use-wallet";
+import { useWallet } from "@txnlab/use-wallet-react";
 
 const { activeAccount, signTransactions } = useWallet();
 
 const signer: ClientAvmSigner = {
-  address: activeAccount.address,
+  address: activeAccount!.address,
   signTransactions: async (txns, indexesToSign) => {
     return signTransactions(txns, indexesToSign);
   },
@@ -84,6 +84,17 @@ const signer: ClientAvmSigner = {
 ```
 
 **For clients (server-side with private key):**
+
+The simplest option is the built-in helper, which takes the base64-encoded 64-byte algosdk secret key (not a mnemonic):
+
+```typescript
+import { toClientAvmSigner } from "@x402/avm";
+
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!); // base64 of 64-byte secret key
+```
+
+Or hand-roll one with `algosdk`:
+
 ```typescript
 import type { ClientAvmSigner } from "@x402/avm";
 import algosdk from "algosdk";
@@ -104,42 +115,40 @@ const signer: ClientAvmSigner = {
 ```
 
 **For facilitators:**
+
+Use the built-in helper. It takes the base64-encoded 64-byte algosdk secret key (not a mnemonic) and returns a `FacilitatorAvmSigner` backed by `@algorandfoundation/algokit-utils` algod clients for TestNet and MainNet:
+
 ```typescript
-import type { FacilitatorAvmSigner } from "@x402/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const signer: FacilitatorAvmSigner = {
-  getAddresses: () => [address],
-  signTransaction: async (txn, _addr) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    return algosdk.signTransaction(decoded, secretKey).blob;
-  },
-  getAlgodClient: () => algodClient,
-  simulateTransactions: async (txns) => { /* ... */ },
-  sendTransactions: async (signedTxns) => { /* ... */ },
-  waitForConfirmation: async (txId, _net, rounds) => { /* ... */ },
-};
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: "https://testnet-api.algonode.cloud", // optional overrides
+  // mainnetUrl, algodToken
+});
 ```
+
+A hand-rolled `FacilitatorAvmSigner` must return an `AlgodClient` from `@algorandfoundation/algokit-utils/algod-client` (e.g. `AlgorandClient.testNet().client.algod`) from `getAlgodClient` — an `algosdk.Algodv2` instance does not type-check.
 
 ### Step 4: Register the AVM Scheme
 
-Registration connects the AVM mechanism to the core component. Each role has its own registration function from a different subpath:
+Registration connects the AVM mechanism to the core component. Each role has its own registration function from a different subpath (all three classes are named `ExactAvmScheme`, so import only the one for your role in a given module):
 
 ```typescript
 // Client
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 client.register("algorand:*", new ExactAvmScheme(signer));
+```
 
+```typescript
 // Server
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 server.register("algorand:*", new ExactAvmScheme());
+```
 
+```typescript
 // Facilitator
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 ```
 
@@ -154,9 +163,11 @@ import {
   isAlgorandNetwork,
   isValidAlgorandAddress,
   convertToTokenAmount,
-  createAlgodClient,
+  normalizeAlgorandNetwork,
 } from "@x402/avm";
 ```
+
+There is no algod client factory in `@x402/avm`; use algokit-utils `AlgorandClient.testNet()` (or pass `algodUrl` in the `ExactAvmScheme` client config). Only CAIP-2 network identifiers are supported — `normalizeAlgorandNetwork` throws on v1 names such as `"algorand-testnet"`.
 
 ## Signer Interfaces
 
@@ -182,19 +193,23 @@ This interface is directly compatible with `@txnlab/use-wallet`'s `signTransacti
 ### FacilitatorAvmSigner
 
 ```typescript
+import type { Network } from "@x402/core/types"; // `${string}:${string}`
+import type { AlgodClient } from "@algorandfoundation/algokit-utils/algod-client";
+// SimulateResponse / PendingTransactionResponse are the algokit-utils algod models
+
 interface FacilitatorAvmSigner {
   getAddresses(): readonly string[];
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
-  getAlgodClient(network: Network): unknown;
-  simulateTransactions(txns: Uint8Array[], network: Network): Promise<unknown>;
+  getAlgodClient(network: Network): AlgodClient;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
   sendTransactions(signedTxns: Uint8Array[], network: Network): Promise<string>;
-  waitForConfirmation(txId: string, network: Network, waitRounds?: number): Promise<unknown>;
+  waitForConfirmation(txId: string, network: Network, waitRounds?: number): Promise<PendingTransactionResponse>;
 }
 ```
 
 - `getAddresses`: Returns all fee payer addresses the facilitator manages
 - `signTransaction`: Signs a single transaction for the given sender address
-- `getAlgodClient`: Returns an Algod client for the specified network
+- `getAlgodClient`: Returns an algokit-utils `AlgodClient` (not `algosdk.Algodv2`) for the specified network
 - `simulateTransactions`: Simulates a transaction group before submission
 - `sendTransactions`: Submits signed transactions to the network, returns txId
 - `waitForConfirmation`: Waits for transaction confirmation

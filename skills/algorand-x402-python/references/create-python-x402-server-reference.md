@@ -263,6 +263,8 @@ AssetAmount(
 | `USDC_TESTNET_ASA_ID` | `10458941` | `x402.mechanisms.avm` |
 | `USDC_MAINNET_ASA_ID` | `31566704` | `x402.mechanisms.avm` |
 
+Values as of x402-avm 2.0.2; note the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form. Always use the constants in code rather than hardcoding the string.
+
 ## CAIP-2 Network Identifiers
 
 | Network | CAIP-2 Identifier |
@@ -271,6 +273,8 @@ AssetAmount(
 | Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` |
 | Base Sepolia (EVM) | `eip155:84532` |
 | Solana Devnet (SVM) | `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` |
+
+Algorand values as of x402-avm 2.0.2 (see note above regarding the TypeScript @x402/avm ≥2.20.0 32-char form). Use `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` in code.
 
 ## Error Handling
 

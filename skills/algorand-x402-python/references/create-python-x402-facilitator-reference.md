@@ -35,7 +35,7 @@ Signs a single transaction with the fee payer's private key.
 - **Parameters:**
   - `txn_bytes` -- Raw msgpack-encoded unsigned transaction bytes
   - `fee_payer` -- 58-character Algorand address of the fee payer
-  - `network` -- CAIP-2 network identifier (e.g., `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="`)
+  - `network` -- CAIP-2 network identifier (e.g., `ALGORAND_TESTNET_CAIP2` = `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` as of x402-avm 2.0.2; note the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form)
 - **Returns:** Raw msgpack-encoded signed transaction bytes
 - **Encoding note:** Must convert `txn_bytes` to base64 before calling `msgpack_decode()`, then convert `msgpack_encode()` result back from base64
 
@@ -158,6 +158,7 @@ from x402.mechanisms.evm.exact import register_exact_evm_facilitator
 from x402.mechanisms.svm.exact import register_exact_svm_facilitator
 # AVM registration
 from x402.mechanisms.avm.exact import register_exact_avm_facilitator
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 
 facilitator = x402Facilitator()
 
@@ -179,12 +180,30 @@ register_exact_avm_facilitator(facilitator, avm_signer, networks=[ALGORAND_TESTN
 
 ## Facilitator Lifecycle Hooks
 
-| Hook | Signature | Description |
-|------|-----------|-------------|
-| `on_before_verify` | `(payload, requirements) -> None` | Called before payment verification |
-| `on_after_verify` | `(payload, requirements, result) -> None` | Called after verification completes |
-| `on_before_settle` | `(payload, requirements) -> None` | Called before settlement submission |
-| `on_after_settle` | `(payload, requirements, result) -> None` | Called after settlement completes |
+Each hook receives a **single context object** (not `(payload, requirements)`), and may be sync or async. Registration methods return `self` for chaining.
+
+| Hook | Handler signature | Context fields | Description |
+|------|-------------------|----------------|-------------|
+| `on_before_verify(hook)` | `(ctx: VerifyContext) -> AbortResult \| None` | `payment_payload`, `requirements`, `payload_bytes`, `requirements_bytes` | Return `AbortResult(reason=...)` to reject before verification |
+| `on_after_verify(hook)` | `(ctx: VerifyResultContext) -> None` | ... + `result: VerifyResponse` | Analytics, caching |
+| `on_verify_failure(hook)` | `(ctx: VerifyFailureContext) -> RecoveredVerifyResult \| None` | ... + `error: Exception` | Optional recovery |
+| `on_before_settle(hook)` | `(ctx: SettleContext) -> AbortResult \| None` | `payment_payload`, `requirements`, ... | Final validation |
+| `on_after_settle(hook)` | `(ctx: SettleResultContext) -> None` | ... + `result: SettleResponse` | Notifications, receipts |
+| `on_settle_failure(hook)` | `(ctx: SettleFailureContext) -> RecoveredSettleResult \| None` | ... + `error: Exception` | Optional recovery |
+
+```python
+from x402 import x402Facilitator, VerifyContext, VerifyResultContext, SettleResultContext
+
+facilitator = x402Facilitator()
+
+async def log_before_verify(ctx: VerifyContext) -> None:
+    print(f"verify: {ctx.requirements.scheme} on {ctx.requirements.network}")
+
+def log_after_settle(ctx: SettleResultContext) -> None:
+    print(f"settled: success={ctx.result.success} tx={ctx.result.transaction}")
+
+facilitator.on_before_verify(log_before_verify).on_after_settle(log_after_settle)
+```
 
 ---
 
@@ -233,11 +252,13 @@ raw_bytes = base64.b64decode(b64_string)
 
 A standard x402 facilitator exposes three endpoints:
 
-| Endpoint | Method | Description | Request Body |
-|----------|--------|-------------|-------------|
-| `/supported` | GET | List supported networks | -- |
-| `/verify` | POST | Verify a payment payload | `{paymentPayload, paymentRequirements}` |
-| `/settle` | POST | Settle a verified payment | `{paymentPayload, paymentRequirements}` |
+| Endpoint | Method | Description | Request Body | `x402Facilitator` method |
+|----------|--------|-------------|-------------|--------------------------|
+| `/supported` | GET | List supported networks | -- | `get_supported() -> SupportedResponse` (return `.model_dump(by_alias=True)`) |
+| `/verify` | POST | Verify a payment payload | `{paymentPayload, paymentRequirements}` | `await verify(PaymentPayload, PaymentRequirements) -> VerifyResponse` |
+| `/settle` | POST | Settle a verified payment | `{paymentPayload, paymentRequirements}` | `await settle(PaymentPayload, PaymentRequirements) -> SettleResponse` |
+
+`verify()` and `settle()` require pydantic models, not raw dicts: convert the JSON body with `PaymentPayload.model_validate(...)` / `PaymentRequirements.model_validate(...)` (imported from `x402`) and return `result.model_dump(by_alias=True)`. There is no `get_supported_networks()` method. `x402Facilitator.register(networks, scheme)` takes a **list** of CAIP-2 networks (a bare string is silently iterated character by character).
 
 ---
 

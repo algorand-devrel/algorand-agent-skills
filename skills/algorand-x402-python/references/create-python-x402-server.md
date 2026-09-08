@@ -66,22 +66,24 @@ Create a facilitator client, resource server, and register the AVM scheme:
 ```python
 from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServer(facilitator)
-server.register("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", ExactAvmServerScheme())
+server.register(ALGORAND_TESTNET_CAIP2, ExactAvmServerScheme())
 ```
 
 **Flask:**
 ```python
 from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServerSync(facilitator)
-server.register("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", ExactAvmServerScheme())
+server.register(ALGORAND_TESTNET_CAIP2, ExactAvmServerScheme())
 ```
 
 ### Step 4: Define Route Configurations
@@ -91,12 +93,13 @@ Routes map HTTP method + path patterns to payment requirements:
 ```python
 from x402.http import PaymentOption
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 
 routes = {
     "GET /api/weather": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -154,16 +157,18 @@ def get_weather():
 4. **Unlisted routes pass through** -- Only routes in the config require payment
 5. **Register scheme before middleware** -- Call `server.register(...)` before adding middleware
 6. **Price format** -- Use `"$0.01"` for auto-conversion or `AssetAmount(amount="10000", asset="10458941")` for explicit control
-7. **CAIP-2 network IDs** -- Use full CAIP-2 identifiers like `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="`
+7. **CAIP-2 network IDs** -- Use the `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` constants from `x402.mechanisms.avm` rather than hardcoding. Testnet is `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` (as of x402-avm 2.0.2; note the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form)
 
 ## Pricing Options
 
 ### Simple String Price
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 PaymentOption(
     scheme="exact",
-    network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    network=ALGORAND_TESTNET_CAIP2,
     pay_to="YOUR_ADDRESS",
     price="$0.01",  # Auto-converts to 10000 microUSDC
 )
@@ -172,11 +177,12 @@ PaymentOption(
 ### Explicit AssetAmount
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.schemas import AssetAmount
 
 PaymentOption(
     scheme="exact",
-    network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    network=ALGORAND_TESTNET_CAIP2,
     pay_to="YOUR_ADDRESS",
     price=AssetAmount(
         amount="50000",       # 50000 microUSDC = $0.05
@@ -189,11 +195,13 @@ PaymentOption(
 ### Multi-Network (AVM + EVM + SVM)
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 routes = {
     "GET /api/data/*": RouteConfig(
         accepts=[
             PaymentOption(scheme="exact", pay_to=AVM_ADDRESS, price="$0.01",
-                         network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="),
+                         network=ALGORAND_TESTNET_CAIP2),
             PaymentOption(scheme="exact", pay_to=EVM_ADDRESS, price="$0.01",
                          network="eip155:84532"),
             PaymentOption(scheme="exact", pay_to=SVM_ADDRESS, price="$0.01",

@@ -7,8 +7,10 @@ Detailed API reference for `@x402/core/facilitator`, `@x402/avm/exact/facilitato
 ### Installation
 
 ```bash
-npm install @x402/core @x402/avm algosdk
+npm install @x402/core @x402/avm
 ```
+
+`@algorandfoundation/algokit-utils` is installed as a transitive dependency of `@x402/avm`; `algosdk` is not required for a facilitator.
 
 ### Facilitator Exports from @x402/core/facilitator
 
@@ -36,9 +38,10 @@ The core facilitator that verifies payment validity and settles transactions on-
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `verify` | `(payload, requirements) => Promise<VerifyResult>` | Verify a payment payload without submitting |
-| `settle` | `(payload, requirements) => Promise<SettleResult>` | Verify and settle a payment on-chain |
-| `getSupportedNetworks` | `() => SupportedNetworks` | Return all registered networks |
+| `register` | `(networks: Network \| Network[], scheme) => this` | Register a scheme for one or more CAIP-2 networks |
+| `verify` | `(payload, requirements) => Promise<VerifyResponse>` | Verify a payment payload without submitting |
+| `settle` | `(payload, requirements) => Promise<SettleResponse>` | Verify and settle a payment on-chain |
+| `getSupported` | `() => { kinds, extensions, signers }` | Return all registered scheme/network kinds, extensions, and signer addresses |
 | `onBeforeVerify` | `(hook) => void` | Register pre-verification hook |
 | `onAfterVerify` | `(hook) => void` | Register post-verification hook |
 | `onBeforeSettle` | `(hook) => void` | Register pre-settlement hook |
@@ -54,7 +57,7 @@ Validates a payment payload against requirements without submitting to the netwo
 
 ```typescript
 const result = await facilitator.verify(paymentPayload, paymentRequirements);
-// result: { isValid: boolean, error?: string }
+// result: { isValid: boolean, invalidReason?: string, invalidMessage?: string, payer?: string }
 ```
 
 ### settle()
@@ -63,7 +66,20 @@ Verifies the payment, co-signs the fee-payer transaction, and submits the group 
 
 ```typescript
 const result = await facilitator.settle(paymentPayload, paymentRequirements);
-// result: { success: boolean, txId?: string, error?: string }
+// result: { success: boolean, transaction: string, network: Network, payer?: string, errorReason?: string, errorMessage?: string }
+```
+
+### getSupported()
+
+Returns the facilitator's capabilities for the `/supported` endpoint. There is no `getSupportedNetworks()` method.
+
+```typescript
+const supported = facilitator.getSupported();
+// supported: {
+//   kinds: { x402Version: number; scheme: string; network: Network; extra?: Record<string, unknown> }[];
+//   extensions: string[];
+//   signers: Record<string, string[]>;
+// }
 ```
 
 ---
@@ -72,13 +88,45 @@ const result = await facilitator.settle(paymentPayload, paymentRequirements);
 
 The interface that bridges the facilitator to the Algorand blockchain.
 
+### toFacilitatorAvmSigner (recommended)
+
 ```typescript
+import { toFacilitatorAvmSigner } from "@x402/avm";
+
+function toFacilitatorAvmSigner(
+  privateKeyBase64: string,            // Base64 of the 64-byte secret key (seed || pubkey); mnemonics are NOT accepted
+  config?: {
+    mainnetUrl?: string;               // default: https://mainnet-api.algonode.cloud
+    testnetUrl?: string;               // default: https://testnet-api.algonode.cloud
+    algodToken?: string;
+  },
+): FacilitatorAvmSigner;
+
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_TESTNET_URL,
+});
+```
+
+The returned signer handles signing, simulation of mixed signed/unsigned groups (`allowEmptySignatures: true`), concatenated submission, and confirmation for both mainnet and testnet, selecting the algod client by the CAIP-2 `network` argument. Passing a mnemonic throws `AVM private key must be a Base64-encoded 64-byte key`.
+
+### Interface
+
+`Network` is `` `${string}:${string}` `` from `@x402/core/types`. The algod client and response models come from `@algorandfoundation/algokit-utils` (a transitive dependency of `@x402/avm`), not from `algosdk` -- a signer built on `algosdk.Algodv2` does not type-check.
+
+```typescript
+import type { Network } from "@x402/core/types";
+import type {
+  AlgodClient,
+  SimulateResponse,
+  PendingTransactionResponse,
+} from "@algorandfoundation/algokit-utils/algod-client";
+
 interface FacilitatorAvmSigner {
   /**
    * Returns the list of Algorand addresses this facilitator controls.
    * Used to identify which transactions in a group the facilitator should sign.
    */
-  getAddresses(): string[];
+  getAddresses(): readonly string[];
 
   /**
    * Sign a single unsigned transaction.
@@ -89,73 +137,73 @@ interface FacilitatorAvmSigner {
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
 
   /**
-   * Get an Algodv2 client configured for the specified network.
+   * Get an algokit-utils AlgodClient configured for the specified network.
    * @param network - CAIP-2 network identifier
-   * @returns Configured algosdk.Algodv2 instance
    */
-  getAlgodClient(network: string): algosdk.Algodv2;
+  getAlgodClient(network: Network): AlgodClient;
 
   /**
    * Simulate a transaction group for verification without submission.
    * Must handle both signed and unsigned transactions in the group.
-   * Use allowEmptySignatures: true for unsigned transactions.
    * @param txns - Array of transaction bytes (mixed signed/unsigned)
    * @param network - CAIP-2 network identifier
-   * @returns Simulation result
+   * @returns algokit-utils SimulateResponse
    */
-  simulateTransactions(txns: Uint8Array[], network: string): Promise<any>;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
 
   /**
    * Send signed transactions to the Algorand network.
    * All transactions must be fully signed before calling this method.
-   * Concatenate bytes with Buffer.concat() before sendRawTransaction.
    * @param signedTxns - Array of signed transaction bytes
    * @param network - CAIP-2 network identifier
    * @returns Transaction ID
    */
-  sendTransactions(signedTxns: Uint8Array[], network: string): Promise<string>;
+  sendTransactions(signedTxns: Uint8Array[], network: Network): Promise<string>;
 
   /**
    * Wait for a transaction to be confirmed on the network.
    * @param txId - Transaction ID to wait for
    * @param network - CAIP-2 network identifier
    * @param waitRounds - Number of rounds to wait (default: 4)
-   * @returns Confirmation result
+   * @returns algokit-utils PendingTransactionResponse
    */
   waitForConfirmation(
     txId: string,
-    network: string,
+    network: Network,
     waitRounds?: number,
-  ): Promise<any>;
+  ): Promise<PendingTransactionResponse>;
 }
 ```
 
-### Implementation Notes
+### Custom Signer
 
-**simulateTransactions**: Must handle mixed signed/unsigned transaction bytes. Wrap unsigned transactions with `new algosdk.SignedTransaction({ txn })`:
-
-```typescript
-simulateTransactions: async (txns, network) => {
-  const stxns = txns.map((txnBytes) => {
-    try {
-      return algosdk.decodeSignedTransaction(txnBytes);
-    } catch {
-      const txn = algosdk.decodeUnsignedTransaction(txnBytes);
-      return new algosdk.SignedTransaction({ txn });
-    }
-  });
-  // ...
-}
-```
-
-**sendTransactions**: Concatenate all signed transaction bytes before sending:
+Only implement the interface yourself if you need a custom key store (HSM, KMS, etc.). Build on `@algorandfoundation/algokit-utils`, not `algosdk`, so the algod client type matches:
 
 ```typescript
-sendTransactions: async (signedTxns, network) => {
-  const combined = Buffer.concat(signedTxns.map(t => Buffer.from(t)));
-  const { txId } = await algodClient.sendRawTransaction(combined).do();
-  return txId;
-}
+import { AlgorandClient, waitForConfirmation } from "@algorandfoundation/algokit-utils";
+import type { Network } from "@x402/core/types";
+import type { FacilitatorAvmSigner } from "@x402/avm";
+import { isTestnetNetwork } from "@x402/avm";
+
+const testnet = AlgorandClient.testNet();
+const mainnet = AlgorandClient.mainNet();
+const algodFor = (network: Network) =>
+  (isTestnetNetwork(network) ? testnet : mainnet).client.algod; // algokit-utils AlgodClient
+
+const customSigner: FacilitatorAvmSigner = {
+  getAddresses: () => [FACILITATOR_ADDRESS],
+  // Return the signed transaction bytes for `txn` (raw unsigned msgpack) from your key store
+  signTransaction: async (txn, senderAddress) => signWithYourKeyStore(txn, senderAddress),
+  getAlgodClient: algodFor,
+  // Accepts mixed signed/unsigned bytes; empty signatures are allowed
+  simulateTransactions: async (txns, network) => algodFor(network).simulateRawTransactions(txns),
+  sendTransactions: async (signedTxns, network) => {
+    const response = await algodFor(network).sendRawTransaction(signedTxns);
+    return response.txId; // algokit-utils PostTransactionsResponse (note: algosdk 3.x uses lowercase `txid`)
+  },
+  waitForConfirmation: async (txId, network, waitRounds = 5) =>
+    waitForConfirmation(txId, waitRounds, algodFor(network)),
+};
 ```
 
 ---
@@ -403,8 +451,8 @@ facilitator.onAfterSettle(async (context) => {
 
 | Constant | Value |
 |----------|-------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 | `USDC_TESTNET_ASA_ID` | `"10458941"` |
 | `USDC_MAINNET_ASA_ID` | `"31566704"` |
 
@@ -450,11 +498,12 @@ curl "http://localhost:4000/discovery/resources?limit=10&offset=0"
 ## Important Notes
 
 - The facilitator address must have ALGO to cover transaction fees. Each settlement requires a minimum of 0.001 ALGO for the fee-payer transaction.
-- `simulateTransactions` must handle both signed and unsigned transaction bytes in the same group. The client signs their payment transaction; the facilitator's fee-payer transaction arrives unsigned.
-- `sendTransactions` receives an array of individually signed transaction bytes. Concatenate them with `Buffer.concat()` before calling `sendRawTransaction`.
+- `simulateTransactions` must handle both signed and unsigned transaction bytes in the same group. The client signs their payment transaction; the facilitator's fee-payer transaction arrives unsigned. `toFacilitatorAvmSigner()` handles this via algokit-utils `simulateRawTransactions`.
+- `sendTransactions` receives an array of individually signed transaction bytes; the algokit-utils `AlgodClient.sendRawTransaction()` accepts the array directly.
+- Use `facilitator.getSupported()` for the `/supported` endpoint; there is no `getSupportedNetworks()`. `SettleResponse` exposes the transaction ID as `transaction` (not `txId`) and failures as `errorReason`/`errorMessage` (not `error`).
 - The `.register()` function at `@x402/avm/exact/facilitator` is distinct from the client and server variants. Always import from the correct subpath.
 - Bazaar discovery is purely additive. If no extensions are present in the payment payload, the facilitator operates normally without cataloging.
-- The `withBazaar` function mutates the client in place and adds an `extensions.discovery` namespace. It is safe to chain with other extension wrappers.
+- The `withBazaar` function mutates the client in place and adds an `extensions.bazaar` namespace (`listResources`, `search`). It is safe to chain with other extension wrappers.
 
 ---
 
@@ -462,5 +511,5 @@ curl "http://localhost:4000/discovery/resources?limit=10&offset=0"
 
 - [x402-avm Examples Repository](https://github.com/GoPlausible/x402-avm/tree/branch-v2-algorand-publish/examples/)
 - [x402-avm Documentation](https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-documentation/)
-- [algosdk TypeScript Reference](https://algorand.github.io/js-algorand-sdk/)
+- [AlgoKit Utils TypeScript Reference](https://github.com/algorandfoundation/algokit-utils-ts)
 - [Algorand Simulate API](https://developer.algorand.org/docs/rest-apis/algod/#post-v2transactionssimulate)

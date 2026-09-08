@@ -51,17 +51,24 @@ The client automatically handles HTTP 402 responses by creating payment payloads
 ```typescript
 import { x402Client } from "@x402/core/client";
 
-const client = new x402Client({
-  schemes: [],  // Populated via client.register(network, new ExactAvmScheme(signer))
-});
+// Optional argument is a selector FUNCTION: (x402Version, requirements) => requirements[n]
+const client = new x402Client();
+// Schemes are added via client.register(network, new ExactAvmScheme(signer))
+
+// x402Client has no fetch() — wrap fetch with @x402/fetch
+import { wrapFetchWithPayment } from "@x402/fetch";
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 ```
 
 ### Methods
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `fetch` | `(url: string, init?: RequestInit) => Promise<Response>` | Fetch with automatic 402 handling |
-| `registerPolicy` | `(policy: PaymentPolicy) => void` | Add a payment filtering policy |
+| `register` | `(network: Network, scheme: SchemeNetworkClient) => this` | Register a scheme for a network (glob `"algorand:*"` ok) |
+| `registerPolicy` | `(policy: PaymentPolicy) => this` | Add a payment filtering policy |
+| `createPaymentPayload` | `(paymentRequired: PaymentRequired) => Promise<PaymentPayload>` | Build a signed payload for a 402 response |
+
+Automatic 402 handling is provided by `wrapFetchWithPayment(fetch, client)` from `@x402/fetch` (there is no `client.fetch`).
 
 ### Lifecycle
 
@@ -96,47 +103,62 @@ const server = new x402ResourceServer(facilitatorClient);
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `createPaymentRequired` | `(resource, configs[]) => PaymentRequired` | Create a 402 response body |
-| `processPayment` | `(xPaymentHeader, config) => Promise<ProcessResult>` | Verify and settle a payment |
+| `register` | `(network: Network, server: SchemeNetworkServer) => this` | Register a scheme for a network |
+| `buildPaymentRequirements` | `(resourceConfig: ResourceConfig) => Promise<PaymentRequirements[]>` | Build requirements from a price/payTo config |
+| `createPaymentRequiredResponse` | `(requirements, resourceInfo, error?, extensions?) => Promise<PaymentRequired>` | Create a 402 response body |
+| `verifyPayment` | `(payload, requirements) => Promise<VerifyResponse>` | Verify via the facilitator |
+| `settlePayment` | `(payload, requirements) => Promise<SettleResponse>` | Settle via the facilitator |
+
+(There is no `createPaymentRequired` or `processPayment`.)
 
 ## x402HTTPResourceServer
 
 Adds HTTP route matching on top of `x402ResourceServer`.
 
 ```typescript
-import { x402HTTPResourceServer } from "@x402/core/server";
+import { x402ResourceServer, x402HTTPResourceServer } from "@x402/core/server";
 
-const httpServer = new x402HTTPResourceServer(facilitatorClient, { routes });
+// Constructor takes a configured x402ResourceServer (not a facilitator client) and a RoutesConfig
+const resourceServer = new x402ResourceServer(facilitatorClient);
+const httpServer = new x402HTTPResourceServer(resourceServer, routes);
 ```
 
 ### Methods
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `processRequest` | `(context) => Promise<{ status, body }>` | Process an HTTP request with route matching |
-| `onProtectedRequest` | `(callback) => void` | Register a hook for protected requests |
-| `resourceServer` | Property | Access the underlying `x402ResourceServer` |
+| `processHTTPRequest` | `(context: HTTPRequestContext, paywallConfig?) => Promise<HTTPProcessResult>` | Match route + verify; result `type` is `"no-payment-required"`, `"payment-verified"` or `"payment-error"` |
+| `processSettlement` | `(payload, requirements, declaredExtensions?, ...) => Promise<ProcessSettleResultResponse>` | Settle after the handler runs |
+| `requiresPayment` | `(context: HTTPRequestContext) => boolean` | Whether the request matches a protected route |
+| `onProtectedRequest` | `(hook) => this` | Register a hook for protected requests |
+| `createSettlementHeaders` | `(settleResponse) => Record<string, string>` | Build `PAYMENT-RESPONSE` headers |
+
+`HTTPRequestContext = { adapter: HTTPAdapter; path: string; method: string; paymentHeader?: string; routePattern?: string }`. There is no `processRequest` method and no `.resourceServer` property — keep your own reference to the `x402ResourceServer`.
 
 ### Route Configuration
 
 ```typescript
+// RoutesConfig is keyed by route pattern: "GET /api/premium/*"
+type RoutesConfig = Record<string, RouteConfig> | RouteConfig;
+
 interface RouteConfig {
-  path: string;          // Route pattern (supports * wildcard)
-  config: ResourceConfig;
+  accepts: PaymentOption | PaymentOption[];   // no `path` — the pattern is the RoutesConfig key
+  resource?: string;
   description?: string;
   mimeType?: string;
+  serviceName?: string;
+  tags?: string[];
+  iconUrl?: string;
+  extensions?: Record<string, unknown>;
 }
 
-interface ResourceConfig {
-  scheme: "exact";
+interface PaymentOption {
+  scheme: string;
   payTo: string;
-  price: {
-    asset: string;
-    amount: string;
-    extra?: { name: string; decimals: number };
-  };
-  network: string;
-  maxTimeoutSeconds: number;
+  price: Price;          // "$0.01" (Money) or { asset, amount, extra? } (AssetAmount)
+  network: Network;      // CAIP-2, e.g. ALGORAND_TESTNET_CAIP2
+  maxTimeoutSeconds?: number;
+  extra?: Record<string, unknown>;
 }
 ```
 
@@ -177,7 +199,10 @@ const facilitator = new x402Facilitator();
 |--------|-----------|-------------|
 | `verify` | `(payload, requirements) => Promise<VerifyResult>` | Verify payment signature and amounts |
 | `settle` | `(payload, requirements) => Promise<SettleResult>` | Sign fee payer txn and submit group |
-| `getSupportedNetworks` | `() => SupportedNetworks` | Get registered networks |
+| `getSupported` | `() => { kinds: { x402Version, scheme, network, extra }[]; extensions: string[]; signers: Record<string, string[]> }` | Get registered scheme/network kinds and signer addresses |
+| `register` | `(networks: Network \| Network[], facilitator) => this` | Register a facilitator scheme for one or more networks |
+
+`SettleResponse` is `{ success: boolean; errorReason?: string; errorMessage?: string; payer?: string; transaction: string; network: Network; amount?: string }` — the on-chain transaction ID is in `transaction` (there is no `txId` field). `VerifyResponse` is `{ isValid: boolean; invalidReason?: string; invalidMessage?: string; payer?: string }`.
 
 ## ExactAvmScheme
 
@@ -238,15 +263,33 @@ Compatible with `@txnlab/use-wallet`'s `signTransactions` function. The `indexes
 ## FacilitatorAvmSigner Interface
 
 ```typescript
+import type { Network } from "@x402/core/types"; // `${string}:${string}`
+import type { AlgodClient } from "@algorandfoundation/algokit-utils/algod-client";
+// SimulateResponse / PendingTransactionResponse are the algokit-utils algod models
+
 interface FacilitatorAvmSigner {
   getAddresses(): readonly string[];
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
-  getAlgodClient(network: Network): unknown;
-  simulateTransactions(txns: Uint8Array[], network: Network): Promise<unknown>;
+  getAlgodClient(network: Network): AlgodClient;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
   sendTransactions(signedTxns: Uint8Array[], network: Network): Promise<string>;
-  waitForConfirmation(txId: string, network: Network, waitRounds?: number): Promise<unknown>;
+  waitForConfirmation(txId: string, network: Network, waitRounds?: number): Promise<PendingTransactionResponse>;
 }
 ```
+
+Prefer the built-in factory instead of hand-rolling this interface. A signer built on `algosdk.Algodv2` does not type-check; `getAlgodClient` must return an algokit-utils `AlgodClient` (e.g. `AlgorandClient.testNet().client.algod`).
+
+### Signer Helpers
+
+```typescript
+toClientAvmSigner(privateKeyBase64: string): ClientAvmSigner
+toFacilitatorAvmSigner(
+  privateKeyBase64: string,
+  config?: { mainnetUrl?: string; testnetUrl?: string; algodToken?: string },
+): FacilitatorAvmSigner
+```
+
+`privateKeyBase64` is the base64 encoding of the 64-byte algosdk secret key (32-byte seed + 32-byte pubkey). A mnemonic is not accepted (throws `AVM private key must be a Base64-encoded 64-byte key`).
 
 ### Method Details
 
@@ -254,7 +297,7 @@ interface FacilitatorAvmSigner {
 |--------|---------|
 | `getAddresses` | Returns fee payer addresses managed by this facilitator |
 | `signTransaction` | Signs a single unsigned transaction (fee payer txn) |
-| `getAlgodClient` | Returns an Algod client for the given network |
+| `getAlgodClient` | Returns an algokit-utils `AlgodClient` for the given network |
 | `simulateTransactions` | Simulates an atomic group to validate before submission |
 | `sendTransactions` | Submits signed transaction group to the network |
 | `waitForConfirmation` | Waits for on-chain confirmation of a transaction |
@@ -274,55 +317,46 @@ isAvmSignerWallet(wallet): wallet is ClientAvmSigner;
 
 | Constant | Value |
 |----------|-------|
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 | `CAIP2_NETWORKS` | `[ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2]` |
 | `ALGORAND_MAINNET_GENESIS_HASH` | `"wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
 | `ALGORAND_TESTNET_GENESIS_HASH` | `"SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| `V1_ALGORAND_MAINNET` | `"algorand-mainnet"` |
-| `V1_ALGORAND_TESTNET` | `"algorand-testnet"` |
-| `V1_NETWORKS` | `["algorand-mainnet", "algorand-testnet"]` |
 
-### V1/V2 Mapping
+Only CAIP-2 identifiers are supported. There are no V1 network-name constants (`"algorand-testnet"`) or V1/CAIP-2 mapping tables; `normalizeAlgorandNetwork("algorand-testnet")` throws.
 
-| Constant | Type | Description |
-|----------|------|-------------|
-| `V1_TO_CAIP2` | `Record<string, string>` | V1 name to CAIP-2 |
-| `CAIP2_TO_V1` | `Record<string, string>` | CAIP-2 to V1 name |
-
-### USDC Configuration
+### USDC / Default Assets
 
 | Constant | Value |
 |----------|-------|
 | `USDC_MAINNET_ASA_ID` | `"31566704"` |
 | `USDC_TESTNET_ASA_ID` | `"10458941"` |
 | `USDC_DECIMALS` | `6` |
-| `USDC_CONFIG` | `Record<network, { asaId, name, decimals }>` |
+| `DEFAULT_ASSETS` | `Record<caip2Network, { asset, decimals, symbol }[]>` — default USD assets per network |
+| `getDefaultAsset(network, symbol?)` | Look up a default asset (throws if unknown) |
+| `findDefaultAsset(asset, network)` | Reverse lookup by ASA id (or `undefined`) |
 
 ### Algod Endpoints
 
-| Constant | Value |
-|----------|-------|
-| `DEFAULT_ALGOD_MAINNET` | env `ALGOD_MAINNET_URL` or `"https://mainnet-api.algonode.cloud"` |
-| `DEFAULT_ALGOD_TESTNET` | env `ALGOD_TESTNET_URL` or `"https://testnet-api.algonode.cloud"` |
-| `NETWORK_TO_ALGOD` | `Record<network, url>` |
-| `FALLBACK_ALGOD_MAINNET` | `"https://mainnet-api.algonode.cloud"` |
-| `FALLBACK_ALGOD_TESTNET` | `"https://testnet-api.algonode.cloud"` |
+No algod URL constants are exported. Configure the node via `ClientAvmConfig` (`new ExactAvmScheme(signer, { algodUrl, algodToken })` or `{ algorandClient: AlgorandClient.testNet() }`) on the client, and via `toFacilitatorAvmSigner(key, { testnetUrl, mainnetUrl, algodToken })` on the facilitator.
 
 ### Transaction Limits
 
 | Constant | Value | Description |
 |----------|-------|-------------|
-| `MAX_ATOMIC_GROUP_SIZE` | `16` | Max transactions per atomic group |
-| `MIN_TXN_FEE` | `1000` | Minimum transaction fee (microAlgos) |
-| `MAX_REASONABLE_FEE` | `10_000_000` | 10 ALGO sanity check |
+| `ALGORAND_MIN_TX_FEE` | `1000` microAlgos (`AlgoAmount`, re-exported from algokit-utils) | Minimum transaction fee |
+| `MAX_REASONABLE_FEE_PER_TXN` | `5000` | Per-transaction fee sanity cap (microAlgos) |
+| `maxReasonableGroupFee(groupSize)` | `MAX_REASONABLE_FEE_PER_TXN * groupSize` | Fee cap for a fee-payer transaction |
+
+The Algorand protocol limit of 16 transactions per atomic group is not exported as a constant.
 
 ### Address Validation
 
 | Constant | Value |
 |----------|-------|
-| `ALGORAND_ADDRESS_REGEX` | `/^[A-Z2-7]{58}$/` |
 | `ALGORAND_ADDRESS_LENGTH` | `58` |
+
+Use `isValidAlgorandAddress(address)` (below) — there is no exported address regex.
 
 ## Utility Functions
 
@@ -356,12 +390,12 @@ decodeUnsignedTransaction(base64Str: string): Transaction
 
 ```typescript
 getNetworkFromCaip2(caip2: string): "testnet" | "mainnet" | null
-isAlgorandNetwork(network: string): boolean    // Recognizes both V1 and CAIP-2
+isAlgorandNetwork(network: string): boolean    // true for any "algorand:*" CAIP-2 identifier
 isTestnetNetwork(network: string): boolean
-v1ToCaip2(v1Name: string): string
-caip2ToV1(caip2: string): string
-createAlgodClient(network: string, url?: string, token?: string): Algodv2
+normalizeAlgorandNetwork(network: string): Network  // accepts short or full-genesis-hash CAIP-2; throws on "algorand-testnet"
 ```
+
+There are no `v1ToCaip2` / `caip2ToV1` / `createAlgodClient` helpers. For an algod client use algokit-utils: `AlgorandClient.testNet().client.algod`.
 
 ### Transaction Inspection
 
@@ -369,10 +403,11 @@ createAlgodClient(network: string, url?: string, token?: string): Algodv2
 getSenderFromTransaction(txnBytes: Uint8Array, isSigned: boolean): string
 getTransactionId(txnBytes: Uint8Array): string
 hasSignature(txnBytes: Uint8Array): boolean
-getGenesisHashFromTransaction(txnBytes: Uint8Array): string
+getGenesisHashFromTransaction(txn: { genesisHash?: Uint8Array }): string
 validateGroupId(txnBytesArray: Uint8Array[]): boolean
-assignGroupId(txns: Transaction[]): Transaction[]
 ```
+
+There is no `assignGroupId` — group with algokit-utils `groupTransactions` (from `@algorandfoundation/algokit-utils/transact`) or `algosdk.assignGroupID`.
 
 ## Type Definitions
 
@@ -381,15 +416,11 @@ assignGroupId(txns: Transaction[]): Transaction[]
 ```typescript
 interface PaymentRequirements {
   scheme: "exact";
-  network: string;            // CAIP-2 identifier
-  maxAmountRequired: string;  // Atomic units as string
-  resource: string;           // URL of the resource
-  description: string;
-  mimeType: string;
+  network: Network;           // CAIP-2 identifier (`${string}:${string}`)
+  asset: string;              // ASA ID ("0" for native ALGO)
+  amount: string;             // Atomic units as string
   payTo: string;              // Receiver address
   maxTimeoutSeconds: number;
-  asset: string;              // ASA ID ("0" for native ALGO)
-  outputSchema: unknown;
   extra?: {
     name: string;             // Token name (e.g., "USDC")
     decimals: number;         // Token decimals (e.g., 6)
@@ -397,13 +428,16 @@ interface PaymentRequirements {
 }
 ```
 
+V2 `PaymentRequirements` has no `resource`, `description`, or `mimeType` fields — that metadata lives on `PaymentRequired.resource` (below).
+
 ### PaymentPayload
 
 ```typescript
 interface PaymentPayload {
   x402Version: 2;
-  scheme: "exact";
-  network: string;
+  resource?: ResourceInfo;      // { url, description?, mimeType? }
+  accepted: PaymentRequirements; // the selected option — scheme/network live here, not at top level
+  extensions?: Record<string, unknown>;
   payload: {
     paymentGroup: string[];   // base64-encoded msgpack transaction bytes
     paymentIndex: number;     // Index of the payment transaction
@@ -439,7 +473,7 @@ Fee abstraction uses Algorand atomic transaction groups and pooled fees:
    - Must be a self-payment (from == to)
    - Amount must be 0
    - No rekey, close-to, or other dangerous operations
-   - Fee must be within `MAX_REASONABLE_FEE`
+   - Fee must be within `maxReasonableGroupFee(groupSize)` (`MAX_REASONABLE_FEE_PER_TXN` × group size)
 5. **Facilitator** signs Transaction 1 and submits the atomic group
 6. **Atomic execution** ensures all-or-nothing on-chain
 

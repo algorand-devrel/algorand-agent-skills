@@ -28,7 +28,7 @@ Client                    Resource Server              Facilitator
   |                             |<-- { isValid: true } -----|
   |<-- 200 OK + content --------|                           |
   |                             |-- settle(payload) ------->|
-  |                             |<-- { txId: "..." } -------|
+  |                             |<-- { transaction: "..." } |
 ```
 
 ## How to Proceed
@@ -45,6 +45,7 @@ The `x402Client` automatically handles 402 responses by creating and signing pay
 
 ```typescript
 import { x402Client } from "@x402/core/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 import algosdk from "algosdk";
@@ -63,10 +64,13 @@ const signer: ClientAvmSigner = {
   },
 };
 
-const client = new x402Client({ schemes: [] });
+// x402Client takes an optional selector function, not { schemes }
+const client = new x402Client();
 client.register("algorand:*", new ExactAvmScheme(signer));
 
-const response = await client.fetch("https://api.example.com/premium/data");
+// x402Client has no fetch() — wrap fetch with @x402/fetch
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+const response = await fetchWithPayment("https://api.example.com/premium/data");
 ```
 
 ### Step 3: Create a Resource Server
@@ -93,7 +97,10 @@ The `x402Facilitator` verifies payment signatures and settles transactions on-ch
 ```typescript
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402/avm";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+// base64 of the 64-byte algosdk secret key (seed||pubkey) — not a mnemonic
+const myFacilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(myFacilitatorSigner));
@@ -104,7 +111,9 @@ facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(myFacilitatorSig
 Two signer interfaces exist:
 
 - **ClientAvmSigner**: For clients paying for resources. Compatible with `@txnlab/use-wallet`.
-- **FacilitatorAvmSigner**: For facilitators verifying and settling payments. Manages Algod clients, simulation, and submission.
+- **FacilitatorAvmSigner**: For facilitators verifying and settling payments. Manages Algod clients (algokit-utils `AlgodClient`), simulation, and submission.
+
+For private-key based signers use the helpers `toClientAvmSigner(privateKeyBase64)` and `toFacilitatorAvmSigner(privateKeyBase64, config?)` from `@x402/avm`. Both take the base64-encoded 64-byte algosdk secret key; mnemonics are not accepted.
 
 ### Step 6: Apply Payment Policies (Optional)
 
@@ -140,7 +149,7 @@ client.register("algorand:*", new ExactAvmScheme(signer));
 | `Simulation failed` | Transaction would fail on-chain | Check sender balance, USDC opt-in, correct receiver |
 | `signer not found for address` | Address mismatch | Verify signer address matches the account paying |
 | `Group ID mismatch` | Inconsistent atomic group | Use `algosdk.assignGroupID()` before encoding |
-| `Fee too high` | Fee exceeds MAX_REASONABLE_FEE | Check fee calculation; max is 10 ALGO |
+| `Fee too high` | Fee exceeds `maxReasonableGroupFee(groupSize)` | Check fee calculation; cap is `MAX_REASONABLE_FEE_PER_TXN` (5000 microAlgos) per transaction |
 | `No payment requirements matched` | Policies filtered all options | Review policy logic; ensure at least one requirement passes |
 | `Transaction rejected` | User cancelled in wallet | Handle rejection gracefully in UI |
 

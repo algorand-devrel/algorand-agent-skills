@@ -32,6 +32,13 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 | `ClientAvmSigner` | Client-side signer with `address` and `signTransactions()` |
 | `FacilitatorAvmSigner` | Facilitator signer with `getAddresses()`, `signTransaction()`, `getAlgodClient()`, `simulateTransactions()`, `sendTransactions()`, `waitForConfirmation()` |
 
+**Signer Helpers:**
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `toClientAvmSigner` | `(privateKeyBase64: string) => ClientAvmSigner` | Builds a client signer from the base64-encoded 64-byte algosdk secret key (seed‖pubkey). Mnemonics are not accepted |
+| `toFacilitatorAvmSigner` | `(privateKeyBase64: string, config?: { mainnetUrl?, testnetUrl?, algodToken? }) => FacilitatorAvmSigner` | Builds a facilitator signer (algokit-utils algod clients for TestNet/MainNet) from the base64-encoded 64-byte secret key |
+
 **Registration Functions (from subpaths):**
 
 | Function | Import Path | Arguments |
@@ -44,8 +51,8 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 
 | Constant | Value | Description |
 |----------|-------|-------------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | Testnet CAIP-2 |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | Mainnet CAIP-2 |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` | Testnet CAIP-2 (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` | Mainnet CAIP-2 (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 | `CAIP2_NETWORKS` | Array of both | All supported CAIP-2 networks |
 | `ALGORAND_TESTNET_GENESIS_HASH` | `"SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | Testnet genesis hash |
 | `ALGORAND_MAINNET_GENESIS_HASH` | `"wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | Mainnet genesis hash |
@@ -81,7 +88,7 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 | `isTestnetNetwork` | `(network: string) => boolean` | Check if testnet |
 | `v1ToCaip2` | `(v1: string) => string` | Convert V1 to CAIP-2 |
 | `caip2ToV1` | `(caip2: string) => string` | Convert CAIP-2 to V1 |
-| `createAlgodClient` | `(network, url?, token?) => Algodv2` | Create Algod client |
+| `createAlgodClient` | `(network, url?, token?) => AlgodClient` | Create algokit-utils Algod client |
 | `getSenderFromTransaction` | `(bytes, isSigned) => string` | Extract sender address |
 | `getTransactionId` | `(bytes) => string` | Get transaction ID |
 | `hasSignature` | `(bytes) => boolean` | Check if transaction is signed |
@@ -171,6 +178,10 @@ interface ClientAvmSigner {
 ## FacilitatorAvmSigner Interface (Detailed)
 
 ```typescript
+import type { Network } from "@x402/core/types"; // `${string}:${string}`
+import type { AlgodClient } from "@algorandfoundation/algokit-utils/algod-client";
+// SimulateResponse / PendingTransactionResponse are the algokit-utils algod models
+
 interface FacilitatorAvmSigner {
   /**
    * Get all Algorand addresses this facilitator manages.
@@ -193,9 +204,9 @@ interface FacilitatorAvmSigner {
    * Used for fetching transaction parameters and other on-chain queries.
    *
    * @param network - CAIP-2 network identifier
-   * @returns algosdk.Algodv2 instance (typed as unknown to avoid algosdk dependency in types)
+   * @returns algokit-utils AlgodClient (not algosdk.Algodv2)
    */
-  getAlgodClient(network: Network): unknown;
+  getAlgodClient(network: Network): AlgodClient;
 
   /**
    * Simulate a transaction group before submission.
@@ -205,7 +216,7 @@ interface FacilitatorAvmSigner {
    * @param network - CAIP-2 network identifier
    * @returns Simulation result from the Algod API
    */
-  simulateTransactions(txns: Uint8Array[], network: Network): Promise<unknown>;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
 
   /**
    * Submit fully signed transactions to the Algorand network.
@@ -229,9 +240,11 @@ interface FacilitatorAvmSigner {
     txId: string,
     network: Network,
     waitRounds?: number,
-  ): Promise<unknown>;
+  ): Promise<PendingTransactionResponse>;
 }
 ```
+
+`Network` is the template literal type `` `${string}:${string}` `` from `@x402/core/types`. Because `getAlgodClient` must return an algokit-utils `AlgodClient`, a hand-rolled signer built on `algosdk.Algodv2` does not type-check — prefer `toFacilitatorAvmSigner(privateKeyBase64)`, or use `AlgorandClient.testNet().client.algod` from `@algorandfoundation/algokit-utils`.
 
 ## Route Configuration Types
 

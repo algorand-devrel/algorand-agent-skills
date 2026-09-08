@@ -8,6 +8,7 @@ from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.fastapi import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = FastAPI()
@@ -15,7 +16,7 @@ app = FastAPI()
 facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServer(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -23,7 +24,7 @@ routes = {
     "GET /api/data/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -49,6 +50,7 @@ from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = FastAPI()
@@ -56,7 +58,7 @@ app = FastAPI()
 facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServer(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -66,7 +68,7 @@ routes = {
             scheme="exact",
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
         ),
         mime_type="application/json",
         description="Weather report",
@@ -85,6 +87,7 @@ async def get_weather():
 ```python
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig
 from x402.http.middleware.fastapi import payment_middleware_from_config
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
@@ -93,7 +96,7 @@ routes = {
     "GET /api/data/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "payTo": "YOUR_ALGORAND_ADDRESS",
             "maxAmountRequired": "10000",
             "asset": "10458941",
@@ -106,7 +109,7 @@ mw = payment_middleware_from_config(
     facilitator_client=facilitator,
     schemes=[
         {
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "server": ExactAvmServerScheme(),
         },
     ],
@@ -120,11 +123,13 @@ async def x402_middleware(request, call_next):
 ## FastAPI: Simple String Price
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 routes = {
     "GET /api/weather": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -135,13 +140,14 @@ routes = {
 ## FastAPI: Explicit AssetAmount
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.schemas import AssetAmount
 
 routes = {
     "GET /api/premium/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price=AssetAmount(
                 amount="10000",
@@ -225,6 +231,7 @@ from fastapi import FastAPI
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.mechanisms.evm.exact import ExactEvmServerScheme
 from x402.mechanisms.svm.exact import ExactSvmServerScheme
@@ -236,7 +243,7 @@ load_dotenv()
 EVM_ADDRESS = os.getenv("EVM_ADDRESS")
 SVM_ADDRESS = os.getenv("SVM_ADDRESS")
 AVM_ADDRESS = os.getenv("AVM_ADDRESS")
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 EVM_NETWORK: Network = "eip155:84532"
 SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
 
@@ -281,7 +288,7 @@ from pydantic import BaseModel
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import AssetAmount, Network
 from x402.server import x402ResourceServer
@@ -292,7 +299,7 @@ AVM_ADDRESS = os.getenv("AVM_ADDRESS")
 if not AVM_ADDRESS:
     raise ValueError("AVM_ADDRESS environment variable is required")
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
 
 
@@ -374,6 +381,7 @@ from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.flask import PaymentMiddleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
@@ -381,7 +389,7 @@ app = Flask(__name__)
 facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServerSync(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -389,7 +397,7 @@ routes = {
     "GET /api/data/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -411,6 +419,7 @@ from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.flask import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
@@ -418,7 +427,7 @@ app = Flask(__name__)
 facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
 server = x402ResourceServerSync(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -428,7 +437,7 @@ routes = {
             scheme="exact",
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
         ),
         mime_type="application/json",
         description="Weather report",
@@ -448,6 +457,7 @@ def get_weather():
 from flask import Flask
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig
 from x402.http.middleware.flask import payment_middleware_from_config
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
@@ -458,7 +468,7 @@ routes = {
     "GET /api/data/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "payTo": "YOUR_ALGORAND_ADDRESS",
             "maxAmountRequired": "10000",
             "asset": "10458941",
@@ -472,7 +482,7 @@ payment_middleware_from_config(
     facilitator_client=facilitator,
     schemes=[
         {
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "server": ExactAvmServerScheme(),
         },
     ],
@@ -511,6 +521,7 @@ from flask import Flask, jsonify
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.mechanisms.evm.exact import ExactEvmServerScheme
 from x402.mechanisms.svm.exact import ExactSvmServerScheme
@@ -522,7 +533,7 @@ load_dotenv()
 EVM_ADDRESS = os.getenv("EVM_ADDRESS")
 SVM_ADDRESS = os.getenv("SVM_ADDRESS")
 AVM_ADDRESS = os.getenv("AVM_ADDRESS")
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 EVM_NETWORK: Network = "eip155:84532"
 SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
 
@@ -566,7 +577,7 @@ from flask import Flask, g, jsonify
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import AssetAmount, Network
 from x402.server import x402ResourceServerSync
@@ -577,7 +588,7 @@ AVM_ADDRESS = os.getenv("AVM_ADDRESS")
 if not AVM_ADDRESS:
     raise ValueError("AVM_ADDRESS environment variable is required")
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
 
 app = Flask(__name__)

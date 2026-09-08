@@ -38,10 +38,13 @@ import { x402Client } from "@x402/core/client";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const avmSigner = toClientAvmSigner(secretKey);
+// secretKeyBase64 = base64 of the 64-byte algosdk secret key (seed||pubkey) — NOT a mnemonic
+const avmSigner = toClientAvmSigner(secretKeyBase64);
 const client = new x402Client()
   .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(avmSigner));
+```
 
+```typescript
 // Server (x402ResourceServer is also re-exported from @x402/hono, @x402/express, @x402/next)
 import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
@@ -50,18 +53,28 @@ import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
 const server = new x402ResourceServer(facilitatorClient)
   .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
+```
 
+```typescript
 // Facilitator
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
 import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const avmSigner = toFacilitatorAvmSigner(secretKey);
+const avmSigner = toFacilitatorAvmSigner(secretKeyBase64);
 const facilitator = new x402Facilitator()
   .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(avmSigner));
 ```
 
 The `register` builder also accepts a glob pattern (e.g. `"algorand:*"`) when you want one scheme to handle all Algorand networks. Use the exported CAIP-2 constants (`ALGORAND_TESTNET_CAIP2`, `ALGORAND_MAINNET_CAIP2`) when targeting a single network.
+
+### Network identifiers
+
+Always use the `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` constants from `@x402/avm` — never hardcode the CAIP-2 string. The value changed in `@x402/avm` 2.20.0 to the 32-char CAIP-2 reference form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` for TestNet, `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k` for MainNet); earlier releases used the full base64 genesis hash. The Python `x402-avm` package (2.0.2) still uses the full genesis hash form, so a TypeScript client/server paired with a Python facilitator (or vice-versa) will not match on `network` until both sides use the same form. As a mitigation, register with the `"algorand:*"` glob on the client and server so either form is accepted.
+
+### Project setup
+
+Node examples assume ESM (`"type": "module"` in `package.json`). Recommended `tsconfig.json`: `"module": "NodeNext"`, `"moduleResolution": "NodeNext"`, `"target": "ES2022"`, `"strict": true`, `"types": ["node"]`. `@x402/*` packages ship both ESM and CJS builds.
 
 ### TypeScript algosdk Encoding
 
@@ -100,7 +113,7 @@ Build payment-protected servers with @x402/express or @x402/hono middleware. Cov
 
 ### Building Next.js Apps
 
-Build fullstack Next.js apps with @x402/next payment protection using paymentProxy and withX402. Covers App Router integration, middleware-level protection, and per-endpoint control.
+Build fullstack Next.js apps with @x402/next payment protection using paymentProxy and withX402. Covers App Router integration, middleware-level protection, and per-endpoint control. Requires Next.js 16.2.6+ and the `@x402/paywall` peer dependency (`npm install @x402/next @x402/paywall`).
 
 - [create-typescript-x402-nextjs.md](./references/create-typescript-x402-nextjs.md) — Next.js integration guide
 - [create-typescript-x402-nextjs-reference.md](./references/create-typescript-x402-nextjs-reference.md) — Next.js API reference
@@ -143,7 +156,7 @@ Use @x402/core and @x402/avm packages directly for custom integrations. Covers p
 | `@x402/next` | Next.js payment middleware and route wrappers |
 | `@x402/paywall` | Browser paywall UI builder for HTML 402 responses |
 | `@x402/extensions` | Optional protocol extensions (e.g. Bazaar discovery, offer/receipt) |
-| `@algorandfoundation/algokit-utils` | Mnemonic → ed25519 key derivation used by `toClientAvmSigner` / `toFacilitatorAvmSigner` |
+| `@algorandfoundation/algokit-utils` | Algod client and transaction signing used internally by `toClientAvmSigner` / `toFacilitatorAvmSigner` (installed transitively by `@x402/avm`) |
 | `algosdk` | Only required for custom/manual signer construction (browser wallets, advanced flows) |
 
 ## How to Use This Skill

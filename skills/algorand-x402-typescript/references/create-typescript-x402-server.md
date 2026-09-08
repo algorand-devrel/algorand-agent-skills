@@ -66,8 +66,9 @@ Routes map HTTP method + path patterns to payment configuration:
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
@@ -147,24 +148,27 @@ If you need your own facilitator instead of the public one:
 import express from "express";
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-// Create signer implementing FacilitatorAvmSigner interface
-const signer = { /* ... see EXAMPLES.md for full implementation ... */ };
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (seed || pubkey), NOT a mnemonic
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_SERVER, // optional; defaults to AlgoNode
+});
 
 const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 
 const app = express();
 app.use(express.json());
-app.post("/verify", async (req, res) => { /* ... */ });
-app.post("/settle", async (req, res) => { /* ... */ });
-app.get("/supported", (req, res) => { /* ... */ });
+app.get("/supported", (_req, res) => res.json(facilitator.getSupported()));
+app.post("/verify", async (req, res) => {
+  const { paymentPayload, paymentRequirements } = req.body;
+  res.json(await facilitator.verify(paymentPayload, paymentRequirements));
+});
+app.post("/settle", async (req, res) => {
+  const { paymentPayload, paymentRequirements } = req.body;
+  res.json(await facilitator.settle(paymentPayload, paymentRequirements));
+});
 app.listen(4020);
 ```
 

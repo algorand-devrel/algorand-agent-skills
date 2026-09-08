@@ -77,12 +77,13 @@ asyncio.run(main())
 import asyncio
 from x402 import x402ClientConfig, SchemeRegistration
 from x402.http.clients.httpx import wrapHttpxWithPaymentFromConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmClientScheme
 
 config = x402ClientConfig(
     schemes=[
         SchemeRegistration(
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             client=ExactAvmClientScheme(signer=my_avm_signer),
         ),
     ],
@@ -206,16 +207,18 @@ async with x402HttpxClient(x402) as client:
 ## httpx: Register with Specific Network
 
 ```python
+from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
+
 # Testnet only
-register_exact_avm_client(x402, signer, networks="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_TESTNET_CAIP2)
 
 # Mainnet only
-register_exact_avm_client(x402, signer, networks="algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_MAINNET_CAIP2)
 
 # Both explicitly
 register_exact_avm_client(x402, signer, networks=[
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+    ALGORAND_TESTNET_CAIP2,
+    ALGORAND_MAINNET_CAIP2,
 ])
 ```
 
@@ -307,12 +310,13 @@ session.mount("http://", adapter)
 import requests
 from x402 import x402ClientConfig, SchemeRegistration
 from x402.http.clients.requests import wrapRequestsWithPaymentFromConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmClientScheme
 
 config = x402ClientConfig(
     schemes=[
         SchemeRegistration(
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             client=ExactAvmClientScheme(signer=my_avm_signer),
         ),
     ],
@@ -424,16 +428,18 @@ with x402_requests(x402) as session:
 ## requests: Register with Specific Network
 
 ```python
+from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
+
 # Testnet only
-register_exact_avm_client(x402, signer, networks="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_TESTNET_CAIP2)
 
 # Mainnet only
-register_exact_avm_client(x402, signer, networks="algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_MAINNET_CAIP2)
 
 # Both explicitly
 register_exact_avm_client(x402, signer, networks=[
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+    ALGORAND_TESTNET_CAIP2,
+    ALGORAND_MAINNET_CAIP2,
 ])
 ```
 

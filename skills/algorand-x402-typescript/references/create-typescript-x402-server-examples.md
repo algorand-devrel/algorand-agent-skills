@@ -6,13 +6,13 @@
 import express from "express";
 import { paymentMiddlewareFromConfig } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
-import { x402ResourceServer } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
@@ -25,14 +25,14 @@ const routes = {
 };
 
 const facilitatorClient = new HTTPFacilitatorClient();
-const server = new x402ResourceServer(facilitatorClient);
-server.register("algorand:*", new ExactAvmScheme());
 
+// paymentMiddlewareFromConfig builds the x402ResourceServer for you;
+// each SchemeRegistration.server is a scheme server (ExactAvmScheme), not an x402ResourceServer
 app.use(
   paymentMiddlewareFromConfig(
     routes,
     facilitatorClient,
-    [{ network: "algorand:*", server: server }],
+    [{ network: "algorand:*", server: new ExactAvmScheme() }],
   ),
 );
 
@@ -56,6 +56,7 @@ import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
@@ -66,7 +67,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium/*": {
     accepts: {
       scheme: "exact",
@@ -111,6 +112,7 @@ import {
 } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
@@ -119,7 +121,7 @@ const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
 resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -154,8 +156,9 @@ app.listen(4021);
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -172,8 +175,9 @@ const routes = {
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium": {
     accepts: {
       scheme: "exact",
@@ -193,8 +197,9 @@ const routes = {
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -219,8 +224,9 @@ const routes = {
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -248,6 +254,7 @@ import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
@@ -255,7 +262,7 @@ const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/ai/generate": {
     accepts: {
       scheme: "exact",
@@ -308,13 +315,14 @@ app.listen(4021);
 import express from "express";
 import { paymentMiddlewareFromConfig } from "@x402/express";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = express();
 const PAY_TO = "YOUR_ALGORAND_ADDRESS";
 const facilitatorClient = new HTTPFacilitatorClient();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/lookup/:id": {
     accepts: {
       scheme: "exact",
@@ -385,11 +393,12 @@ app.listen(4021);
 import express from "express";
 import { paymentMiddlewareFromConfig } from "@x402/express";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium": {
     accepts: {
       scheme: "exact",
@@ -423,65 +432,18 @@ app.listen(4021);
 import express from "express";
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 app.use(express.json());
 
-const privateKeyBytes = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(privateKeyBytes.slice(32));
-const algodClient = new algosdk.Algodv2(
-  process.env.ALGOD_TOKEN || "",
-  process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
-  "",
-);
-
-const signer: FacilitatorAvmSigner = {
-  address,
-  async getAlgodClient(network: string) { return algodClient; },
-  async signGroupTransactions(groupTxnBytes: Uint8Array[], myIndices: number[]) {
-    const result = [...groupTxnBytes];
-    for (const idx of myIndices) {
-      const txn = algosdk.decodeUnsignedTransaction(groupTxnBytes[idx]);
-      result[idx] = txn.signTxn(privateKeyBytes);
-    }
-    return result;
-  },
-  async sendGroup(signedGroupBytes: Uint8Array[]) {
-    const combined = new Uint8Array(
-      signedGroupBytes.reduce((acc, b) => acc + b.length, 0),
-    );
-    let offset = 0;
-    for (const bytes of signedGroupBytes) {
-      combined.set(bytes, offset);
-      offset += bytes.length;
-    }
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  async simulateGroup(groupTxnBytes: Uint8Array[]) {
-    const txns = groupTxnBytes.map((bytes) => {
-      try { return algosdk.decodeSignedTransaction(bytes); }
-      catch {
-        const unsigned = algosdk.decodeUnsignedTransaction(bytes);
-        return new algosdk.SignedTransaction(unsigned);
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [
-        new algosdk.modelsv2.SimulateRequestTransactionGroup({
-          txns: txns.map((t) => algosdk.decodeObj(algosdk.encodeMsgpack(t))),
-        }),
-      ],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-};
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (seed || pubkey), NOT a mnemonic
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_SERVER, // optional; defaults to AlgoNode
+});
 
 const facilitator = new x402Facilitator();
-facilitator.register("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", new ExactAvmScheme(signer));
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 
 app.post("/verify", async (req, res) => {
   try {
@@ -516,11 +478,12 @@ app.listen(4020);
 import { Hono } from "hono";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
@@ -580,13 +543,14 @@ Deno.serve({ port: 4021 }, app.fetch);
 import { Hono } from "hono";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = new Hono();
 const PAY_TO = "YOUR_ALGORAND_ADDRESS";
 const facilitatorClient = new HTTPFacilitatorClient();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/lookup/:id": {
     accepts: {
       scheme: "exact",
@@ -681,6 +645,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 type Bindings = {
@@ -692,7 +657,7 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.use("*", cors());
 
 app.use("*", async (c, next) => {
-  const routes = {
+  const routes: RoutesConfig = {
     "GET /api/data": {
       accepts: {
         scheme: "exact",
@@ -740,65 +705,18 @@ export default app;
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
-import algosdk from "algosdk";
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402/avm";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 app.use("*", cors());
 
-const privateKeyBytes = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const facilitatorAddress = algosdk.encodeAddress(privateKeyBytes.slice(32));
-const algodClient = new algosdk.Algodv2(
-  process.env.ALGOD_TOKEN || "",
-  process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
-  "",
-);
-
-const signer: FacilitatorAvmSigner = {
-  address: facilitatorAddress,
-  async getAlgodClient(_network: string) { return algodClient; },
-  async signGroupTransactions(groupTxnBytes: Uint8Array[], myIndices: number[]) {
-    const result = [...groupTxnBytes];
-    for (const idx of myIndices) {
-      const txn = algosdk.decodeUnsignedTransaction(groupTxnBytes[idx]);
-      result[idx] = txn.signTxn(privateKeyBytes);
-    }
-    return result;
-  },
-  async sendGroup(signedGroupBytes: Uint8Array[]) {
-    const combined = new Uint8Array(
-      signedGroupBytes.reduce((acc, b) => acc + b.length, 0),
-    );
-    let offset = 0;
-    for (const bytes of signedGroupBytes) {
-      combined.set(bytes, offset);
-      offset += bytes.length;
-    }
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  async simulateGroup(groupTxnBytes: Uint8Array[]) {
-    const txns = groupTxnBytes.map((bytes) => {
-      try { return algosdk.decodeSignedTransaction(bytes); }
-      catch {
-        const unsigned = algosdk.decodeUnsignedTransaction(bytes);
-        return new algosdk.SignedTransaction(unsigned);
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [
-        new algosdk.modelsv2.SimulateRequestTransactionGroup({
-          txns: txns.map((t) => algosdk.decodeObj(algosdk.encodeMsgpack(t))),
-        }),
-      ],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-};
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (seed || pubkey), NOT a mnemonic
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_SERVER, // optional; defaults to AlgoNode
+  algodToken: process.env.ALGOD_TOKEN,
+});
 
 const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
@@ -846,8 +764,10 @@ serve({ fetch: app.fetch, port: 4020 }, (info) => {
 ```typescript
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import type { PaywallConfig } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
@@ -855,7 +775,7 @@ const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /premium-article": {
     accepts: {
       scheme: "exact",
@@ -868,14 +788,11 @@ const routes = {
   },
 };
 
-const paywallConfig = {
-  title: "Premium Content",
-  description: "Pay to access this article",
-  logoUrl: "https://example.com/logo.png",
-  theme: {
-    primaryColor: "#6366f1",
-    backgroundColor: "#ffffff",
-  },
+// PaywallConfig fields: appName, appLogo, sessionTokenEndpoint, currentUrl, testnet
+const paywallConfig: PaywallConfig = {
+  appName: "Premium Content",
+  appLogo: "https://example.com/logo.png",
+  testnet: true,
 };
 
 app.use(paymentMiddleware(routes, server, paywallConfig));
@@ -890,7 +807,9 @@ app.listen(4021);
 ## Custom Paywall HTML
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+
+const routes: RoutesConfig = {
   "GET /premium": {
     accepts: {
       scheme: "exact",
@@ -915,7 +834,9 @@ const routes = {
 ## Unpaid Response Body (API Preview)
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+
+const routes: RoutesConfig = {
   "GET /api/article/:id": {
     accepts: {
       scheme: "exact",
@@ -944,6 +865,7 @@ import dotenv from "dotenv";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 dotenv.config();
@@ -958,7 +880,7 @@ const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/:city": {
     accepts: {
       scheme: "exact",
@@ -1047,6 +969,7 @@ import { serve } from "@hono/node-server";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = new Hono();
@@ -1061,7 +984,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/:city": {
     accepts: {
       scheme: "exact",

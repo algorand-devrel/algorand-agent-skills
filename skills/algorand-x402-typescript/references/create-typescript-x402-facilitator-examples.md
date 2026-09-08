@@ -1,54 +1,20 @@
 # x402 Facilitator Examples
 
-## FacilitatorAvmSigner Implementation
+## FacilitatorAvmSigner Setup
 
 ```typescript
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 import type { FacilitatorAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const facilitatorSigner: FacilitatorAvmSigner = {
-  getAddresses: () => [address],
-
-  signTransaction: async (txn: Uint8Array, senderAddress: string) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    const signed = algosdk.signTransaction(decoded, secretKey);
-    return signed.blob;
+// AVM_PRIVATE_KEY: Base64 of the 64-byte secret key (seed || pubkey). Mnemonics are not accepted.
+const facilitatorSigner: FacilitatorAvmSigner = toFacilitatorAvmSigner(
+  process.env.AVM_PRIVATE_KEY!,
+  {
+    testnetUrl: process.env.ALGOD_TESTNET_URL, // optional; defaults to https://testnet-api.algonode.cloud
+    mainnetUrl: process.env.ALGOD_MAINNET_URL, // optional; defaults to https://mainnet-api.algonode.cloud
+    algodToken: process.env.ALGOD_TOKEN,       // optional
   },
-
-  getAlgodClient: (network: string) => algodClient,
-
-  simulateTransactions: async (txns: Uint8Array[], network: string) => {
-    const stxns = txns.map((txnBytes) => {
-      try {
-        return algosdk.decodeSignedTransaction(txnBytes);
-      } catch {
-        const txn = algosdk.decodeUnsignedTransaction(txnBytes);
-        return new algosdk.SignedTransaction({ txn });
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [
-        new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns }),
-      ],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-
-  sendTransactions: async (signedTxns: Uint8Array[], network: string) => {
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-
-  waitForConfirmation: async (txId: string, network: string, waitRounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, waitRounds);
-  },
-};
+);
 ```
 
 ---
@@ -73,40 +39,11 @@ facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(facilitatorSigne
 import express from "express";
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
-import algosdk from "algosdk";
+import { ALGORAND_TESTNET_CAIP2, toFacilitatorAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const signer = {
-  getAddresses: () => [address],
-  signTransaction: async (txn: Uint8Array, _addr: string) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    return algosdk.signTransaction(decoded, secretKey).blob;
-  },
-  getAlgodClient: () => algodClient,
-  simulateTransactions: async (txns: Uint8Array[]) => {
-    const stxns = txns.map((t) => {
-      try { return algosdk.decodeSignedTransaction(t); }
-      catch { return new algosdk.SignedTransaction({ txn: algosdk.decodeUnsignedTransaction(t) }); }
-    });
-    const req = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns })],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(req).do();
-  },
-  sendTransactions: async (signedTxns: Uint8Array[]) => {
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  waitForConfirmation: async (txId: string, _net: string, rounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, rounds);
-  },
-};
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_TESTNET_URL,
+});
 
 const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
@@ -114,21 +51,28 @@ facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 const app = express();
 app.use(express.json());
 
-app.get("/supported", async (_req, res) => {
-  const supported = facilitator.getSupportedNetworks();
-  res.json(supported);
+app.get("/supported", (_req, res) => {
+  res.json(facilitator.getSupported());
 });
 
 app.post("/verify", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.verify(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.verify(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ isValid: false, invalidReason: "invalid_request", invalidMessage: String(error) });
+  }
 });
 
 app.post("/settle", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.settle(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.settle(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ success: false, errorReason: "settle_failed", errorMessage: String(error) });
+  }
 });
 
 app.listen(4000, () => console.log("Facilitator running on :4000"));
@@ -143,14 +87,14 @@ const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 
 facilitator.onBeforeVerify(async (context) => {
-  console.log(`Verifying payment for ${context.requirements.resource}`);
+  console.log(`Verifying ${context.requirements.scheme} payment on ${context.requirements.network}`);
 });
 
 facilitator.onAfterSettle(async (context) => {
   if (context.result.success) {
-    console.log(`Settled: ${context.result.txId}`);
+    console.log(`Settled: ${context.result.transaction}`);
   } else {
-    console.error(`Settlement failed: ${context.result.error}`);
+    console.error(`Settlement failed: ${context.result.errorReason} - ${context.result.errorMessage}`);
   }
 });
 ```
@@ -274,9 +218,11 @@ const uploadExtension = declareDiscoveryExtension({
 
 ```typescript
 import {
+  x402ResourceServer,
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
 } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import {
   bazaarResourceServerExtension,
@@ -288,29 +234,31 @@ const facilitatorClient = new HTTPFacilitatorClient({
   url: "https://facilitator.example.com",
 });
 
-const httpServer = new x402HTTPResourceServer(facilitatorClient, {
-  routes: [
-    {
-      path: "/api/weather",
-      config: {
-        scheme: "exact",
-        payTo: "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
-        price: {
-          asset: USDC_TESTNET_ASA_ID,
-          amount: "10000",
-          extra: { name: "USDC", decimals: 6 },
-        },
-        network: ALGORAND_TESTNET_CAIP2,
-        maxTimeoutSeconds: 60,
-      },
-      description: "Weather data API",
-      mimeType: "application/json",
-    },
-  ],
-});
+// Register schemes/extensions on the core x402ResourceServer, then wrap it
+const resourceServer = new x402ResourceServer(facilitatorClient);
+resourceServer.register("algorand:*", new ExactAvmScheme());
+resourceServer.registerExtension(bazaarResourceServerExtension);
 
-httpServer.resourceServer.register("algorand:*", new ExactAvmScheme());
-httpServer.resourceServer.registerExtension(bazaarResourceServerExtension);
+// The route pattern is the RoutesConfig key (there is no `path` property)
+const routes: RoutesConfig = {
+  "GET /api/weather": {
+    accepts: {
+      scheme: "exact",
+      payTo: "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
+      price: {
+        asset: USDC_TESTNET_ASA_ID,
+        amount: "10000",
+        extra: { name: "USDC", decimals: 6 },
+      },
+      network: ALGORAND_TESTNET_CAIP2,
+      maxTimeoutSeconds: 60,
+    },
+    description: "Weather data API",
+    mimeType: "application/json",
+  },
+};
+
+const httpServer = new x402HTTPResourceServer(resourceServer, routes);
 ```
 
 ---
@@ -341,7 +289,11 @@ async function processPaymentWithDiscovery(
 
   if (discovered) {
     console.log("Resource URL:", discovered.resourceUrl);
-    console.log("HTTP Method:", discovered.method);
+    // DiscoveredResource = DiscoveredHTTPResource | DiscoveredMCPResource;
+    // `method` (optional) only exists on the HTTP variant, so narrow first
+    if ("method" in discovered) {
+      console.log("HTTP Method:", discovered.method);
+    }
     console.log("x402 Version:", discovered.x402Version);
     console.log("Description:", discovered.description);
     console.log("MIME Type:", discovered.mimeType);
@@ -354,8 +306,10 @@ function processExtension(extension: unknown) {
   const { valid, info, errors } = validateAndExtract(extension as any);
 
   if (valid && info) {
-    console.log("Method:", info.input.method);
     console.log("Type:", info.input.type);
+    if (info.input.type === "http") {
+      console.log("Method:", info.input.method); // MCP discovery info has no method
+    }
 
     if ("queryParams" in info.input) {
       console.log("Query params:", info.input.queryParams);
@@ -416,7 +370,7 @@ const client = withBazaar(facilitatorClient);
 
 // List all discovered resources
 const allResources: DiscoveryResourcesResponse =
-  await client.extensions.discovery.listResources();
+  await client.extensions.bazaar.listResources();
 
 console.log("Total resources:", allResources.pagination.total);
 for (const resource of allResources.items) {
@@ -426,7 +380,7 @@ for (const resource of allResources.items) {
 }
 
 // Filtered query
-const httpResources = await client.extensions.discovery.listResources({
+const httpResources = await client.extensions.bazaar.listResources({
   type: "http",
   limit: 10,
   offset: 0,
@@ -439,7 +393,7 @@ async function getAllResources() {
   const limit = 50;
 
   while (true) {
-    const page = await client.extensions.discovery.listResources({
+    const page = await client.extensions.bazaar.listResources({
       limit,
       offset,
     });
@@ -457,7 +411,7 @@ async function getAllResources() {
 
 // Finding Algorand-compatible resources
 async function findAlgorandResources() {
-  const resources = await client.extensions.discovery.listResources({
+  const resources = await client.extensions.bazaar.listResources({
     type: "http",
   });
 
@@ -524,7 +478,7 @@ const client = withBazaar(withCustom(new HTTPFacilitatorClient({
   url: "https://facilitator.example.com",
 })));
 
-const resources = await client.extensions.discovery.listResources();
+const resources = await client.extensions.bazaar.listResources();
 const result = await client.extensions.custom.doSomething();
 ```
 
@@ -535,9 +489,12 @@ const result = await client.extensions.custom.doSomething();
 ```typescript
 import express from "express";
 import {
+  x402ResourceServer,
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
 } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
+import { ExpressAdapter } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import {
   bazaarResourceServerExtension,
@@ -551,45 +508,9 @@ const facilitatorClient = new HTTPFacilitatorClient({
   url: process.env.FACILITATOR_URL || "https://facilitator.example.com",
 });
 
-const httpServer = new x402HTTPResourceServer(facilitatorClient, {
-  routes: [
-    {
-      path: "/api/weather",
-      config: {
-        scheme: "exact",
-        payTo: process.env.RECEIVER_ADDRESS!,
-        price: {
-          asset: USDC_TESTNET_ASA_ID,
-          amount: "10000",
-          extra: { name: "USDC", decimals: 6 },
-        },
-        network: ALGORAND_TESTNET_CAIP2,
-        maxTimeoutSeconds: 60,
-      },
-      description: "Real-time weather data",
-      mimeType: "application/json",
-    },
-    {
-      path: "/api/analyze",
-      config: {
-        scheme: "exact",
-        payTo: process.env.RECEIVER_ADDRESS!,
-        price: {
-          asset: USDC_TESTNET_ASA_ID,
-          amount: "500000",
-          extra: { name: "USDC", decimals: 6 },
-        },
-        network: ALGORAND_TESTNET_CAIP2,
-        maxTimeoutSeconds: 120,
-      },
-      description: "AI text analysis",
-      mimeType: "application/json",
-    },
-  ],
-});
-
-httpServer.resourceServer.register("algorand:*", new ExactAvmScheme());
-httpServer.resourceServer.registerExtension(bazaarResourceServerExtension);
+const resourceServer = new x402ResourceServer(facilitatorClient);
+resourceServer.register("algorand:*", new ExactAvmScheme());
+resourceServer.registerExtension(bazaarResourceServerExtension);
 
 const weatherDiscovery = declareDiscoveryExtension({
   input: { city: "San Francisco", units: "metric" },
@@ -630,53 +551,98 @@ const analysisDiscovery = declareDiscoveryExtension({
   },
 });
 
-app.get("/api/weather", async (req, res) => {
-  const result = await httpServer.processRequest({
-    url: req.url,
-    method: req.method,
-    headers: req.headers,
-    adapter: {
-      getHeader: (name: string) => req.headers[name.toLowerCase()] as string,
+// Route patterns are the RoutesConfig keys; discovery metadata goes in `extensions`
+const routes: RoutesConfig = {
+  "GET /api/weather": {
+    accepts: {
+      scheme: "exact",
+      payTo: process.env.RECEIVER_ADDRESS!,
+      price: {
+        asset: USDC_TESTNET_ASA_ID,
+        amount: "10000",
+        extra: { name: "USDC", decimals: 6 },
+      },
+      network: ALGORAND_TESTNET_CAIP2,
+      maxTimeoutSeconds: 60,
     },
+    description: "Real-time weather data",
+    mimeType: "application/json",
     extensions: weatherDiscovery,
+  },
+  "POST /api/analyze": {
+    accepts: {
+      scheme: "exact",
+      payTo: process.env.RECEIVER_ADDRESS!,
+      price: {
+        asset: USDC_TESTNET_ASA_ID,
+        amount: "500000",
+        extra: { name: "USDC", decimals: 6 },
+      },
+      network: ALGORAND_TESTNET_CAIP2,
+      maxTimeoutSeconds: 120,
+    },
+    description: "AI text analysis",
+    mimeType: "application/json",
+    extensions: analysisDiscovery,
+  },
+};
+
+const httpServer = new x402HTTPResourceServer(resourceServer, routes);
+
+// Manual integration: processHTTPRequest(context) + processSettlement(...) after the handler.
+// (In practice, prefer `paymentMiddleware(routes, resourceServer)` from @x402/express.)
+async function requirePayment(
+  req: express.Request,
+  res: express.Response,
+  handler: () => unknown,
+) {
+  const result = await httpServer.processHTTPRequest({
+    adapter: new ExpressAdapter(req),
+    path: req.path,
+    method: req.method,
+    paymentHeader: req.header("payment-signature"),
   });
 
-  if (result.status === 402) {
-    return res.status(402).json(result.body);
+  if (result.type === "payment-error") {
+    return res.status(result.response.status).set(result.response.headers).json(result.response.body ?? {});
   }
 
+  const body = handler();
+
+  if (result.type === "payment-verified") {
+    const settlement = await httpServer.processSettlement(
+      result.paymentPayload,
+      result.paymentRequirements,
+      result.declaredExtensions,
+    );
+    if (!settlement.success) {
+      return res.status(settlement.response.status).set(settlement.response.headers).json(settlement.response.body ?? {});
+    }
+    res.set(settlement.headers);
+  }
+
+  res.json(body);
+}
+
+app.get("/api/weather", async (req, res) => {
   const city = (req.query.city as string) || "San Francisco";
-  res.json({
+  await requirePayment(req, res, () => ({
     temperature: 18.5,
     condition: "Partly Cloudy",
     humidity: 65,
     windSpeed: 12.3,
     city,
-  });
+  }));
 });
 
 app.post("/api/analyze", express.json(), async (req, res) => {
-  const result = await httpServer.processRequest({
-    url: req.url,
-    method: req.method,
-    headers: req.headers,
-    adapter: {
-      getHeader: (name: string) => req.headers[name.toLowerCase()] as string,
-    },
-    extensions: analysisDiscovery,
-  });
-
-  if (result.status === 402) {
-    return res.status(402).json(result.body);
-  }
-
   const { text, language } = req.body;
-  res.json({
+  await requirePayment(req, res, () => ({
     sentiment: "neutral",
     confidence: 0.85,
     entities: ["person", "location"],
     summary: `Analysis of ${text.length} characters in ${language || "en"}.`,
-  });
+  }));
 });
 
 const PORT = parseInt(process.env.PORT || "3000", 10);
@@ -693,47 +659,18 @@ app.listen(PORT, () => {
 import express from "express";
 import { x402Facilitator } from "@x402/core/facilitator";
 import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { ALGORAND_TESTNET_CAIP2, toFacilitatorAvmSigner } from "@x402/avm";
 import {
   extractDiscoveryInfo,
   type DiscoveredResource,
 } from "@x402/extensions";
-import algosdk from "algosdk";
 
 // In-memory catalog (use a database in production)
 const catalog: Map<string, DiscoveredResource & { settledCount: number }> = new Map();
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const signer = {
-  getAddresses: () => [address],
-  signTransaction: async (txn: Uint8Array, _addr: string) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    return algosdk.signTransaction(decoded, secretKey).blob;
-  },
-  getAlgodClient: () => algodClient,
-  simulateTransactions: async (txns: Uint8Array[]) => {
-    const stxns = txns.map((t) => {
-      try { return algosdk.decodeSignedTransaction(t); }
-      catch { return new algosdk.SignedTransaction({ txn: algosdk.decodeUnsignedTransaction(t) }); }
-    });
-    const req = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns })],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(req).do();
-  },
-  sendTransactions: async (signedTxns: Uint8Array[]) => {
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  waitForConfirmation: async (txId: string, _net: string, rounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, rounds);
-  },
-};
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_TESTNET_URL,
+});
 
 const facilitator = new x402Facilitator();
 facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
@@ -747,7 +684,9 @@ facilitator.onAfterSettle(async (context) => {
     );
 
     if (discovered) {
-      const key = `${discovered.method}:${discovered.resourceUrl}`;
+      // `method` only exists on the HTTP variant of DiscoveredResource
+      const method = "method" in discovered ? discovered.method ?? "GET" : "MCP";
+      const key = `${method}:${discovered.resourceUrl}`;
       const existing = catalog.get(key);
 
       if (existing) {
@@ -764,16 +703,28 @@ facilitator.onAfterSettle(async (context) => {
 const app = express();
 app.use(express.json());
 
+app.get("/supported", (_req, res) => {
+  res.json(facilitator.getSupported());
+});
+
 app.post("/verify", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.verify(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.verify(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ isValid: false, invalidReason: "invalid_request", invalidMessage: String(error) });
+  }
 });
 
 app.post("/settle", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.settle(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.settle(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ success: false, errorReason: "settle_failed", errorMessage: String(error) });
+  }
 });
 
 app.get("/discovery/resources", (req, res) => {
@@ -801,7 +752,7 @@ app.get("/discovery/resources", (req, res) => {
       accepts: [],
       lastUpdated: new Date().toISOString(),
       metadata: {
-        method: r.method,
+        method: "method" in r ? r.method : undefined,
         description: r.description,
         mimeType: r.mimeType,
         settledCount: r.settledCount,
@@ -843,27 +794,24 @@ const facilitatorClient = new HTTPFacilitatorClient({
   url: "https://facilitator.example.com",
 });
 
-// With authentication
+// With authentication (headers are keyed by request path, not a flat object)
+const authHeaders = { Authorization: `Bearer ${process.env.FACILITATOR_API_KEY}` };
 const authenticatedClient = new HTTPFacilitatorClient({
   url: "https://facilitator.example.com",
-  headers: {
-    Authorization: `Bearer ${process.env.FACILITATOR_API_KEY}`,
-  },
+  createAuthHeaders: async () => ({
+    verify: authHeaders,
+    settle: authHeaders,
+    supported: authHeaders,
+  }),
 });
 
-// Check supported networks
-const supported = await facilitatorClient.supported();
-console.log("Supported networks:", supported.networks);
+// Check supported scheme/network kinds
+const supported = await facilitatorClient.getSupported();
+console.log("Supported kinds:", supported.kinds.map((k) => `${k.scheme} on ${k.network}`));
 
 // Verify a payment directly
-const verifyResult = await facilitatorClient.verify({
-  paymentPayload,
-  paymentRequirements,
-});
+const verifyResult = await facilitatorClient.verify(paymentPayload, paymentRequirements);
 
 // Settle a payment directly
-const settleResult = await facilitatorClient.settle({
-  paymentPayload,
-  paymentRequirements,
-});
+const settleResult = await facilitatorClient.settle(paymentPayload, paymentRequirements);
 ```

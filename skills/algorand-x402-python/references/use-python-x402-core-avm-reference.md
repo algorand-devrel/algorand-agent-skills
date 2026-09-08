@@ -73,6 +73,8 @@ Detailed API reference for the x402-avm Python package core components and AVM m
 | `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | `from x402.mechanisms.avm.constants import ALGORAND_TESTNET_CAIP2` |
 | `SUPPORTED_NETWORKS` | `[MAINNET_CAIP2, TESTNET_CAIP2]` | `from x402.mechanisms.avm.constants import SUPPORTED_NETWORKS` |
 
+Values as of x402-avm 2.0.2; note the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form. Always use the constants in code rather than hardcoding the string.
+
 ### Genesis Hashes
 
 | Constant | Value |

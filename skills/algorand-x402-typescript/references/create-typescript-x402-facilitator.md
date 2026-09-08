@@ -8,7 +8,7 @@ Before using this skill, ensure:
 
 1. **Node.js with TypeScript** support
 2. **An Algorand account with ALGO** for covering transaction fees during settlement
-3. **algosdk** installed for transaction signing, simulation, and submission
+3. **@x402/avm** installed -- its `toFacilitatorAvmSigner` helper handles transaction signing, simulation, and submission (via `@algorandfoundation/algokit-utils`, a transitive dependency of `@x402/avm`)
 
 ## Core Workflow: What a Facilitator Does
 
@@ -27,7 +27,7 @@ Client                    Resource Server              Facilitator              
   |                            |                            |--- Sign fee txn ---->|
   |                            |                            |--- Send group ------>|
   |                            |                            |<-- Confirmation -----|
-  |                            |<-- { success, txId } ------|                      |
+  |                            |<-- { success, transaction }|                      |
   |<--- 200 + Content ---------|                            |                      |
 ```
 
@@ -36,65 +36,29 @@ Client                    Resource Server              Facilitator              
 ### Step 1: Install Dependencies
 
 ```bash
-npm install @x402/core @x402/avm algosdk express
+npm install @x402/core @x402/avm express
 ```
+
+`@algorandfoundation/algokit-utils` is pulled in as a transitive dependency of `@x402/avm`; `algosdk` is not needed for the facilitator.
 
 For Bazaar discovery extension:
 ```bash
 npm install @x402/extensions
 ```
 
-### Step 2: Implement the FacilitatorAvmSigner
+### Step 2: Create the FacilitatorAvmSigner
 
-The `FacilitatorAvmSigner` interface bridges the facilitator to the Algorand blockchain. It handles signing, simulation, submission, and confirmation:
+The `FacilitatorAvmSigner` interface bridges the facilitator to the Algorand blockchain. It handles signing, simulation, submission, and confirmation. Use the `toFacilitatorAvmSigner` helper from `@x402/avm` rather than hand-rolling one:
 
 ```typescript
-import algosdk from "algosdk";
-import type { FacilitatorAvmSigner } from "@x402/avm";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const facilitatorSigner: FacilitatorAvmSigner = {
-  getAddresses: () => [address],
-
-  signTransaction: async (txn: Uint8Array, senderAddress: string) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    const signed = algosdk.signTransaction(decoded, secretKey);
-    return signed.blob;
-  },
-
-  getAlgodClient: (network: string) => algodClient,
-
-  simulateTransactions: async (txns: Uint8Array[], network: string) => {
-    const stxns = txns.map((txnBytes) => {
-      try {
-        return algosdk.decodeSignedTransaction(txnBytes);
-      } catch {
-        const txn = algosdk.decodeUnsignedTransaction(txnBytes);
-        return new algosdk.SignedTransaction({ txn });
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [
-        new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns }),
-      ],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-
-  sendTransactions: async (signedTxns: Uint8Array[], network: string) => {
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-
-  waitForConfirmation: async (txId: string, network: string, waitRounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, waitRounds);
-  },
-};
+// AVM_PRIVATE_KEY: Base64 of the 64-byte algosdk secret key (seed || pubkey). Mnemonics are not accepted.
+const facilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_TESTNET_URL, // optional; defaults to https://testnet-api.algonode.cloud
+  // mainnetUrl: process.env.ALGOD_MAINNET_URL,
+  // algodToken: process.env.ALGOD_TOKEN,
+});
 ```
 
 ### Step 3: Create and Register the Facilitator
@@ -117,21 +81,28 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
-app.get("/supported", async (_req, res) => {
-  const supported = facilitator.getSupportedNetworks();
-  res.json(supported);
+app.get("/supported", (_req, res) => {
+  res.json(facilitator.getSupported());
 });
 
 app.post("/verify", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.verify(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.verify(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ isValid: false, invalidReason: "invalid_request", invalidMessage: String(error) });
+  }
 });
 
 app.post("/settle", async (req, res) => {
-  const { paymentPayload, paymentRequirements } = req.body;
-  const result = await facilitator.settle(paymentPayload, paymentRequirements);
-  res.json(result);
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+    const result = await facilitator.settle(paymentPayload, paymentRequirements);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ success: false, errorReason: "settle_failed", errorMessage: String(error) });
+  }
 });
 
 app.listen(4000, () => console.log("Facilitator running on :4000"));
@@ -174,7 +145,9 @@ facilitator.onAfterSettle(async (context) => {
     );
 
     if (discovered) {
-      console.log("Cataloged:", discovered.resourceUrl, discovered.method);
+      // DiscoveredResource is a union (HTTP | MCP); `method` only exists on the HTTP variant
+      const method = "method" in discovered ? discovered.method : undefined;
+      console.log("Cataloged:", discovered.resourceUrl, method);
       // Store in database for the discovery API
     }
   }
@@ -185,12 +158,12 @@ facilitator.onAfterSettle(async (context) => {
 
 ```typescript
 facilitator.onBeforeVerify(async (context) => {
-  console.log(`Verifying payment for ${context.requirements.resource}`);
+  console.log(`Verifying ${context.requirements.scheme} payment on ${context.requirements.network}`);
 });
 
 facilitator.onAfterSettle(async (context) => {
   if (context.result.success) {
-    console.log(`Settled: ${context.result.txId}`);
+    console.log(`Settled: ${context.result.transaction}`);
   }
 });
 ```
@@ -199,36 +172,45 @@ facilitator.onAfterSettle(async (context) => {
 
 1. **Facilitator needs ALGO** -- The facilitator address must have ALGO to pay transaction fees during settlement
 2. **Private key security** -- Store `AVM_PRIVATE_KEY` securely. The facilitator co-signs the fee-payer transaction in each group
-3. **Simulation before settlement** -- The `simulateTransactions` method must wrap unsigned transactions with `new algosdk.SignedTransaction({ txn })` and use `allowEmptySignatures: true`
-4. **sendTransactions expects signed bytes** -- Concatenate all signed transaction bytes with `Buffer.concat()` before calling `sendRawTransaction`
+3. **Use the signer helper** -- `toFacilitatorAvmSigner()` already handles simulation of mixed signed/unsigned groups (`allowEmptySignatures`), concatenated submission, and confirmation. Only implement `FacilitatorAvmSigner` yourself if you need a custom key store (see the reference)
+4. **Key format** -- `AVM_PRIVATE_KEY` must be the Base64 of the 64-byte secret key; a mnemonic is rejected with `AVM private key must be a Base64-encoded 64-byte key`
 5. **Network registration** -- Use `ALGORAND_TESTNET_CAIP2` or `ALGORAND_MAINNET_CAIP2` constants, not string literals in SDK code
 6. **Bazaar is optional** -- The Bazaar discovery extension adds cataloging capability but is not required for basic facilitator operation
 
 ## FacilitatorAvmSigner Interface
 
+This is what `toFacilitatorAvmSigner()` returns. `Network` is `` `${string}:${string}` `` from `@x402/core/types`; the algod client and response models come from `@algorandfoundation/algokit-utils`, not `algosdk`.
+
 ```typescript
+import type { Network } from "@x402/core/types";
+import type {
+  AlgodClient,
+  SimulateResponse,
+  PendingTransactionResponse,
+} from "@algorandfoundation/algokit-utils/algod-client";
+
 interface FacilitatorAvmSigner {
   /** Returns the list of addresses this signer controls */
-  getAddresses(): string[];
+  getAddresses(): readonly string[];
 
   /** Sign a single transaction for the given sender address */
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
 
-  /** Get an Algodv2 client for the specified network */
-  getAlgodClient(network: string): algosdk.Algodv2;
+  /** Get an algokit-utils AlgodClient for the specified network */
+  getAlgodClient(network: Network): AlgodClient;
 
   /** Simulate a transaction group (for verification without submission) */
-  simulateTransactions(txns: Uint8Array[], network: string): Promise<any>;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
 
   /** Send signed transactions to the network */
-  sendTransactions(signedTxns: Uint8Array[], network: string): Promise<string>;
+  sendTransactions(signedTxns: Uint8Array[], network: Network): Promise<string>;
 
   /** Wait for a transaction to be confirmed */
   waitForConfirmation(
     txId: string,
-    network: string,
+    network: Network,
     waitRounds?: number,
-  ): Promise<any>;
+  ): Promise<PendingTransactionResponse>;
 }
 ```
 
@@ -252,9 +234,9 @@ Resource Server                        Facilitator                    Client
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `signer not found` | No AVM_PRIVATE_KEY or wrong format | Ensure Base64-encoded 64-byte key |
-| Simulation fails | Mixed signed/unsigned transactions | Wrap unsigned with `new algosdk.SignedTransaction({ txn })` |
-| `sendRawTransaction` fails | Transaction group not properly concatenated | Use `Buffer.concat(signedTxns.map(t => Buffer.from(t)))` |
+| `AVM private key must be a Base64-encoded 64-byte key` | `AVM_PRIVATE_KEY` missing, a mnemonic, or wrong format | Ensure Base64-encoded 64-byte key (seed + pubkey) |
+| Simulation fails in a custom signer | Mixed signed/unsigned transactions | Use `toFacilitatorAvmSigner()`, which simulates with `allowEmptySignatures: true` |
+| Signer does not type-check | Hand-rolled signer built on `algosdk.Algodv2` | `getAlgodClient` must return an algokit-utils `AlgodClient`; prefer `toFacilitatorAvmSigner()` |
 | Settlement times out | Network congestion or low fee | Increase `waitRounds` parameter |
 | `No scheme registered` | `.register()` not called | Register before handling requests |
 | Discovery not extracted | Extensions not passed through payload | Ensure resource server includes extensions in PaymentRequired |

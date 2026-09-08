@@ -10,20 +10,13 @@ Detailed API reference for the x402-avm Next.js integration package.
     "@x402/next": "latest",
     "@x402/core": "latest",
     "@x402/avm": "latest",
-    "next": ">=14.0.0"
+    "@x402/paywall": "latest",
+    "next": ">=16.2.6"
   }
 }
 ```
 
-For paywall UI:
-
-```json
-{
-  "dependencies": {
-    "@x402/paywall": "latest"
-  }
-}
-```
+`@x402/next` declares `next >= 16.2.6` and `@x402/paywall` as peer dependencies, so both must be installed (use `next@latest`, which is >= 16.2.6). `@x402/paywall` is required even if you do not use the browser paywall UI.
 
 ## Package Exports: @x402/next
 
@@ -307,8 +300,8 @@ export const config = {
 
 | Network | Constant | Value |
 |---------|----------|-------|
-| Algorand Testnet | `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| Algorand Mainnet | `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
+| Algorand Testnet | `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| Algorand Mainnet | `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 
 ## USDC ASA IDs
 
