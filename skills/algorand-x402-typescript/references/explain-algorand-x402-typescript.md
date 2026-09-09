@@ -75,8 +75,12 @@ import { useWallet } from "@txnlab/use-wallet-react";
 
 const { activeAccount, signTransactions } = useWallet();
 
+if (!activeAccount) {
+  throw new Error("Connect a wallet before creating the signer.");
+}
+
 const signer: ClientAvmSigner = {
-  address: activeAccount!.address,
+  address: activeAccount.address,
   signTransactions: async (txns, indexesToSign) => {
     return signTransactions(txns, indexesToSign);
   },
