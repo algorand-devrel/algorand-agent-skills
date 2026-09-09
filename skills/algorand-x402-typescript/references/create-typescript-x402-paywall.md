@@ -98,7 +98,7 @@ import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes: RoutesConfig = {
-  "/api/premium-content": {
+  "GET /api/premium-content": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
