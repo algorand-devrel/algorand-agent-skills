@@ -84,7 +84,7 @@ import { createPaywall, avmPaywall } from "@x402/paywall";
 const app = express();
 
 const routes: RoutesConfig = {
-  "/api/premium-content": {
+  "GET /api/premium-content": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
