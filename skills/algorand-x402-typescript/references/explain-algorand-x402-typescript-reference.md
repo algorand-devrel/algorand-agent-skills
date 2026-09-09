@@ -86,9 +86,6 @@ The AVM mechanism package provides Algorand-specific signer interfaces, constant
 | `getNetworkFromCaip2` | `(caip2: string) => "testnet" \| "mainnet" \| null` | Extract network type |
 | `isAlgorandNetwork` | `(network: string) => boolean` | Check if Algorand network |
 | `isTestnetNetwork` | `(network: string) => boolean` | Check if testnet |
-| `v1ToCaip2` | `(v1: string) => string` | Convert V1 to CAIP-2 |
-| `caip2ToV1` | `(caip2: string) => string` | Convert CAIP-2 to V1 |
-| `createAlgodClient` | `(network, url?, token?) => AlgodClient` | Create algokit-utils Algod client |
 | `getSenderFromTransaction` | `(bytes, isSigned) => string` | Extract sender address |
 | `getTransactionId` | `(bytes) => string` | Get transaction ID |
 | `hasSignature` | `(bytes) => boolean` | Check if transaction is signed |
