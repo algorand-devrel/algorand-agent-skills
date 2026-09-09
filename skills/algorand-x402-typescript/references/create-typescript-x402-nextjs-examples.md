@@ -3,14 +3,10 @@
 ## Installation
 
 ```bash
-npm install @x402/next @x402/avm @x402/core
+npm install @x402/next @x402/core @x402/avm @x402/paywall
 ```
 
-For paywall UI support:
-
-```bash
-npm install @x402/next @x402/avm @x402/core @x402/paywall
-```
+`@x402/paywall` is a required peer dependency of `@x402/next`, and `@x402/next` requires `next@latest` (>= 16.2.6).
 
 ---
 
@@ -22,11 +18,12 @@ npm install @x402/next @x402/avm @x402/core @x402/paywall
 import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
@@ -98,6 +95,7 @@ import { NextRequest } from "next/server";
 import { paymentProxy, x402ResourceServer } from "@x402/next";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
@@ -109,7 +107,7 @@ const facilitatorClient = new HTTPFacilitatorClient({
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/:city": {
     accepts: {
       scheme: "exact",
@@ -156,6 +154,7 @@ import {
 } from "@x402/next";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
@@ -164,7 +163,7 @@ const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
 resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -223,20 +222,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402, x402ResourceServer } from "@x402/next";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routeConfig = {
-  accepts: {
-    scheme: "exact",
-    network: ALGORAND_TESTNET_CAIP2,
-    payTo: process.env.PAY_TO!,
-    price: "$0.01",
+// Keyed by route pattern (path as served, including any basePath)
+const routes: RoutesConfig = {
+  "GET /api/weather": {
+    accepts: {
+      scheme: "exact",
+      network: ALGORAND_TESTNET_CAIP2,
+      payTo: process.env.PAY_TO!,
+      price: "$0.01",
+    },
+    description: "Weather data",
   },
-  description: "Weather data",
 };
 
 async function handler(request: NextRequest) {
@@ -248,7 +251,7 @@ async function handler(request: NextRequest) {
   });
 }
 
-export const GET = withX402(handler, routeConfig, server);
+export const GET = withX402(handler, routes, server);
 ```
 
 ---
@@ -331,7 +334,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
-const handler = async (request: NextRequest) => {
+// Annotate the return type when the handler returns different JSON shapes
+const handler = async (request: NextRequest): Promise<NextResponse<unknown>> => {
   const { prompt } = await request.json();
 
   try {
@@ -375,13 +379,14 @@ import {
 } from "@x402/next";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RouteConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
 resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
     network: ALGORAND_TESTNET_CAIP2,
@@ -417,9 +422,10 @@ export const GET = withX402FromHTTPServer(handler, httpServer);
 import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /premium-article": {
     accepts: {
       scheme: "exact",
@@ -584,11 +590,12 @@ async function performSearch(query: string, limit: number) {
 import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/users/*": {
     accepts: {
       scheme: "exact",
@@ -667,15 +674,17 @@ export async function GET(
 ```typescript
 import { NextRequest } from "next/server";
 import { paymentProxy, x402ResourceServer } from "@x402/next";
+import type { PaywallConfig } from "@x402/next";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
 server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /premium/*": {
     accepts: {
       scheme: "exact",
@@ -688,10 +697,11 @@ const routes = {
   },
 };
 
-const paywallConfig = {
-  title: "Premium Content",
-  description: "Pay with Algorand to unlock this content",
-  logoUrl: "/logo.png",
+// PaywallConfig fields: appName, appLogo, sessionTokenEndpoint, currentUrl, testnet
+const paywallConfig: PaywallConfig = {
+  appName: "Premium Content",
+  appLogo: "/logo.png",
+  testnet: true,
 };
 
 const proxy = paymentProxy(routes, server, paywallConfig);
@@ -710,7 +720,9 @@ export const config = {
 ## Custom Paywall HTML
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+
+const routes: RoutesConfig = {
   "GET /premium/article": {
     accepts: {
       scheme: "exact",
@@ -746,7 +758,9 @@ const routes = {
 ## Unpaid Response Body (for API Clients)
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+
+const routes: RoutesConfig = {
   "GET /api/article/:id": {
     accepts: {
       scheme: "exact",
@@ -780,8 +794,9 @@ import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -808,8 +823,9 @@ const routes = {
 
 ```typescript
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -839,8 +855,9 @@ import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium": {
     accepts: {
       scheme: "exact",
@@ -906,13 +923,15 @@ x402Server.register("algorand:*", new ExactAvmScheme());
 ```typescript
 import { NextRequest } from "next/server";
 import { paymentProxy } from "@x402/next";
+import type { PaywallConfig } from "@x402/next";
 import { x402Server, PAY_TO } from "@/lib/x402";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/*": {
     accepts: {
       scheme: "exact",
@@ -947,9 +966,9 @@ const routes = {
   },
 };
 
-const paywallConfig = {
-  title: "x402-avm Demo",
-  description: "Pay with Algorand to access premium features",
+const paywallConfig: PaywallConfig = {
+  appName: "x402-avm Demo",
+  testnet: true,
 };
 
 const proxy = paymentProxy(routes, x402Server, paywallConfig);
@@ -1142,7 +1161,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
-const handler = async (request: NextRequest) => {
+const handler = async (request: NextRequest): Promise<NextResponse<unknown>> => {
   try {
     const { prompt } = await request.json();
     const result = await generateContent(prompt);

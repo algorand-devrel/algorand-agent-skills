@@ -175,12 +175,13 @@ response = session.get(url)
 
 ```python
 from x402 import x402ClientConfig, SchemeRegistration
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmClientScheme
 
 config = x402ClientConfig(
     schemes=[
         SchemeRegistration(
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             client=ExactAvmClientScheme(signer=my_signer),
         ),
     ],

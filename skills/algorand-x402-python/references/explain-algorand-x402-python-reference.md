@@ -174,8 +174,8 @@ Defined in `x402.mechanisms.avm.constants`:
 
 | Constant | Value |
 |----------|-------|
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` (as of x402-avm 2.0.2; the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k`) |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` (as of x402-avm 2.0.2; note the TypeScript @x402/avm package ≥2.20.0 uses the 32-char form `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form) |
 | `SUPPORTED_NETWORKS` | `[MAINNET_CAIP2, TESTNET_CAIP2]` |
 | `MAINNET_GENESIS_HASH` | `"wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
 | `TESTNET_GENESIS_HASH` | `"SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |

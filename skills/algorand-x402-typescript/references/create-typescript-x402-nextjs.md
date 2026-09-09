@@ -6,7 +6,7 @@ Build fullstack Next.js applications with HTTP 402 payment-gated routes using Al
 
 Before using this skill, ensure:
 
-1. **Next.js 14+ App Router** project is set up
+1. **Next.js 16.2.6+ App Router** project is set up (`@x402/next` requires `next >= 16.2.6`)
 2. **Node.js 18+** is installed
 3. **Algorand address** to receive payments (`PAY_TO`)
 4. **Facilitator URL** is available (default: `https://x402.org/facilitator`)
@@ -41,14 +41,10 @@ Pattern 1: Proxy (middleware.ts)           Pattern 2: withX402 (route.ts)
 ### Step 1: Install Dependencies
 
 ```bash
-npm install @x402/next @x402/avm @x402/core
+npm install @x402/next @x402/core @x402/avm @x402/paywall
 ```
 
-For paywall UI support:
-
-```bash
-npm install @x402/next @x402/avm @x402/core @x402/paywall
-```
+`@x402/paywall` is a required peer dependency of `@x402/next` (even without the browser paywall UI), and `@x402/next` requires `next@latest` (>= 16.2.6).
 
 ### Step 2: Set Up Environment Variables
 
@@ -69,11 +65,12 @@ Create `middleware.ts` at your project root:
 import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
@@ -184,8 +181,9 @@ import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
 } from "@x402/avm";
+import type { RoutesConfig } from "@x402/core/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {

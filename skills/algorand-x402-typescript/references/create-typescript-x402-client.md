@@ -41,19 +41,35 @@ Client Request (GET /api/premium)
 
 For Fetch-based clients:
 ```bash
-npm install @x402/fetch @x402/avm algosdk
+npm install @x402/fetch @x402/avm
 ```
 
 For Axios-based clients:
 ```bash
-npm install @x402/axios @x402/avm algosdk axios
+npm install @x402/axios @x402/avm axios
 ```
 
-### Step 2: Implement a ClientAvmSigner
+`algosdk` is only needed if you build a custom `ClientAvmSigner` (browser wallets, advanced flows):
+```bash
+npm install algosdk
+```
+
+### Step 2: Create a ClientAvmSigner
 
 The `ClientAvmSigner` interface is what bridges your wallet or private key to the x402 payment system.
 
-**Interface:**
+**For Node.js (private key) -- use `toClientAvmSigner` from `@x402/avm`:**
+```typescript
+import { toClientAvmSigner } from "@x402/avm";
+
+// AVM_PRIVATE_KEY is the base64 of the 64-byte algosdk secret key (32-byte seed + 32-byte pubkey).
+// It is NOT a mnemonic -- toClientAvmSigner throws on anything other than a 64-byte base64 key.
+// To produce it from an algosdk account: Buffer.from(account.sk).toString("base64")
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
+console.log("Payer address:", signer.address);
+```
+
+**For browser wallets -- implement the interface manually:**
 ```typescript
 interface ClientAvmSigner {
   address: string;
@@ -64,27 +80,7 @@ interface ClientAvmSigner {
 }
 ```
 
-**For Node.js (private key):**
-```typescript
-import algosdk from "algosdk";
-
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
-```
-
-**For Browser (@txnlab/use-wallet):**
+**Browser (@txnlab/use-wallet):**
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
 import type { ClientAvmSigner } from "@x402/avm";
@@ -174,8 +170,8 @@ client.onPaymentCreationFailure(async ({ error }) => {
 ## Important Rules / Guidelines
 
 1. **Always register a scheme before wrapping** -- `client.register("algorand:*", new ExactAvmScheme(signer))` must be called before `wrapFetchWithPayment` or `wrapAxiosWithPayment`
-2. **AVM_PRIVATE_KEY format** -- Base64-encoded 64-byte key (32-byte seed + 32-byte public key)
-3. **Address derivation** -- Always use `algosdk.encodeAddress(secretKey.slice(32))`, never the first 32 bytes
+2. **AVM_PRIVATE_KEY format** -- Base64-encoded 64-byte key (32-byte seed + 32-byte public key), i.e. `Buffer.from(account.sk).toString("base64")`. Not a mnemonic; `toClientAvmSigner` does no mnemonic derivation
+3. **Prefer `toClientAvmSigner`** -- For private-key signers use `toClientAvmSigner(privateKeyBase64)` from `@x402/avm`; it derives the address for you. Only hand-roll a `ClientAvmSigner` for browser wallets (if you do, derive the address with `algosdk.encodeAddress(secretKey.slice(32))`, never the first 32 bytes)
 4. **Single retry** -- The wrapper retries exactly once after 402. If the retry also returns 402, the error is propagated
 5. **Interceptor order for Axios** -- Add your own interceptors first, then call `wrapAxiosWithPayment` last
 6. **Config-based alternative** -- Use `wrapFetchWithPaymentFromConfig` / `wrapAxiosWithPaymentFromConfig` for declarative setup without manual `x402Client` construction
@@ -187,12 +183,13 @@ Instead of creating an `x402Client` manually, use the config-based approach:
 
 ```typescript
 import { wrapFetchWithPaymentFromConfig, type x402ClientConfig } from "@x402/fetch";
-import { ExactAvmScheme } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
     {
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+      network: ALGORAND_TESTNET_CAIP2,
       client: new ExactAvmScheme(signer),
     },
   ],

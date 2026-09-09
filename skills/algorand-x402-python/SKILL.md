@@ -32,6 +32,8 @@ pip install "x402-avm[all]"
 
 > Distribution name is `x402-avm` but the **import root is `x402`** (not `x402_avm`).
 
+> **Warning:** Do not install the canonical PyPI `x402` package in the same environment as `x402-avm` — both unpack into the same `site-packages/x402` directory, and canonical `x402` contains no AVM mechanism. Keep them in separate environments.
+
 ### Register AVM Scheme
 
 Every component registers the AVM exact scheme unconditionally — no environment variable guards:
@@ -53,13 +55,24 @@ server.register("algorand:*", ExactAvmServerScheme())
 
 # Facilitator
 from x402 import x402Facilitator
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmFacilitatorScheme
 
 facilitator = x402Facilitator()
-facilitator.register("algorand:*", ExactAvmFacilitatorScheme(signer=my_signer))
+facilitator.register([ALGORAND_TESTNET_CAIP2], ExactAvmFacilitatorScheme(signer=my_signer))
 ```
 
+> `x402Facilitator.register` takes a **list** of networks, while `x402Client.register` and `x402ResourceServer.register` take a single string (glob `"algorand:*"` is fine there). Passing a bare string to the facilitator silently iterates it into single-character networks.
+
 The `register_exact_avm_client/server/facilitator` helpers from `x402.mechanisms.avm.exact` are also valid.
+
+### Network identifiers
+
+Always use the constants from `x402.mechanisms.avm` (`ALGORAND_TESTNET_CAIP2`, `ALGORAND_MAINNET_CAIP2`) rather than hardcoding CAIP-2 strings. As of x402-avm 2.0.2 these are the full genesis hash form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` for TestNet, `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` for MainNet). The TypeScript `@x402/avm` package ≥2.20.0 uses the 32-char form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe`, `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k`) — a TS server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form.
+
+### Troubleshooting
+
+- **macOS SSL errors** reaching `https://testnet-api.algonode.cloud`: run with `SSL_CERT_FILE=$(python -c "import certifi;print(certifi.where())")`.
 
 ### Python algosdk Encoding
 

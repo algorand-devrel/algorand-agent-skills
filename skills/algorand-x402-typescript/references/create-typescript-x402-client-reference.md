@@ -7,7 +7,8 @@ Detailed API reference for `@x402/fetch`, `@x402/axios`, and `@x402/avm` client 
 ### Installation
 
 ```bash
-npm install @x402/fetch @x402/avm algosdk
+npm install @x402/fetch @x402/avm
+# algosdk is only needed for custom/browser-wallet signers
 ```
 
 ### Exports
@@ -96,7 +97,8 @@ Decodes the `PAYMENT-RESPONSE` header returned by the server after settlement.
 ### Installation
 
 ```bash
-npm install @x402/axios @x402/avm algosdk axios
+npm install @x402/axios @x402/avm axios
+# algosdk is only needed for custom/browser-wallet signers
 ```
 
 ### Exports
@@ -171,7 +173,8 @@ Key details:
 ### Installation
 
 ```bash
-npm install @x402/avm algosdk
+npm install @x402/avm
+# algosdk is only needed for custom/browser-wallet signers
 ```
 
 ### Exports
@@ -179,15 +182,30 @@ npm install @x402/avm algosdk
 | Export | Type | Description |
 |--------|------|-------------|
 | `ExactAvmScheme` | Class | Algorand exact payment scheme (client) |
+| `toClientAvmSigner` | Function | `(privateKeyBase64: string) => ClientAvmSigner` -- builds a private-key signer from the base64 64-byte secret key |
 | `ClientAvmSigner` | Interface | Signer interface for client wallets |
 | `ClientAvmConfig` | Interface | Algod client configuration |
-| `ALGORAND_TESTNET_CAIP2` | Constant | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| `ALGORAND_MAINNET_CAIP2` | Constant | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
+| `ALGORAND_TESTNET_CAIP2` | Constant | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| `ALGORAND_MAINNET_CAIP2` | Constant | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 | `isAvmSignerWallet` | Function | Type guard for ClientAvmSigner |
+
+### toClientAvmSigner
+
+The primary way to build a signer from a private key (Node.js, scripts, agents):
+
+```typescript
+import { toClientAvmSigner } from "@x402/avm";
+
+// Base64 of the 64-byte algosdk secret key (seed || pubkey). NOT a mnemonic.
+// e.g. Buffer.from(account.sk).toString("base64")
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
+```
+
+`toClientAvmSigner` does no mnemonic derivation; passing anything other than a Base64-encoded 64-byte key throws `AVM private key must be a Base64-encoded 64-byte key`.
 
 ### ClientAvmSigner Interface
 
-The interface that bridges wallets (browser or server) to the x402 payment system.
+The interface that bridges wallets to the x402 payment system. Implement it manually only for browser wallets (Pera, Defly, Lute, use-wallet); for private keys use `toClientAvmSigner`.
 
 ```typescript
 interface ClientAvmSigner {
@@ -241,22 +259,14 @@ client.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 ### ClientAvmConfig
 
 ```typescript
-interface AvmClientConfig {
-  /** The client signer implementation */
-  signer: ClientAvmSigner;
-
-  /** Optional Algod configuration */
-  algodConfig?: {
-    /** Algod URL (defaults to AlgoNode testnet/mainnet) */
-    algodUrl?: string;
-    /** Algod API token */
-    algodToken?: string;
-    /** Pre-configured Algodv2 client */
-    algodClient?: algosdk.Algodv2;
-  };
-
-  /** Optional: restrict to specific networks */
-  networks?: string[];
+// Second constructor argument of ExactAvmScheme (from "@x402/avm")
+interface ClientAvmConfig {
+  /** Pre-configured AlgoKit AlgorandClient (from @algorandfoundation/algokit-utils) */
+  algorandClient?: AlgorandClient;
+  /** Algod URL (defaults to AlgoNode testnet/mainnet based on the payment network) */
+  algodUrl?: string;
+  /** Algod API token */
+  algodToken?: string;
 }
 ```
 
@@ -324,8 +334,8 @@ client.onPaymentCreationFailure(async (context) => {
 
 | Constant | Value |
 |----------|-------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash) |
 | `V1_ALGORAND_TESTNET` | `"algorand-testnet"` |
 | `V1_ALGORAND_MAINNET` | `"algorand-mainnet"` |
 
@@ -368,8 +378,8 @@ npx tsx client-test.ts https://api.example.com/paid-endpoint
 
 ## Important Notes
 
-- `AVM_PRIVATE_KEY` is a Base64-encoded 64-byte key. The first 32 bytes are the seed, the last 32 bytes are the public key.
-- Address derivation always uses `algosdk.encodeAddress(secretKey.slice(32))` -- the public key portion.
+- `AVM_PRIVATE_KEY` is a Base64-encoded 64-byte key (`Buffer.from(account.sk).toString("base64")`). The first 32 bytes are the seed, the last 32 bytes are the public key. It is not a mnemonic.
+- Prefer `toClientAvmSigner(process.env.AVM_PRIVATE_KEY!)` over a hand-rolled signer; it derives the address for you. If you do implement a signer manually, address derivation uses `algosdk.encodeAddress(secretKey.slice(32))` -- the public key portion.
 - The `algorand:*` wildcard in config-based setups matches any Algorand network (testnet or mainnet).
 - Policies are composable and applied in order. An empty result from any policy means no payment options are available.
 - The Axios interceptor modifies the instance in place and returns it. Do not create a new instance after wrapping.

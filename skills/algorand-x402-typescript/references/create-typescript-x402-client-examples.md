@@ -5,21 +5,10 @@
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (Buffer.from(account.sk).toString("base64")), not a mnemonic
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 const client = new x402Client();
 client.register("algorand:*", new ExactAvmScheme(signer));
@@ -38,21 +27,10 @@ console.log(data);
 import axios from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (Buffer.from(account.sk).toString("base64")), not a mnemonic
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 const client = new x402Client();
 client.register("algorand:*", new ExactAvmScheme(signer));
@@ -151,12 +129,13 @@ import {
   wrapFetchWithPaymentFromConfig,
   type x402ClientConfig,
 } from "@x402/fetch";
-import { ExactAvmScheme } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
     {
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+      network: ALGORAND_TESTNET_CAIP2,
       client: new ExactAvmScheme(signer),
     },
   ],
@@ -179,12 +158,13 @@ import {
   wrapAxiosWithPaymentFromConfig,
   type x402ClientConfig,
 } from "@x402/axios";
-import { ExactAvmScheme } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
     {
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+      network: ALGORAND_TESTNET_CAIP2,
       client: new ExactAvmScheme(signer),
     },
   ],
@@ -215,37 +195,23 @@ const config: x402ClientConfig = {
 
 ---
 
-## ClientAvmSigner: Node.js Implementation
+## ClientAvmSigner: Node.js (Private Key) with toClientAvmSigner
 
 ```typescript
-import algosdk from "algosdk";
-import type { ClientAvmSigner } from "@x402/avm";
+import algosdk from "algosdk"; // only needed here to generate/export a key
+import { toClientAvmSigner } from "@x402/avm";
 
-function createNodeSigner(privateKeyBase64: string): ClientAvmSigner {
-  const secretKey = Buffer.from(privateKeyBase64, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
+// The input is the base64 of the 64-byte algosdk secret key (seed || pubkey), NOT a mnemonic.
+// Export it once from an account and store it in AVM_PRIVATE_KEY:
+const account = algosdk.generateAccount();
+const privateKeyBase64 = Buffer.from(account.sk).toString("base64");
 
-  return {
-    address,
-    signTransactions: async (
-      txns: Uint8Array[],
-      indexesToSign?: number[],
-    ): Promise<(Uint8Array | null)[]> => {
-      return txns.map((txnBytes, i) => {
-        if (indexesToSign && !indexesToSign.includes(i)) {
-          return null;
-        }
-        const decoded = algosdk.decodeUnsignedTransaction(txnBytes);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
-}
-
-const signer = createNodeSigner(process.env.AVM_PRIVATE_KEY!);
+// Normal usage: read it from the environment
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY ?? privateKeyBase64);
 console.log("Signer address:", signer.address);
 ```
+
+`toClientAvmSigner` throws `AVM private key must be a Base64-encoded 64-byte key` for any other input (including mnemonics). A hand-rolled `ClientAvmSigner` is only needed for browser wallets -- see the sections below.
 
 ---
 
@@ -282,6 +248,7 @@ import { PeraWalletConnect } from "@perawallet/connect";
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
+import algosdk from "algosdk";
 
 const peraWallet = new PeraWalletConnect();
 
@@ -292,8 +259,9 @@ async function setupPaymentFetch(): Promise<typeof fetch> {
   const signer: ClientAvmSigner = {
     address,
     signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-      const txnGroup = txns.map((txn, i) => ({
-        txn,
+      // Pera expects SignerTransaction[][] with decoded algosdk.Transaction objects, not raw bytes
+      const txnGroup = txns.map((txnBytes, i) => ({
+        txn: algosdk.decodeUnsignedTransaction(txnBytes),
         signers: indexesToSign && !indexesToSign.includes(i) ? [] : [address],
       }));
 
@@ -391,18 +359,26 @@ client.register("algorand:*", new ExactAvmScheme(signer));
 
 ## Pre-Configured Algod Client
 
+`ExactAvmScheme` accepts an optional second `ClientAvmConfig` argument: either `algodUrl`/`algodToken`, or a pre-built AlgoKit `AlgorandClient` (not an `algosdk.Algodv2`).
+
 ```typescript
-import algosdk from "algosdk";
+import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 
-const algodClient = new algosdk.Algodv2(
-  "your-token",
-  "https://your-node.example.com",
-  443,
-);
+// Option A: custom node URL/token
+const scheme = new ExactAvmScheme(signer, {
+  algodUrl: "https://your-node.example.com",
+  algodToken: "your-token",
+});
+
+// Option B: pre-configured AlgoKit client
+const algorandClient = AlgorandClient.fromConfig({
+  algodConfig: { server: "https://your-node.example.com", port: 443, token: "your-token" },
+});
+const scheme2 = new ExactAvmScheme(signer, { algorandClient });
 
 const client = new x402Client();
-client.register("algorand:*", new ExactAvmScheme(signer));
+client.register("algorand:*", scheme);
 ```
 
 ---
@@ -570,20 +546,22 @@ client.register("algorand:*", new ExactAvmScheme(signer));
 
 ```tsx
 import React, { useState, useMemo, useCallback } from "react";
-import { WalletProvider, useWallet } from "@txnlab/use-wallet-react";
-import { WalletId } from "@txnlab/use-wallet";
+import { WalletProvider, useWallet, WalletManager, NetworkId } from "@txnlab/use-wallet-react";
+import { pera, WALLET_ID as PERA_WALLET_ID } from "@txnlab/use-wallet-pera";
+import { defly } from "@txnlab/use-wallet-defly";
+import { lute } from "@txnlab/use-wallet-lute";
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 
-const WALLET_PROVIDERS = [
-  { id: WalletId.PERA },
-  { id: WalletId.DEFLY },
-  { id: WalletId.LUTE },
-];
+// use-wallet 5.x: wallet adapters are separate packages (@txnlab/use-wallet-pera, -defly, -lute, ...)
+const walletManager = new WalletManager({
+  wallets: [pera(), defly(), lute()],
+  defaultNetwork: NetworkId.TESTNET,
+});
 
 function PaidApiDemo() {
-  const { activeAccount, signTransactions, providers } = useWallet();
+  const { activeAccount, signTransactions, wallets } = useWallet();
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -605,9 +583,9 @@ function PaidApiDemo() {
   }, [signer]);
 
   const handleConnect = useCallback(async () => {
-    const pera = providers?.find((p) => p.metadata.id === WalletId.PERA);
-    if (pera) await pera.connect();
-  }, [providers]);
+    const peraWallet = wallets.find((w) => w.id === PERA_WALLET_ID);
+    if (peraWallet) await peraWallet.connect();
+  }, [wallets]);
 
   const handleFetch = useCallback(async () => {
     if (!fetchWithPay) return;
@@ -647,7 +625,7 @@ function PaidApiDemo() {
 
 export default function App() {
   return (
-    <WalletProvider wallets={WALLET_PROVIDERS}>
+    <WalletProvider manager={walletManager}>
       <PaidApiDemo />
     </WalletProvider>
   );
@@ -661,32 +639,19 @@ export default function App() {
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 async function main() {
   const privateKey = process.env.AVM_PRIVATE_KEY;
   if (!privateKey) {
     console.error("Error: AVM_PRIVATE_KEY environment variable is required");
-    console.error("Format: Base64-encoded 64-byte key (32-byte seed + 32-byte pubkey)");
+    console.error("Format: Base64-encoded 64-byte key (32-byte seed + 32-byte pubkey), not a mnemonic");
     process.exit(1);
   }
 
-  const secretKey = Buffer.from(privateKey, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-  console.log(`Using address: ${address}`);
-
-  const signer = {
-    address,
-    signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-      return txns.map((txn, i) => {
-        if (indexesToSign && !indexesToSign.includes(i)) return null;
-        const decoded = algosdk.decodeUnsignedTransaction(txn);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
+  // toClientAvmSigner derives the address from the 64-byte key
+  const signer = toClientAvmSigner(privateKey);
+  console.log(`Using address: ${signer.address}`);
 
   const client = new x402Client();
   client.register("algorand:*", new ExactAvmScheme(signer));
@@ -743,23 +708,11 @@ main();
 import axios, { AxiosError } from "axios";
 import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402/axios";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+// AVM_PRIVATE_KEY = base64 of the 64-byte algosdk secret key (Buffer.from(account.sk).toString("base64")), not a mnemonic
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
+const address = signer.address;
 
 const client = new x402Client();
 client.register("algorand:*", new ExactAvmScheme(signer));

@@ -226,6 +226,9 @@ class AlgorandFacilitatorSigner:
 from x402.mechanisms.avm.constants import (
     ALGORAND_MAINNET_CAIP2,     # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
     ALGORAND_TESTNET_CAIP2,     # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+    # CAIP-2 values as of x402-avm 2.0.2; note the TypeScript @x402/avm package >=2.20.0
+    # uses the 32-char form "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe" -- a TS server/client
+    # and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form.
     SUPPORTED_NETWORKS,          # [MAINNET_CAIP2, TESTNET_CAIP2]
     MAINNET_GENESIS_HASH,
     TESTNET_GENESIS_HASH,
@@ -358,7 +361,9 @@ from x402.mechanisms.avm.utils import (
 )
 
 normalize_network("algorand-testnet")
-# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="  (== ALGORAND_TESTNET_CAIP2, as of x402-avm 2.0.2;
+#    TypeScript @x402/avm >=2.20.0 uses the 32-char form "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe" -- a TS
+#    server/client and a Python facilitator (or vice-versa) will not match until x402-avm adopts the same form)
 
 is_valid_network("algorand-testnet")  # True
 is_valid_network("unknown-network")   # False

@@ -332,12 +332,13 @@ from x402.mechanisms.avm.utils import (
     get_genesis_hash,
     network_from_genesis_hash,
 )
+from x402.mechanisms.avm.constants import TESTNET_GENESIS_HASH
 
 normalize_network("algorand-testnet")
 is_valid_network("algorand-testnet")
 config = get_network_config("algorand-testnet")
 get_usdc_asa_id("algorand-testnet")
-network_from_genesis_hash("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
+network_from_genesis_hash(TESTNET_GENESIS_HASH)
 ```
 
 ## Security Validation
@@ -497,7 +498,7 @@ import os
 import base64
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from x402 import x402Facilitator
+from x402 import x402Facilitator, PaymentPayload, PaymentRequirements
 from x402.mechanisms.avm.exact import register_exact_avm_facilitator
 from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2
 from x402.mechanisms.avm.constants import NETWORK_CONFIGS
@@ -577,17 +578,17 @@ register_exact_avm_facilitator(
 
 @app.get("/supported")
 async def supported():
-    return facilitator.get_supported_networks()
+    return facilitator.get_supported().model_dump(by_alias=True)
 
 
 @app.post("/verify")
 async def verify(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.verify(
-            body["paymentPayload"], body["paymentRequirements"]
-        )
-        return result
+        payload = PaymentPayload.model_validate(body["paymentPayload"])
+        requirements = PaymentRequirements.model_validate(body["paymentRequirements"])
+        result = await facilitator.verify(payload, requirements)
+        return result.model_dump(by_alias=True)
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 
@@ -596,10 +597,10 @@ async def verify(request: Request):
 async def settle(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.settle(
-            body["paymentPayload"], body["paymentRequirements"]
-        )
-        return result
+        payload = PaymentPayload.model_validate(body["paymentPayload"])
+        requirements = PaymentRequirements.model_validate(body["paymentRequirements"])
+        result = await facilitator.settle(payload, requirements)
+        return result.model_dump(by_alias=True)
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 ```

@@ -225,6 +225,23 @@ interface PaymentAccepts {
 }
 ```
 
+Always annotate the routes object as `RoutesConfig` (`import type { RoutesConfig } from "@x402/core/server";` then `const routes: RoutesConfig = { ... }`). Without the annotation `scheme`/`network` widen to `string` and `tsc --strict` rejects the object against `PaymentOption.network`.
+
+### Resource Server Construction
+
+`x402ResourceServer` takes a `FacilitatorClient`, not a `{ url }` object, and the AVM scheme must be registered on it:
+
+```typescript
+import { x402ResourceServer } from "@x402/express"; // or @x402/hono, @x402/next
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
+```
+
 ---
 
 ## Bundle Sizes
@@ -248,8 +265,10 @@ import { avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 
 | Network | ASA ID | CAIP-2 |
 |---------|--------|--------|
-| Algorand Testnet | `10458941` | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` |
-| Algorand Mainnet | `31566704` | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` |
+| Algorand Testnet | `10458941` | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` (`ALGORAND_TESTNET_CAIP2`) |
+| Algorand Mainnet | `31566704` | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k` (`ALGORAND_MAINNET_CAIP2`) |
+
+CAIP-2 values shown are the 32-char form (since @x402/avm 2.20.0; earlier releases and the Python `x402-avm` package use the full genesis hash). In code, always import the constants from `@x402/avm` rather than hardcoding the string.
 
 ---
 
@@ -259,6 +278,7 @@ import { avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 
 ```typescript
 import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)
@@ -269,7 +289,7 @@ const html = paywall.generateHtml({
   x402Version: 2,
   accepts: [{
     scheme: "exact",
-    network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    network: ALGORAND_TESTNET_CAIP2,
     asset: "10458941",
     payTo: "TEST_ADDRESS",
     amount: "10000",

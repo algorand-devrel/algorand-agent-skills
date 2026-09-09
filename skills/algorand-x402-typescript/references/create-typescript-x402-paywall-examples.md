@@ -76,16 +76,18 @@ import {
   paymentMiddleware,
   x402ResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = express();
 
-const routes = {
-  "/api/premium-content": {
+const routes: RoutesConfig = {
+  "GET /api/premium-content": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS_HERE",
       price: "$0.01",
       maxTimeoutSeconds: 300,
@@ -105,7 +107,10 @@ const paywall = createPaywall()
   .build();
 
 const facilitatorUrl = process.env.FACILITATOR_URL || "https://facilitator.example.com";
-const server = new x402ResourceServer({ url: facilitatorUrl });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: facilitatorUrl })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 app.use(paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -136,9 +141,15 @@ import {
   x402ResourceServer,
   x402HTTPResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
-const resourceServer = new x402ResourceServer({ url: facilitatorUrl });
+const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: facilitatorUrl })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 const httpServer = new x402HTTPResourceServer(resourceServer, routes)
   .onProtectedRequest(async (context) => {
@@ -158,12 +169,14 @@ app.use(paymentMiddlewareFromHTTPServer(httpServer, { testnet: true }, paywall))
 ## Express.js Multiple Protected Routes
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const routes: RoutesConfig = {
   "/api/weather": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.001",
       maxTimeoutSeconds: 60,
@@ -174,8 +187,7 @@ const routes = {
   "/api/analytics": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.05",
       maxTimeoutSeconds: 300,
@@ -186,8 +198,7 @@ const routes = {
   "/api/ai-summary": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.10",
       maxTimeoutSeconds: 600,
@@ -205,16 +216,18 @@ const routes = {
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = new Hono();
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS",
       price: "$0.01",
       maxTimeoutSeconds: 300,
@@ -229,7 +242,10 @@ const paywall = createPaywall()
   .withConfig({ appName: "Hono API", testnet: true })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 app.use("*", paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -250,7 +266,10 @@ export default app;
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig, x402ResourceServer } from "@x402/hono";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 type Env = {
@@ -261,12 +280,11 @@ type Env = {
 const app = new Hono<{ Bindings: Env }>();
 
 app.use("*", async (c, next) => {
-  const routes = {
+  const routes: RoutesConfig = {
     "/api/data": {
       accepts: {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: c.env.PAYTO_ADDRESS,
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -281,7 +299,10 @@ app.use("*", async (c, next) => {
     .withConfig({ appName: "Worker API", testnet: true })
     .build();
 
-  const server = new x402ResourceServer({ url: c.env.FACILITATOR_URL });
+  const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: c.env.FACILITATOR_URL })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
   const middleware = paymentMiddleware(routes, server, { testnet: true }, paywall);
   return middleware(c, next);
@@ -301,15 +322,17 @@ export default app;
 ```typescript
 // middleware.ts
 import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 import { NextRequest, NextResponse } from "next/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: process.env.PAYTO_ADDRESS!,
       price: "$0.01",
       maxTimeoutSeconds: 300,
@@ -328,7 +351,10 @@ const paywall = createPaywall()
   })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 const proxy = paymentProxy(routes, server, { testnet: true }, paywall);
 
@@ -352,22 +378,24 @@ export const config = {
 // app/api/premium/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { withX402, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient, type RouteConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
-const server = new x402ResourceServer({
-  url: process.env.FACILITATOR_URL!,
-});
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)
   .withConfig({ appName: "Next.js App", testnet: true })
   .build();
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
-    network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    asset: "10458941",
+    network: ALGORAND_TESTNET_CAIP2,
     payTo: process.env.PAYTO_ADDRESS!,
     price: "$0.01",
     maxTimeoutSeconds: 300,
@@ -391,13 +419,15 @@ export const GET = withX402(handler, routeConfig, server, { testnet: true }, pay
 ## Multi-Network Server Routes
 
 ```typescript
-const routes = {
+import type { RoutesConfig } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: [
       {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: "ALGO_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -405,7 +435,6 @@ const routes = {
       {
         scheme: "exact",
         network: "eip155:84532",
-        asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
         payTo: "0xEVM_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 30,
@@ -567,6 +596,9 @@ import {
   paymentMiddleware,
   x402ResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = express();
@@ -578,20 +610,14 @@ const PAYTO_ADDRESS = process.env.PAYTO_ADDRESS || "YOUR_ALGORAND_ADDRESS";
 const PORT = parseInt(process.env.PORT || "3000");
 const IS_TESTNET = process.env.NODE_ENV !== "production";
 
-const ALGORAND_TESTNET_NETWORK = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
-const ALGORAND_MAINNET_NETWORK = "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=";
-const USDC_TESTNET_ASA = "10458941";
-const USDC_MAINNET_ASA = "31566704";
+const network = IS_TESTNET ? ALGORAND_TESTNET_CAIP2 : ALGORAND_MAINNET_CAIP2;
+// Money prices ("$0.01") resolve to the network's default asset (USDC) automatically
 
-const network = IS_TESTNET ? ALGORAND_TESTNET_NETWORK : ALGORAND_MAINNET_NETWORK;
-const usdcAsset = IS_TESTNET ? USDC_TESTNET_ASA : USDC_MAINNET_ASA;
-
-const routes = {
+const routes: RoutesConfig = {
   "/api/weather": {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$0.001",
       maxTimeoutSeconds: 60,
@@ -603,7 +629,6 @@ const routes = {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$0.05",
       maxTimeoutSeconds: 300,
@@ -615,7 +640,6 @@ const routes = {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$1.00",
       maxTimeoutSeconds: 600,
@@ -634,7 +658,10 @@ const paywall = createPaywall()
   })
   .build();
 
-const server = new x402ResourceServer({ url: FACILITATOR_URL });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: FACILITATOR_URL })).register(
+  network,
+  new ExactAvmScheme(),
+);
 app.use(paymentMiddleware(routes, server, { testnet: IS_TESTNET }, paywall));
 
 app.get("/", (req, res) => {
@@ -699,18 +726,20 @@ app.listen(PORT, () => {
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall, evmPaywall } from "@x402/paywall";
 
 const app = new Hono();
 app.use("*", cors());
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/data": {
     accepts: [
       {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: process.env.ALGO_PAYTO!,
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -718,7 +747,6 @@ const routes = {
       {
         scheme: "exact",
         network: "eip155:84532",
-        asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
         payTo: process.env.EVM_PAYTO!,
         price: "$0.01",
         maxTimeoutSeconds: 30,
@@ -738,7 +766,10 @@ const paywall = createPaywall()
   })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! })).register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(),
+);
 
 app.use("*", paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -771,11 +802,14 @@ export default {
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
 import { withX402, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient, type RouteConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
-const server = new x402ResourceServer({
-  url: process.env.FACILITATOR_URL!,
-});
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)
@@ -786,11 +820,10 @@ const paywall = createPaywall()
   })
   .build();
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
-    network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    asset: "10458941",
+    network: ALGORAND_TESTNET_CAIP2,
     payTo: process.env.PAYTO_ADDRESS!,
     price: "$0.01",
     maxTimeoutSeconds: 300,

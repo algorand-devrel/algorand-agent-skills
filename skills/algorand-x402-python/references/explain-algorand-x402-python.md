@@ -12,7 +12,7 @@ Before using this skill, ensure:
 
 ## Core Concept: Extras-Based Installation
 
-The `x402-avm` package uses pip extras to install only what you need. The package name on PyPI is `x402-avm` but all imports use `from x402...` (not `from x402...`).
+The `x402-avm` package uses pip extras to install only what you need. The package name on PyPI is `x402-avm` but all imports use `from x402...` (not `from x402_avm...`).
 
 ```bash
 # Minimal AVM support
@@ -155,7 +155,7 @@ register_exact_avm_client(client, signer)
 | `Invalid key length: expected 64` | Wrong key format | Ensure `AVM_PRIVATE_KEY` is Base64-encoded 64-byte key |
 | `TypeError: x402HTTPAdapter requires sync client` | Used `x402Client` with requests | Use `x402ClientSync` for requests (sync) |
 | `ImportError: AVM mechanism requires...` | Missing `py-algorand-sdk` | `pip install "x402-avm[avm]"` |
-| `ModuleNotFoundError: x402_avm` | Wrong import name | Import as `from x402...` not `from x402...` |
+| `ModuleNotFoundError: x402_avm` | Wrong import name | Import as `from x402...` not `from x402_avm...` |
 | `Simulation failed: ...` | Transaction group invalid | Check group ID assignment, fee calculations, asset opt-in |
 
 ## References / Further Reading

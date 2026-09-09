@@ -228,7 +228,9 @@ By default, `register_exact_avm_client` registers:
 
 For specific networks:
 ```python
-register_exact_avm_client(x402, signer, networks="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
+register_exact_avm_client(x402, signer, networks=ALGORAND_TESTNET_CAIP2)
 ```
 
 ## Error Classes
